@@ -26,12 +26,10 @@ import {
   FormMessage,
 } from "~~/components/ui/shadcn/form";
 import { Input } from "~~/components/ui/shadcn/input";
-import { Label } from "~~/components/ui/shadcn/label";
 import { Progress } from "~~/components/ui/shadcn/progress";
 import { ScrollArea } from "~~/components/ui/shadcn/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~~/components/ui/shadcn/select";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
-import { Switch } from "~~/components/ui/shadcn/switch";
 import { Textarea } from "~~/components/ui/shadcn/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~~/components/ui/shadcn/tooltip";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -197,13 +195,13 @@ export const CreateDaoDialog: React.FC = () => {
                       Name <span className="text-destructive font-bold text-bold">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="shadcn" {...field} />
+                      <Input placeholder="e.g. ETH Force" {...field} />
                     </FormControl>
                     <div className="w-full flex justify-between px-1">
                       {fieldState.error === undefined && <span />}
                       <FormMessage className="-my-1" />
 
-                      <FormDescription className="-my-1 justify-end">{field.value.length}/30</FormDescription>
+                      <FormDescription className="-my-1 justify-end">{field.value.length}/50</FormDescription>
                     </div>
                   </FormItem>
                 )}
@@ -221,7 +219,7 @@ export const CreateDaoDialog: React.FC = () => {
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g. Decentralized organization supporting social impact projects"
+                        placeholder="e.g. A decentralized autonomous organization focused on empowering communities through blockchain-based governance, funding social impact initiatives, and promoting transparent decision-making."
                         className="resize-none h-28"
                         {...field}
                       />
@@ -230,7 +228,7 @@ export const CreateDaoDialog: React.FC = () => {
                       {fieldState.error === undefined && <span />}
                       <FormMessage className="-my-1" />
 
-                      <FormDescription className="-my-1 justify-end">{field.value.length}/300</FormDescription>
+                      <FormDescription className="-my-1 justify-end">{field.value.length}/500</FormDescription>
                     </div>
                   </FormItem>
                 )}
@@ -259,7 +257,7 @@ export const CreateDaoDialog: React.FC = () => {
                         <SelectContent>
                           {daoCategories.map((x, y) => (
                             <SelectItem key={y} value={y.toString()}>
-                              {x.toString().toLowerCase()}
+                              {x.toString()}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -352,6 +350,7 @@ export const CreateDaoDialog: React.FC = () => {
                       </div>
                     </FormControl>
                     <FormMessage className="-my-1 ml-2" />
+                    <FormDescription className="-my-1 pl-2">Optional</FormDescription>
                   </FormItem>
                 )}
               />
@@ -399,7 +398,7 @@ export const CreateDaoDialog: React.FC = () => {
               /> */}
 
               {/* Submit buttons */}
-              <div className="w-full flex justify-center gap-6 mt-4">
+              <div className="w-full flex justify-center gap-6 mt-5">
                 <Button type="button" onClick={() => daoForm.reset()} disabled={submitLoading} variant="destructive">
                   <Trash className="w-4 h-4" />
                   Clear all

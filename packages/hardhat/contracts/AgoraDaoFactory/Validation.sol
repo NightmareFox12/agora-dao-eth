@@ -11,7 +11,7 @@ abstract contract Validation {
         //TODO: me falta verificar que el nombre no este repetido. Pero gastaria mucho gas
 
         require(bytes(_name).length > 0, "Dao name must not be empty");
-        require(bytes(_name).length <= 60, "The name of the DAO is very long");
+        require(bytes(_name).length <= 50, "The name of the DAO is very long");
         require(bytes(_description).length > 0, "DAO description must not be empty");
         require(bytes(_description).length <= 500, "The description of the DAO is very long");
 
