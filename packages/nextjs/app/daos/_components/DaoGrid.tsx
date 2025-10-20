@@ -8,8 +8,8 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadCo
 export const DaoGrid: React.FC = () => {
   //smart contract
   const { data: daos, isLoading: daoLoading } = useScaffoldReadContract({
-    contractName: "AgoraDaoFabric",
-    functionName: "getPublicDaos",
+    contractName: "AgoraDaoFactory",
+    functionName: "getAllDaos",
   });
 
   //components

@@ -13,12 +13,12 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 export const ImpactSection: React.FC = () => {
   //smart contract
   const { data: daoCounter, isLoading: daoCounterLoading } = useScaffoldReadContract({
-    contractName: "AgoraDaoFabric",
+    contractName: "AgoraDaoFactory",
     functionName: "getTotalDaoCount",
   });
 
   const { data: userCounter, isLoading: userCounterLoading } = useScaffoldReadContract({
-    contractName: "AgoraDaoFabric",
+    contractName: "AgoraDaoFactory",
     functionName: "userCounter",
   });
 

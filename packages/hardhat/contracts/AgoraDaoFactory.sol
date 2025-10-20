@@ -29,7 +29,7 @@ contract AgoraDaoFactory is Ownable, Validation {
     // State Variables
     uint256 public userCounter;
     string[] internal daoCategories;
-    Dao[] internal allDaos;
+    Dao[] public allDaos;
 
     //mappings
     mapping(address => Dao[]) public daosByUser;
@@ -113,10 +113,13 @@ contract AgoraDaoFactory is Ownable, Validation {
         return daoCategories;
     }
 
-    //TODO: VERIFICAR POR CODIGO O ALGO PARA VER SI ES DISPONIBLE EL JOIN
-    // function getAllDaos() external view returns (Dao[] memory) {
-    //     return allDaos;
-    // }
+    function getAllDaos() external view returns (Dao[] memory) {
+        Dao[] memory _allDaos = new Dao[](allDaos.length);
+        for (uint256 i = 0; i < allDaos.length; i++) {
+            _allDaos[i] = allDaos[i];
+        }
+        return _allDaos;
+    }
 
     // function getPublicDaos() external view returns (Dao[] memory) {
     //     uint256 count;
