@@ -30,5 +30,5 @@ export const DaoFormSchema = z.object({
     })
     .optional(),
 
-  isPublic: z.boolean(),
+  // isPublic: z.boolean(),
 });

@@ -4,6 +4,7 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./AgoraDao.sol";
+import "./AgoraDaoFactory/Validation.sol";
 
 /**
  * A smart contract that allows changing a state variable of the contract and tracking the changes
@@ -11,7 +12,8 @@ import "./AgoraDao.sol";
  * @title AgoraDaoFabric
  * @author NightmareFox12
  */
-contract AgoraDaoFabric is Ownable {
+contract AgoraDaoFactory is Ownable, Validation {
+    //structs
     struct Dao {
         uint256 daoID;
         address creator;
@@ -20,7 +22,7 @@ contract AgoraDaoFabric is Ownable {
         string description;
         string category;
         string imageURI;
-        bool isPublic;
+        // bool isPublic;
         uint256 creationTimestamp;
     }
 
@@ -51,18 +53,10 @@ contract AgoraDaoFabric is Ownable {
         string memory _name,
         string memory _description,
         uint256 _categoryID,
-        string memory _imageURI,
-        bool _isPublic
+        string memory _imageURI // bool _isPublic
     ) external {
-        //validations
-        require(bytes(_name).length > 0, "Dao name must not be empty");
-        require(bytes(_name).length <= 30, "The name of the DAO is very long");
-        require(bytes(_description).length > 0, "DAO description must not be empty");
-        require(bytes(_description).length <= 300, "The description of the DAO is very long");
-
-        require(_categoryID < daoCategories.length, "Invalid category ID.");
-
-        //TODO: me falta verificar que el nombre no este repetido
+        //Validation
+        _createDao(_name, _description, _categoryID, daoCategories);
 
         //create dao
         AgoraDao createdDaoContract = new AgoraDao(address(this), msg.sender);
@@ -75,7 +69,7 @@ contract AgoraDaoFabric is Ownable {
             _description,
             daoCategories[_categoryID],
             _imageURI,
-            _isPublic,
+            // _isPublic,
             block.timestamp
         );
 
@@ -124,26 +118,26 @@ contract AgoraDaoFabric is Ownable {
     //     return allDaos;
     // }
 
-    function getPublicDaos() external view returns (Dao[] memory) {
-        uint256 count;
-        for (uint256 i = 0; i < allDaos.length; i++) {
-            if (allDaos[i].isPublic) {
-                count++;
-            }
-        }
+    // function getPublicDaos() external view returns (Dao[] memory) {
+    //     uint256 count;
+    //     for (uint256 i = 0; i < allDaos.length; i++) {
+    //         if (allDaos[i].isPublic) {
+    //             count++;
+    //         }
+    //     }
 
-        Dao[] memory publicDaos = new Dao[](count);
-        uint256 index;
+    //     Dao[] memory publicDaos = new Dao[](count);
+    //     uint256 index;
 
-        for (uint256 i = 0; i < allDaos.length; i++) {
-            if (allDaos[i].isPublic) {
-                publicDaos[index] = allDaos[i];
-                index++;
-            }
-        }
+    //     for (uint256 i = 0; i < allDaos.length; i++) {
+    //         if (allDaos[i].isPublic) {
+    //             publicDaos[index] = allDaos[i];
+    //             index++;
+    //         }
+    //     }
 
-        return publicDaos;
-    }
+    //     return publicDaos;
+    // }
 
     function getTotalDaoCount() external view returns (uint256) {
         return allDaos.length;

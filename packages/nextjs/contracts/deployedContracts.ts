@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AgoraDao: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       abi: [
         {
           inputs: [
@@ -102,10 +102,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 3,
+      deployedOnBlock: 10,
     },
-    AgoraDaoFabric: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    AgoraDaoFactory: {
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       abi: [
         {
           inputs: [
@@ -232,11 +232,6 @@ const deployedContracts = {
               name: "_imageURI",
               type: "string",
             },
-            {
-              internalType: "bool",
-              name: "_isPublic",
-              type: "bool",
-            },
           ],
           name: "createDao",
           outputs: [],
@@ -294,11 +289,6 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "bool",
-              name: "isPublic",
-              type: "bool",
-            },
-            {
               internalType: "uint256",
               name: "creationTimestamp",
               type: "uint256",
@@ -315,66 +305,6 @@ const deployedContracts = {
               internalType: "string[]",
               name: "",
               type: "string[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getPublicDaos",
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: "uint256",
-                  name: "daoID",
-                  type: "uint256",
-                },
-                {
-                  internalType: "address",
-                  name: "creator",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "daoAddress",
-                  type: "address",
-                },
-                {
-                  internalType: "string",
-                  name: "name",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "description",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "category",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "imageURI",
-                  type: "string",
-                },
-                {
-                  internalType: "bool",
-                  name: "isPublic",
-                  type: "bool",
-                },
-                {
-                  internalType: "uint256",
-                  name: "creationTimestamp",
-                  type: "uint256",
-                },
-              ],
-              internalType: "struct AgoraDaoFabric.Dao[]",
-              name: "",
-              type: "tuple[]",
             },
           ],
           stateMutability: "view",
@@ -456,7 +386,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 1,
+      deployedOnBlock: 8,
     },
   },
 } as const;

@@ -55,7 +55,7 @@ export const CreateDaoDialog: React.FC = () => {
       description: "",
       categories: undefined,
       logo: undefined,
-      isPublic: true,
+      // isPublic: true,
     },
   });
 
@@ -63,10 +63,12 @@ export const CreateDaoDialog: React.FC = () => {
   const logoFile = daoForm.watch("logo");
 
   //Smart contract
-  const { writeContractAsync: writeAgoraDaoFabricAsync } = useScaffoldWriteContract({ contractName: "AgoraDaoFabric" });
+  const { writeContractAsync: writeAgoraDaoFabricAsync } = useScaffoldWriteContract({
+    contractName: "AgoraDaoFactory",
+  });
 
   const { data: daoCategories, isLoading: daoCategoriesLoading } = useScaffoldReadContract({
-    contractName: "AgoraDaoFabric",
+    contractName: "AgoraDaoFactory",
     functionName: "getAllDaoCategories",
   });
 
@@ -128,7 +130,7 @@ export const CreateDaoDialog: React.FC = () => {
 
       await writeAgoraDaoFabricAsync({
         functionName: "createDao",
-        args: [data.name, data.description, BigInt(data.categories), res?.cid || "", data.isPublic],
+        args: [data.name, data.description, BigInt(data.categories), res?.cid || ""],
       });
     } catch (err) {
       console.log(err);
@@ -182,7 +184,7 @@ export const CreateDaoDialog: React.FC = () => {
               onSubmit={daoForm.handleSubmit(onSubmit)}
               autoComplete="off"
               autoCapitalize="sentences"
-              className="space-y-4 px-1"
+              className="space-y-4 px-1.5"
             >
               {/* Name */}
               <FormField
@@ -355,7 +357,7 @@ export const CreateDaoDialog: React.FC = () => {
               />
 
               {/* Is Public */}
-              <FormField
+              {/* <FormField
                 control={daoForm.control}
                 name="isPublic"
                 disabled={submitLoading}
@@ -394,7 +396,7 @@ export const CreateDaoDialog: React.FC = () => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               {/* Submit buttons */}
               <div className="w-full flex justify-center gap-6 mt-4">

@@ -8,7 +8,7 @@ import { DeployFunction } from "hardhat-deploy/types";
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployAgoraDaoFabric: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployAgoraDaoFactory: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
@@ -22,7 +22,7 @@ const deployAgoraDaoFabric: DeployFunction = async function (hre: HardhatRuntime
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("AgoraDaoFabric", {
+  await deploy("AgoraDaoFactory", {
     from: deployer,
     // Contract constructor arguments
     // args: [deployer],
@@ -38,8 +38,8 @@ const deployAgoraDaoFabric: DeployFunction = async function (hre: HardhatRuntime
   // console.log("👋 Initial greeting:", await yourContract.greeting());
 };
 
-export default deployAgoraDaoFabric;
+export default deployAgoraDaoFactory;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployAgoraDaoFabric.tags = ["AgoraDaoFabric"];
+deployAgoraDaoFactory.tags = ["AgoraDaoFactory"];
