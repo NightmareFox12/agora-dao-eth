@@ -40,6 +40,7 @@ export const CreateDaoDialog: React.FC = () => {
   const { isMd } = useBreakpoint();
 
   //states
+  const [openModal, setOpenModal] = useState<boolean>(false);
   const [loadImage, setLoadImage] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
@@ -121,7 +122,6 @@ export const CreateDaoDialog: React.FC = () => {
         });
 
         res = await req.json();
-        console.log(res);
 
         if (!req.ok) return toast.error(res!.response);
       }
@@ -130,6 +130,12 @@ export const CreateDaoDialog: React.FC = () => {
         functionName: "createDao",
         args: [data.name, data.description, BigInt(data.categories), res?.cid || ""],
       });
+      toast.dismiss();
+      toast.success("Dao created successfully");
+      daoForm.reset();
+      daoForm.setValue("logo", undefined);
+      daoForm.setValue("categories", "");
+      setOpenModal(false);
     } catch (err) {
       console.log(err);
     } finally {
@@ -140,11 +146,10 @@ export const CreateDaoDialog: React.FC = () => {
   //TODO: pinnata eliminacion tambien,si el usuario rechaza la metamask
   //TODO: luego de la imagen conectar la creacion con el smart contract
   //TODO: Poner filtros al buscador como por ejemplo daos creadas por ti
-  //TODO: inventarme la de la vaina de acceso para daos privadas
   //TODO: en el header poner el nombre de mi dao actual. Tambien que puedas customizar el color del header de mi dao... o mejor dicho, el color primario (o agregar a premium)
 
   return (
-    <Dialog>
+    <Dialog open={openModal} onOpenChange={setOpenModal}>
       {/* Dialog button */}
       <div className="flex justify-center p-3">
         <DialogTrigger asChild>
@@ -168,7 +173,7 @@ export const CreateDaoDialog: React.FC = () => {
         </DialogTrigger>
       </div>
 
-      <DialogContent className="p-3">
+      <DialogContent className="p-3" >
         <ScrollArea className="h-[500px] p-1 px-1 mt-2.5">
           <DialogHeader>
             <DialogTitle>Create your DAO!</DialogTitle>
