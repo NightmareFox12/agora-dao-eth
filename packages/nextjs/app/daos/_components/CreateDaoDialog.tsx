@@ -136,6 +136,7 @@ export const CreateDaoDialog: React.FC = () => {
       daoForm.setValue("logo", undefined);
       daoForm.setValue("categories", "");
       setOpenModal(false);
+      //aqui deberia entrar directamente al dao creada
     } catch (err) {
       console.log(err);
     } finally {
@@ -173,7 +174,7 @@ export const CreateDaoDialog: React.FC = () => {
         </DialogTrigger>
       </div>
 
-      <DialogContent className="p-3" >
+      <DialogContent className="p-3">
         <ScrollArea className="h-[500px] p-1 px-1 mt-2.5">
           <DialogHeader>
             <DialogTitle>Create your DAO!</DialogTitle>
