@@ -2,10 +2,8 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Funnel, Search } from "lucide-react";
 import { useAccount } from "wagmi";
-import { Button } from "~~/components/ui/shadcn/button";
-import { Input } from "~~/components/ui/shadcn/input";
+import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export const HeaderDaoList: React.FC = () => {
   const { isConnected } = useAccount();
@@ -27,14 +25,9 @@ export const HeaderDaoList: React.FC = () => {
               Discover and join decentralized autonomous organizations
             </p>
           </div>
-          <div className="flex gap-4 mb-2 justify-center md:mb-0 md:justify-start">
-            <div className="relative w-full md:max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Buscar DAOs..." className="pl-10" />
-            </div>
-            <Button size="icon">
-              <Funnel className="h-4 w-4" />
-            </Button>
+          <div className="flex gap-1 mb-2 justify-center md:mb-0 md:justify-start">
+            <RainbowKitCustomConnectButton />
+            <FaucetButton />
           </div>
         </div>
       </div>
