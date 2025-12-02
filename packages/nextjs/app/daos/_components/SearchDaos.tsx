@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DropdownMenuGroup, DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
-import { Funnel } from "lucide-react";
+import { Funnel, Loader } from "lucide-react";
 import { Button } from "~~/components/ui/shadcn/button";
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import { Input } from "~~/components/ui/shadcn/input";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 
 export const SearchDaos: React.FC = () => {
-  const [selectedFilters, setSelectedFilters] = useState<string | null>(null);
+  const [selectedFilters, setSelectedFilters] = useState<string>("all");
 
   //smart contract
   const { data: daoCategories, isLoading: daoCategoriesLoading } = useScaffoldReadContract({
@@ -30,10 +30,17 @@ export const SearchDaos: React.FC = () => {
         {/* Button trigger */}
         <DropdownMenuTrigger asChild>
           <Button size="icon" disabled={daoCategoriesLoading}>
-            <Funnel className="h-4 w-4" />
+            {daoCategoriesLoading ? <Loader className="h-4 w-4 animate-spin" /> : <Funnel className="h-4 w-4" />}
           </Button>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent>
+          <DropdownMenuCheckboxItem
+            checked={selectedFilters === "all"}
+            onCheckedChange={() => setSelectedFilters("all")}
+          >
+            All
+          </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem
             checked={selectedFilters === "myDaos"}
             onCheckedChange={() => setSelectedFilters("myDaos")}
