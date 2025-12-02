@@ -15,7 +15,7 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadCo
 import { useDaoStore } from "~~/services/store/dao.store";
 
 export const SearchDaos: React.FC = () => {
-  const { selectedFilter, setSelectedFilter } = useDaoStore();
+  const { selectedDao, setSelectedDao } = useDaoStore();
 
   //smart contract
   const { data: daoCategories, isLoading: daoCategoriesLoading } = useScaffoldReadContract({
@@ -25,7 +25,12 @@ export const SearchDaos: React.FC = () => {
 
   return (
     <>
-      <Input className="w-full md:w-1/4" placeholder="Search DAOs..." />
+      <Input
+        className="w-full md:w-1/4"
+        placeholder="Search DAOs..."
+        value={selectedDao.name}
+        onChange={e => setSelectedDao({ ...selectedDao, name: e.target.value })}
+      />
       <DropdownMenu>
         {/* Button trigger */}
         <DropdownMenuTrigger asChild>
@@ -35,12 +40,15 @@ export const SearchDaos: React.FC = () => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>
-          <DropdownMenuCheckboxItem checked={selectedFilter === "all"} onCheckedChange={() => setSelectedFilter("all")}>
+          <DropdownMenuCheckboxItem
+            checked={selectedDao.category === "all"}
+            onCheckedChange={() => setSelectedDao({ category: "all", name: "" })}
+          >
             All
           </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem
-            checked={selectedFilter === "myDaos"}
-            onCheckedChange={() => setSelectedFilter("myDaos")}
+            checked={selectedDao.category === "myDaos"}
+            onCheckedChange={() => setSelectedDao({ category: "myDaos", name: "" })}
           >
             My DAOs
           </DropdownMenuCheckboxItem>
@@ -50,8 +58,8 @@ export const SearchDaos: React.FC = () => {
             {daoCategories?.map((category, index) => (
               <DropdownMenuCheckboxItem
                 key={index}
-                checked={selectedFilter === category}
-                onCheckedChange={() => setSelectedFilter(category)}
+                checked={selectedDao.category === category}
+                onCheckedChange={() => setSelectedDao({ category: category, name: "" })}
               >
                 {category}
               </DropdownMenuCheckboxItem>

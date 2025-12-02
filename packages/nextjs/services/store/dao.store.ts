@@ -1,11 +1,17 @@
 import { create } from "zustand";
 
 type DaoStore = {
-  selectedFilter: string;
-  setSelectedFilter: (filter: string) => void;
+  selectedDao: {
+    category: string;
+    name: string;
+  };
+  setSelectedDao: (dao: { category: string; name: string }) => void;
 };
 
 export const useDaoStore = create<DaoStore>(set => ({
-  selectedFilter: "all",
-  setSelectedFilter: (filter: string) => set(() => ({ selectedFilter: filter })),
+  selectedDao: {
+    category: "all",
+    name: "",
+  },
+  setSelectedDao: (dao: { category: string; name: string }) => set(() => ({ selectedDao: dao })),
 }));

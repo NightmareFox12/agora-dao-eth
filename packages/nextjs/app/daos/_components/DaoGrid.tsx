@@ -9,7 +9,7 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadCo
 import { useDaoStore } from "~~/services/store/dao.store";
 
 export const DaoGrid: React.FC = () => {
-  const { selectedFilter } = useDaoStore();
+  const { selectedDao } = useDaoStore();
   const { address } = useAccount();
   //smart contract
   const { data: daos, isLoading: daoLoading } = useScaffoldReadContract({
@@ -31,15 +31,17 @@ export const DaoGrid: React.FC = () => {
   };
 
   //memos
-  const daosFiltered = useMemo(
-    () =>
-      daos?.filter(x => {
-        if (selectedFilter === "all") return daos;
-        if (selectedFilter === "myDaos") return x.creator === address;
-        return x.category === selectedFilter;
-      }),
-    [address, daos, selectedFilter],
-  );
+  const daosFiltered = useMemo(() => {
+    const daosCat = daos?.filter(x => {
+      if (selectedDao.category === "all") return daos;
+      if (selectedDao.category === "myDaos") return x.creator === address;
+      return x.category === selectedDao.category;
+    });
+
+    if (selectedDao.name.length > 0)
+      return daosCat?.filter(x => x.name.toLowerCase().includes(selectedDao.name.toLowerCase()));
+    return daosCat;
+  }, [address, daos, selectedDao]);
 
   return (
     <section>
