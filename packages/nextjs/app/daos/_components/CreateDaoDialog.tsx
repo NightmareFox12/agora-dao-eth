@@ -147,10 +147,6 @@ export const CreateDaoDialog: React.FC = () => {
     }
   };
 
-  //TODO: pinnata eliminacion tambien,si el usuario rechaza la metamask
-  //TODO: luego de la imagen conectar la creacion con el smart contract
-  //TODO: en el header poner el nombre de mi dao actual. Tambien que puedas customizar el color del header de mi dao... o mejor dicho, el color primario (o agregar a premium)
-
   return (
     <Dialog open={openModal} onOpenChange={setOpenModal}>
       {/* Dialog button */}

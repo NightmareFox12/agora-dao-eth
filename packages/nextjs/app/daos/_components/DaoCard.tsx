@@ -15,7 +15,7 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWrite
 const NoSSRBadge = dynamic(() => import("~~/components/ui/shadcn/badge").then(module => module.Badge), { ssr: false });
 
 //constans
-const darkCategoryColors = {
+const DARK_CATEGORY_COLORS = {
   defi: "bg-blue-900 text-blue-300",
   gaming: "bg-purple-900 text-purple-300",
   "Social Impact": "bg-green-900 text-green-300",
@@ -24,7 +24,7 @@ const darkCategoryColors = {
   governance: "bg-pink-900 text-pink-300",
 } as const;
 
-const lightCategoryColors = {
+const LIGHT_CATEGORY_COLORS = {
   defi: "bg-blue-100 text-blue-800",
   gaming: "bg-purple-100 text-purple-800",
   "Social Impact": "bg-green-100 text-green-800",
@@ -115,8 +115,8 @@ export const DaoCard: React.FC<DaoCardProps> = ({
           variant="secondary"
           className={`w-fit ${
             isDarkMode
-              ? darkCategoryColors[category.toLowerCase() as keyof typeof darkCategoryColors]
-              : lightCategoryColors[category.toLowerCase() as keyof typeof lightCategoryColors]
+              ? DARK_CATEGORY_COLORS[category.toLowerCase() as keyof typeof DARK_CATEGORY_COLORS]
+              : LIGHT_CATEGORY_COLORS[category.toLowerCase() as keyof typeof LIGHT_CATEGORY_COLORS]
           }`}
         >
           {category.toLowerCase()}
