@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { DropdownMenuGroup, DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { Funnel, Loader } from "lucide-react";
 import { Button } from "~~/components/ui/shadcn/button";
@@ -13,9 +12,10 @@ import {
 } from "~~/components/ui/shadcn/dropdown-menu";
 import { Input } from "~~/components/ui/shadcn/input";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
+import { useDaoStore } from "~~/services/store/dao.store";
 
 export const SearchDaos: React.FC = () => {
-  const [selectedFilters, setSelectedFilters] = useState<string>("all");
+  const { selectedFilter, setSelectedFilter } = useDaoStore();
 
   //smart contract
   const { data: daoCategories, isLoading: daoCategoriesLoading } = useScaffoldReadContract({
@@ -35,15 +35,12 @@ export const SearchDaos: React.FC = () => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>
-          <DropdownMenuCheckboxItem
-            checked={selectedFilters === "all"}
-            onCheckedChange={() => setSelectedFilters("all")}
-          >
+          <DropdownMenuCheckboxItem checked={selectedFilter === "all"} onCheckedChange={() => setSelectedFilter("all")}>
             All
           </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem
-            checked={selectedFilters === "myDaos"}
-            onCheckedChange={() => setSelectedFilters("myDaos")}
+            checked={selectedFilter === "myDaos"}
+            onCheckedChange={() => setSelectedFilter("myDaos")}
           >
             My DAOs
           </DropdownMenuCheckboxItem>
@@ -53,8 +50,8 @@ export const SearchDaos: React.FC = () => {
             {daoCategories?.map((category, index) => (
               <DropdownMenuCheckboxItem
                 key={index}
-                checked={selectedFilters === category}
-                onCheckedChange={() => setSelectedFilters(category)}
+                checked={selectedFilter === category}
+                onCheckedChange={() => setSelectedFilter(category)}
               >
                 {category}
               </DropdownMenuCheckboxItem>

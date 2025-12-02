@@ -1,11 +1,16 @@
 "use client";
 
+import { useMemo } from "react";
 import { DaoCard } from "./DaoCard";
 import { Frown } from "lucide-react";
+import { useAccount } from "wagmi";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
+import { useDaoStore } from "~~/services/store/dao.store";
 
 export const DaoGrid: React.FC = () => {
+  const { selectedFilter } = useDaoStore();
+  const { address } = useAccount();
   //smart contract
   const { data: daos, isLoading: daoLoading } = useScaffoldReadContract({
     contractName: "AgoraDaoFactory",
@@ -25,6 +30,17 @@ export const DaoGrid: React.FC = () => {
     );
   };
 
+  //memos
+  const daosFiltered = useMemo(
+    () =>
+      daos?.filter(x => {
+        if (selectedFilter === "all") return daos;
+        if (selectedFilter === "myDaos") return x.creator === address;
+        return x.category === selectedFilter;
+      }),
+    [address, daos, selectedFilter],
+  );
+
   return (
     <section>
       {daos === undefined || daoLoading ? (
@@ -39,7 +55,7 @@ export const DaoGrid: React.FC = () => {
         <article className="container mx-auto px-4 py-8">
           {/* Main Content */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {daos.map(x => {
+            {daosFiltered?.map(x => {
               return (
                 <DaoCard
                   key={x.daoID}

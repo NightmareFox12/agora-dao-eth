@@ -10,7 +10,7 @@ import { useSidebar } from "./ui/shadcn/sidebar";
 import { BugIcon, Home, Menu } from "lucide-react";
 import { hardhat } from "viem/chains";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useHeaderStore } from "~~/services/store/header.store.";
+import { useHeaderStore } from "~~/services/store/header.store";
 
 type HeaderMenuLink = {
   label: string;

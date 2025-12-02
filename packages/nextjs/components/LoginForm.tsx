@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Input } from "./ui/shadcn/input";
 import { Label } from "./ui/shadcn/label";
 import { cn } from "~~/lib/utils";
-import { useHeaderStore } from "~~/services/store/header.store.";
+import { useHeaderStore } from "~~/services/store/header.store";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const { setShowHeader } = useHeaderStore();

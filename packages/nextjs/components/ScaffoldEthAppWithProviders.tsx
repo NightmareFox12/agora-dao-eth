@@ -13,7 +13,7 @@ import { useTheme } from "next-themes";
 import { WagmiProvider } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
-import { useHeaderStore } from "~~/services/store/header.store.";
+import { useHeaderStore } from "~~/services/store/header.store";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
