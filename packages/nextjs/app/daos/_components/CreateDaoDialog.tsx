@@ -106,10 +106,18 @@ export const CreateDaoDialog: React.FC = () => {
     return file;
   };
 
+  const resetAll = () => {
+    toast.dismiss();
+    toast.success("Dao created successfully");
+    daoForm.reset();
+    daoForm.setValue("logo", undefined);
+    daoForm.setValue("categories", "");
+    setOpenModal(false);
+  };
+
   const onSubmit = async (data: z.infer<typeof DaoFormSchema>) => {
     try {
       setSubmitLoading(true);
-      console.log(data);
       let res: { response: string; cid: string } | undefined;
       if (data.logo) {
         const formData = new FormData();
@@ -130,13 +138,8 @@ export const CreateDaoDialog: React.FC = () => {
         functionName: "createDao",
         args: [data.name, data.description, BigInt(data.categories), res?.cid || ""],
       });
-      toast.dismiss();
-      toast.success("Dao created successfully");
-      daoForm.reset();
-      daoForm.setValue("logo", undefined);
-      daoForm.setValue("categories", "");
-      setOpenModal(false);
-      //aqui deberia entrar directamente al dao creada
+
+      resetAll();
     } catch (err) {
       console.log(err);
     } finally {
@@ -146,7 +149,6 @@ export const CreateDaoDialog: React.FC = () => {
 
   //TODO: pinnata eliminacion tambien,si el usuario rechaza la metamask
   //TODO: luego de la imagen conectar la creacion con el smart contract
-  //TODO: Poner filtros al buscador como por ejemplo daos creadas por ti
   //TODO: en el header poner el nombre de mi dao actual. Tambien que puedas customizar el color del header de mi dao... o mejor dicho, el color primario (o agregar a premium)
 
   return (

@@ -28,13 +28,14 @@ contract AgoraDaoFactory is Ownable, Validation {
 
     // State Variables
     uint256 public userCounter;
+    uint256 public daoCounter;
     string[] internal daoCategories;
     Dao[] public allDaos;
 
     //mappings
     mapping(address => Dao[]) public daosByUser;
-    mapping(address => bool) internal users;
-    mapping(address => bool) internal isAgoraDao;
+    mapping(address => bool) internal isUser;
+    mapping(address => bool) internal isDao;
 
     //events
     event DaoCreated(uint256 indexed daoID, address indexed creator, string indexed name);
@@ -62,7 +63,7 @@ contract AgoraDaoFactory is Ownable, Validation {
         AgoraDao createdDaoContract = new AgoraDao(address(this), msg.sender);
 
         Dao memory newDao = Dao(
-            allDaos.length,
+            daoCounter,
             msg.sender,
             address(createdDaoContract),
             _name,
@@ -76,12 +77,12 @@ contract AgoraDaoFactory is Ownable, Validation {
         //store dao
         daosByUser[msg.sender].push(newDao);
         allDaos.push(newDao);
-        isAgoraDao[address(createdDaoContract)] = true;
+        isDao[address(createdDaoContract)] = true;
+        daoCounter++;
+        addUserCounter(msg.sender);
 
         //emit event
-        emit DaoCreated(allDaos.length, msg.sender, _name);
-
-        addUserCounter(msg.sender);
+        emit DaoCreated(daoCounter, msg.sender, _name);
     }
 
     function addDaoCategory(string memory newCategory) external onlyOwner {
@@ -98,8 +99,8 @@ contract AgoraDaoFactory is Ownable, Validation {
     }
 
     function addUserCounter(address _newUser) public {
-        if (!users[_newUser]) {
-            users[_newUser] = true;
+        if (!isUser[_newUser]) {
+            isUser[_newUser] = true;
             userCounter++;
         }
     }

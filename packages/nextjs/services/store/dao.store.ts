@@ -6,6 +6,8 @@ type DaoStore = {
     name: string;
   };
   setSelectedDao: (dao: { category: string; name: string }) => void;
+  daoAddress: string;
+  setDaoAddress: (address: string) => void;
 };
 
 export const useDaoStore = create<DaoStore>(set => ({
@@ -14,4 +16,6 @@ export const useDaoStore = create<DaoStore>(set => ({
     name: "",
   },
   setSelectedDao: (dao: { category: string; name: string }) => set(() => ({ selectedDao: dao })),
+  daoAddress: "",
+  setDaoAddress: (address: string) => set(() => ({ daoAddress: address })),
 }));

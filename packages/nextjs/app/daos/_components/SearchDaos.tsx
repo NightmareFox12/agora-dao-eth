@@ -42,13 +42,13 @@ export const SearchDaos: React.FC = () => {
         <DropdownMenuContent>
           <DropdownMenuCheckboxItem
             checked={selectedDao.category === "all"}
-            onCheckedChange={() => setSelectedDao({ category: "all", name: "" })}
+            onCheckedChange={() => setSelectedDao({ ...selectedDao, category: "all" })}
           >
             All
           </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem
             checked={selectedDao.category === "myDaos"}
-            onCheckedChange={() => setSelectedDao({ category: "myDaos", name: "" })}
+            onCheckedChange={() => setSelectedDao({ ...selectedDao, category: "myDaos" })}
           >
             My DAOs
           </DropdownMenuCheckboxItem>
@@ -59,7 +59,7 @@ export const SearchDaos: React.FC = () => {
               <DropdownMenuCheckboxItem
                 key={index}
                 checked={selectedDao.category === category}
-                onCheckedChange={() => setSelectedDao({ category: category, name: "" })}
+                onCheckedChange={() => setSelectedDao({ ...selectedDao, category: category })}
               >
                 {category}
               </DropdownMenuCheckboxItem>

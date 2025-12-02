@@ -11,6 +11,7 @@ import { useDaoStore } from "~~/services/store/dao.store";
 export const DaoGrid: React.FC = () => {
   const { selectedDao } = useDaoStore();
   const { address } = useAccount();
+
   //smart contract
   const { data: daos, isLoading: daoLoading } = useScaffoldReadContract({
     contractName: "AgoraDaoFactory",
