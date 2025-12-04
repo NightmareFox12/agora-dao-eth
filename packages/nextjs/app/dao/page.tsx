@@ -25,9 +25,6 @@ const Home: NextPage = () => {
       startTransition(() => {
         router.push("/daos");
       });
-    } else {
-      router.replace("/daos");
-      router.push("/");
     }
   }, [router, setShowHeader]);
 

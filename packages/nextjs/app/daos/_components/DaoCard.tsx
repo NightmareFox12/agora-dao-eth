@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
+import { LOCAL_STORAGE_KEYS } from "~~/constants/localStorage";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { cn } from "~~/lib/utils";
@@ -61,7 +62,6 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   creationDate,
 }) => {
   const { resolvedTheme } = useTheme();
-
   //consts
   const isDarkMode = (resolvedTheme ?? "light") === "dark";
 
@@ -86,6 +86,12 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   //functions
   const handleJoinDao = async () => {
     try {
+      if (!userAddress) return;
+
+      if (userAddress === creator) {
+        localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS, daoAddress);
+        return;
+      }
       await writeAgoraDaoAsync({
         functionName: "joinDao",
       });

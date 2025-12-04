@@ -1,16 +1,20 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { DaoCard } from "./DaoCard";
-import { Frown } from "lucide-react";
+import { Frown, Loader } from "lucide-react";
 import { useAccount } from "wagmi";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
+import { LOCAL_STORAGE_KEYS } from "~~/constants/localStorage";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useDaoStore } from "~~/services/store/dao.store";
 
 export const DaoGrid: React.FC = () => {
   const { selectedDao } = useDaoStore();
   const { address } = useAccount();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   //smart contract
   const { data: daos, isLoading: daoLoading } = useScaffoldReadContract({
@@ -31,6 +35,15 @@ export const DaoGrid: React.FC = () => {
     );
   };
 
+  useEffect(() => {
+    const daoAddress = localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS);
+    if (daoAddress !== null) {
+      startTransition(() => {
+        router.push(`/dao?address=${daoAddress}`);
+      });
+    }
+  }, [router, startTransition]);
+
   //memos
   const daosFiltered = useMemo(() => {
     const daosCat = daos?.filter(x => {
@@ -43,6 +56,14 @@ export const DaoGrid: React.FC = () => {
       return daosCat?.filter(x => x.name.toLowerCase().includes(selectedDao.name.toLowerCase()));
     return daosCat;
   }, [address, daos, selectedDao]);
+
+  if (isPending) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <Loader className="w-10 h-10 animate-spin" />
+      </main>
+    );
+  }
 
   return (
     <section>
