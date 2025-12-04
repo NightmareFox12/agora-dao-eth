@@ -2,6 +2,11 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./AgoraDaoFactory.sol";
+
+interface AgoraDaoFactory {
+    function addUserCounter(address _user) external;
+}
 
 /**
  * A smart contract that allows changing a state variable of the contract and tracking the changes
@@ -9,8 +14,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @title AgoraDao
  * @author NightmareFox12
  */
-
-//TODO: pensar a futuro si voy a poner roles
 contract AgoraDao {
     // State Variables
     address internal fabric;
@@ -35,9 +38,12 @@ contract AgoraDao {
     // --- write functions ---
     function joinDao() external {
         require(!isUser[msg.sender], "User already joined");
-        //TODO: verificar si la dao es privada para pedir el codigo
+        require(msg.sender != creator, "The creator can't join");
 
         isUser[msg.sender] = true;
+
+        AgoraDaoFactory(fabric).addUserCounter(msg.sender);
+
         emit UserJoined(msg.sender, userCounter);
         userCounter++;
     }
