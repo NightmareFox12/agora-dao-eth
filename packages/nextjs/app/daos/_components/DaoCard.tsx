@@ -74,7 +74,6 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     try {
       await writeAgoraDaoAsync({
         functionName: "joinDao",
-        // args: [],
       });
     } catch (err) {
       console.log(err);
