@@ -3,13 +3,14 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import { DaoDetailsDialog } from "./DaoDetailsDialog";
-import { Image, Users } from "lucide-react";
+import { DoorOpen, Image, Loader2, Users } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
+import { cn } from "~~/lib/utils";
 
 //dinamycs
 const NoSSRBadge = dynamic(() => import("~~/components/ui/shadcn/badge").then(module => module.Badge), { ssr: false });
@@ -33,9 +34,15 @@ const LIGHT_CATEGORY_COLORS = {
   governance: "bg-pink-100 text-pink-800",
 } as const;
 
+const BORDER_COLOR = {
+  dark: "border-blue-400",
+  light: "border-blue-500",
+} as const;
+
 type DaoCardProps = {
   daoID: bigint;
   daoAddress: string;
+  userAddress: string | undefined;
   name: string;
   description: string;
   category: string;
@@ -46,6 +53,7 @@ type DaoCardProps = {
 export const DaoCard: React.FC<DaoCardProps> = ({
   daoID,
   daoAddress,
+  userAddress,
   name,
   description,
   category,
@@ -69,6 +77,12 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     contractAddress: daoAddress,
   });
 
+  const { data: creator, isLoading: creatorLoading } = useScaffoldReadContract({
+    contractName: "AgoraDao",
+    functionName: "creator",
+    contractAddress: daoAddress,
+  });
+
   //functions
   const handleJoinDao = async () => {
     try {
@@ -81,7 +95,12 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   };
 
   return (
-    <Card className="flex flex-col transition-all hover:shadow-lg">
+    <Card
+      className={cn(
+        "flex flex-col transition-all hover:shadow-lg",
+        userAddress === creator ? BORDER_COLOR[isDarkMode ? "dark" : "light"] : "",
+      )}
+    >
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -130,8 +149,28 @@ export const DaoCard: React.FC<DaoCardProps> = ({
 
       <CardFooter>
         <div className="w-full flex items-center justify-between gap-1 md:gap-1.5">
-          <Button onClick={handleJoinDao} className="flex-1 " size="sm">
-            Unirse a la DAO
+          <Button
+            onClick={handleJoinDao}
+            className={`flex-1 ${userAddress === creator ? "bg-secondary-foreground" : "bg-primary"}`}
+            size="sm"
+            disabled={creatorLoading}
+          >
+            {creatorLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading...
+              </>
+            ) : userAddress === creator ? (
+              <>
+                <DoorOpen className="h-4 w-4" />
+                Login
+              </>
+            ) : (
+              <>
+                <Users className="h-4 w-4" />
+                Join
+              </>
+            )}
           </Button>
           <DaoDetailsDialog
             daoID={daoID}

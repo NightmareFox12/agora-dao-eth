@@ -64,6 +64,7 @@ export const DaoGrid: React.FC = () => {
                   key={x.daoID}
                   daoID={x.daoID}
                   daoAddress={x.daoAddress}
+                  userAddress={address}
                   name={x.name}
                   description={x.description}
                   category={x.category}

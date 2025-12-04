@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract AgoraDao {
     // State Variables
     address internal fabric;
-    address internal creator;
+    address public creator;
     uint256 public daoID;
     uint256 public userCounter;
 
