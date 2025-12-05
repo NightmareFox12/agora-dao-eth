@@ -39,7 +39,7 @@ export const ImpactSection: React.FC = () => {
                 <CardTitle className="text-2xl text-primary">
                   <CountUp
                     from={0}
-                    to={parseInt(daoCounter?.toString() ?? "0") === 0 ? 0 : parseInt(daoCounter?.toString() ?? "0") - 1}
+                    to={parseInt(daoCounter?.toString() ?? "0") > 0 ? parseInt(daoCounter?.toString() ?? "0") : 0}
                     separator=","
                     direction="up"
                     duration={1}
@@ -64,9 +64,7 @@ export const ImpactSection: React.FC = () => {
                 <CardTitle className="text-2xl">
                   <CountUp
                     from={0}
-                    to={
-                      parseInt(userCounter?.toString() ?? "0") === 0 ? 0 : parseInt(userCounter?.toString() ?? "0") - 1
-                    }
+                    to={parseInt(userCounter?.toString() ?? "0") > 0 ? parseInt(userCounter?.toString() ?? "0") : 0}
                     separator=","
                     direction="up"
                     duration={1}

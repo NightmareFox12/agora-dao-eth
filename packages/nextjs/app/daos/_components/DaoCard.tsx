@@ -4,6 +4,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { DaoDetailsDialog } from "./DaoDetailsDialog";
 import { DoorOpen, Image, Loader2, Users } from "lucide-react";
+import { useRouter } from "next-nprogress-bar";
 import { useTheme } from "next-themes";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
@@ -62,6 +63,8 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   creationDate,
 }) => {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
+
   //consts
   const isDarkMode = (resolvedTheme ?? "light") === "dark";
 
@@ -90,11 +93,13 @@ export const DaoCard: React.FC<DaoCardProps> = ({
 
       if (userAddress === creator) {
         localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS, daoAddress);
+        router.push(`/dao?address=${daoAddress}`);
         return;
       }
       await writeAgoraDaoAsync({
         functionName: "joinDao",
       });
+      router.push(`/dao?address=${daoAddress}`);
     } catch (err) {
       console.log(err);
     }

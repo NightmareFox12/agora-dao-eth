@@ -7,7 +7,7 @@ import { FaucetButton } from "./scaffold-eth/FaucetButton";
 import { RainbowKitCustomConnectButton } from "./scaffold-eth/RainbowKitCustomConnectButton";
 import { Button } from "./ui/shadcn/button";
 import { useSidebar } from "./ui/shadcn/sidebar";
-import { BugIcon, DoorOpenIcon, Home, Menu } from "lucide-react";
+import { BugIcon, DoorOpenIcon, Files, Home, Menu } from "lucide-react";
 import { hardhat } from "viem/chains";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useHeaderStore } from "~~/services/store/header.store";
@@ -21,8 +21,13 @@ type HeaderMenuLink = {
 export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Home",
-    href: "/",
+    href: "/dao",
     icon: <Home />,
+  },
+  {
+    label: "Tasks",
+    href: "/tasks",
+    icon: <Files className="h-4 w-4" />,
   },
   {
     label: "Debug Contracts",
