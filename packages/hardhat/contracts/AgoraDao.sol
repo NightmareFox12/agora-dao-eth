@@ -14,10 +14,9 @@ interface IAgoraDaoFactory {
  * @title AgoraDao
  * @author NightmareFox12
  */
-contract AgoraDao {
+contract AgoraDao is Ownable {
     // State Variables
     address public fabric;
-    address public creator;
     uint256 public daoID;
     uint256 public userCounter;
 
@@ -29,20 +28,19 @@ contract AgoraDao {
     //events
     event UserJoined(address indexed user, uint256 userID);
 
-    constructor(address _fabric, address _creator) {
+    constructor(address _fabric, address _creator) Ownable(_creator) {
         fabric = _fabric;
-        creator = _creator;
         userCounter++;
     }
 
     // --- write functions ---
     function joinDao() external {
         require(!isUser[msg.sender], "User already joined");
-        require(msg.sender != creator, "The creator can't join");
+        require(msg.sender != owner(), "The owner can't join");
 
         isUser[msg.sender] = true;
 
-        // IAgoraDaoFactory(fabric).addUserCounter(msg.sender);
+        IAgoraDaoFactory(fabric).addUserCounter(msg.sender);
 
         emit UserJoined(msg.sender, userCounter);
         userCounter++;

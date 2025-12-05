@@ -86,6 +86,9 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     contractAddress: daoAddress,
   });
 
+  console.log("User address:", userAddress);
+  console.log("The creator is:", creator);
+
   //functions
   const handleJoinDao = async () => {
     try {
@@ -99,6 +102,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
       await writeAgoraDaoAsync({
         functionName: "joinDao",
       });
+      localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS, daoAddress);
       router.push(`/dao?address=${daoAddress}`);
     } catch (err) {
       console.log(err);

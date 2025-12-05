@@ -39,18 +39,18 @@ const blockieSizeMap = {
   "7xl": 23,
 } as const;
 
-const copyIconSizeMap = {
-  "3xs": "h-2.5 w-2.5",
-  "2xs": "h-3 w-3",
-  xs: "h-3.5 w-3.5",
-  sm: "h-4 w-4",
-  base: "h-[18px] w-[18px]",
-  lg: "h-5 w-5",
-  xl: "h-[22px] w-[22px]",
-  "2xl": "h-6 w-6",
-  "3xl": "h-[26px] w-[26px]",
-  "4xl": "h-7 w-7",
-} as const;
+// const copyIconSizeMap = {
+//   "3xs": "h-2.5 w-2.5",
+//   "2xs": "h-3 w-3",
+//   xs: "h-3.5 w-3.5",
+//   sm: "h-4 w-4",
+//   base: "h-[18px] w-[18px]",
+//   lg: "h-5 w-5",
+//   xl: "h-[22px] w-[22px]",
+//   "2xl": "h-6 w-6",
+//   "3xl": "h-[26px] w-[26px]",
+//   "4xl": "h-7 w-7",
+// } as const;
 
 type SizeMap = typeof textSizeMap | typeof blockieSizeMap;
 
@@ -187,7 +187,7 @@ export const Address = ({
               className="ml-1 size-4 cursor-pointer"
               onClick={e => {
                 e.stopPropagation();
-                copyAddressToClipboard(copyIconSizeMap[addressSize]);
+                copyAddressToClipboard(checkSumAddress);
               }}
             />
           )}

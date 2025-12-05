@@ -79,6 +79,8 @@ contract AgoraDaoFactory is Ownable, Validation {
         allDaos.push(newDao);
         isDao[address(createdDaoContract)] = true;
         daoCounter++;
+
+        //add user counter
         addUserCounter(msg.sender);
 
         //emit event
@@ -99,7 +101,7 @@ contract AgoraDaoFactory is Ownable, Validation {
     }
 
     function addUserCounter(address _newUser) public {
-        if (!isUser[_newUser]) {
+        if (!isUser[_newUser] && _newUser != address(0) && _newUser != address(this)) {
             isUser[_newUser] = true;
             userCounter++;
         }
