@@ -80,21 +80,18 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     contractAddress: daoAddress,
   });
 
-  const { data: creator, isLoading: creatorLoading } = useScaffoldReadContract({
+  const { data: owner, isLoading: ownerLoading } = useScaffoldReadContract({
     contractName: "AgoraDao",
-    functionName: "creator",
+    functionName: "owner",
     contractAddress: daoAddress,
   });
-
-  console.log("User address:", userAddress);
-  console.log("The creator is:", creator);
 
   //functions
   const handleJoinDao = async () => {
     try {
       if (!userAddress) return;
 
-      if (userAddress === creator) {
+      if (userAddress === owner) {
         localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS, daoAddress);
         router.push(`/dao?address=${daoAddress}`);
         return;
@@ -113,7 +110,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     <Card
       className={cn(
         "flex flex-col transition-all hover:shadow-lg",
-        userAddress === creator ? BORDER_COLOR[isDarkMode ? "dark" : "light"] : "",
+        userAddress === owner ? BORDER_COLOR[isDarkMode ? "dark" : "light"] : "",
       )}
     >
       <CardHeader>
@@ -166,16 +163,16 @@ export const DaoCard: React.FC<DaoCardProps> = ({
         <div className="w-full flex items-center justify-between gap-1 md:gap-1.5">
           <Button
             onClick={handleJoinDao}
-            className={`flex-1 ${userAddress === creator ? "bg-secondary-foreground" : "bg-primary"}`}
+            className={`flex-1 ${userAddress === owner ? "bg-secondary-foreground" : "bg-primary"}`}
             size="sm"
-            disabled={creatorLoading}
+            disabled={ownerLoading}
           >
-            {creatorLoading ? (
+            {ownerLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading...
               </>
-            ) : userAddress === creator ? (
+            ) : userAddress === owner ? (
               <>
                 <DoorOpen className="h-4 w-4" />
                 Login
