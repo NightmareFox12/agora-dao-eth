@@ -17,6 +17,7 @@ const Home: NextPage = () => {
   //effects
   useEffect(() => {
     if (localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS) === null) {
+      setShowHeader(false);
       startTransition(() => {
         router.push("/daos");
       });
