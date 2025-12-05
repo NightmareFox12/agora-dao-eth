@@ -4,10 +4,6 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./AgoraDaoFactory.sol";
 
-interface AgoraDaoFactory {
-    function addUserCounter(address _user) external;
-}
-
 /**
  * A smart contract that allows changing a state variable of the contract and tracking the changes
  * It also allows the owner to withdraw the Ether in the contract
@@ -42,7 +38,7 @@ contract AgoraDao {
 
         isUser[msg.sender] = true;
 
-        AgoraDaoFactory(fabric).addUserCounter(msg.sender);
+        AgoraDaoFactory(payable(fabric)).addUserCounter(msg.sender);
 
         emit UserJoined(msg.sender, userCounter);
         userCounter++;

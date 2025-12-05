@@ -20,12 +20,12 @@ const Home: NextPage = () => {
 
   //effects
   useEffect(() => {
-    setShowHeader(false);
     if (localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS) === null) {
       startTransition(() => {
         router.push("/daos");
       });
     }
+    setShowHeader(true);
   }, [router, setShowHeader]);
 
   if (isPending) {
