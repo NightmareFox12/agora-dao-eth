@@ -42,11 +42,11 @@ contract AgoraDao is Ownable {
 
         // IAgoraDaoFactory(fabric).addUserCounter(msg.sender);
 
-        (bool success, ) = fabric.call(abi.encodeWithSignature("addUserCounter(address)", msg.sender));
+        // (bool success, ) = fabric.call(abi.encodeWithSignature("addUserCounter(address)", msg.sender));
 
-        if (!success) {
-            revert("Failed to call addUserCounter");
-        }
+        // if (!success) {
+        //     revert("Failed to call addUserCounter");
+        // }
 
         emit UserJoined(msg.sender, userCounter);
         userCounter++;

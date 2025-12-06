@@ -25,8 +25,8 @@ const deployAgoraDaoFactory: DeployFunction = async function (hre: HardhatRuntim
   await deploy("AgoraDaoFactory", {
     from: deployer,
     // Contract constructor arguments
-    // args: [deployer],
-    args: ["0x486dd25072a665db79330b1DEDc4Bac473148019"],
+    args: [deployer],
+    // args: ["0x486dd25072a665db79330b1DEDc4Bac473148019"],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.

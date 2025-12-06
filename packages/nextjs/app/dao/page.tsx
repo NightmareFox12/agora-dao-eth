@@ -5,6 +5,7 @@ import { Loader } from "lucide-react";
 import type { NextPage } from "next";
 import { useRouter } from "next-nprogress-bar";
 import { LOCAL_STORAGE_KEYS } from "~~/constants/localStorage";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useHeaderStore } from "~~/services/store/header.store";
 
 const Home: NextPage = () => {
@@ -13,6 +14,13 @@ const Home: NextPage = () => {
   const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
+
+  //smart contract
+  const { data: owner } = useScaffoldReadContract({
+    contractName: "AgoraDao",
+    functionName: "owner",
+    contractAddress: localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS)!,
+  });
 
   //effects
   useEffect(() => {
@@ -33,7 +41,7 @@ const Home: NextPage = () => {
     );
   }
 
-  return <main></main>;
+  return <main>{owner?.toString()}</main>;
 };
 
 export default Home;
