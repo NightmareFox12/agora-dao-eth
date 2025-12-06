@@ -47,7 +47,7 @@ export const ImpactSection: React.FC = () => {
                   />
                   +
                 </CardTitle>
-                <CardDescription>DAOs created</CardDescription>
+                <CardDescription>DAOs creadas</CardDescription>
               </CardHeader>
             </Card>
           )}
@@ -72,7 +72,7 @@ export const ImpactSection: React.FC = () => {
                   />
                   +
                 </CardTitle>
-                <CardDescription>Registered Users</CardDescription>
+                <CardDescription>Usuarios Registrados</CardDescription>
               </CardHeader>
             </Card>
           )}
