@@ -12,18 +12,19 @@ type Feature = {
 
 const mainFeatures: Feature[] = [
   {
-    title: "Transparent Voting",
-    description: "Blockchain voting system that guarantees transparency and immutability in every decision.",
+    title: "Voto Transparente",
+    description:
+      "Sistema de votación en cadena de bloques que garantiza transparencia e inmutabilidad en cada decisión.",
     icon: Vote,
   },
   {
-    title: "Gamified Tasks",
-    description: "Complete missions, contribute to the ecosystem, and gain experience while helping the community.",
+    title: "Tareas Gamificadas",
+    description: "Completar misiones, contribuir al ecosistema y ganar experiencia mientras ayudas a la comunidad.",
     icon: Zap,
   },
   {
-    title: "Rewards System",
-    description: "Receive exclusive tokens and NFTs for your active participation in DAO governance",
+    title: "Sistema de recompensas",
+    description: "Recibe tokens y NFTs exclusivos por tu participación activa en la gobernanza del DAO.",
     icon: Trophy,
   },
 ];
@@ -33,9 +34,9 @@ export const FeatureSection: React.FC = async () => {
     <section id="features" className="py-20 px-4 bg-card/30 relative z-10">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Main Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Características Principales</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover the tools that make AgoraDAO the leading platform in decentralized governance.
+            Descubre las herramientas que hacen de AgoraDAO la plataforma líder en gobernanza descentralizada.
           </p>
         </div>
 

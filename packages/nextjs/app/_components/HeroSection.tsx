@@ -23,7 +23,7 @@ export const HeroSection: React.FC = () => {
         <Badge variant="secondary" className="mb-6 bg-primary/10 text-primary border-primary/20 ">
           <Rocket />
           <DecryptedText
-            text="Decentralization in Action"
+            text="Decentralización en Acción"
             animateOn="view"
             speed={100}
             maxIterations={15}
