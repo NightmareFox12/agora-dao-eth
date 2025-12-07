@@ -87,6 +87,19 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   });
 
   //functions
+  const saveStorageArr = (daoAddress: string) => {
+    const joinedDaoArray = localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY);
+    console.log(joinedDaoArray);
+
+    if (joinedDaoArray) {
+      const joinedDaoArrayParsed = JSON.parse(joinedDaoArray);
+      console.log(joinedDaoArrayParsed);
+      if (joinedDaoArrayParsed.includes(daoAddress)) return;
+      joinedDaoArrayParsed.push(daoAddress);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY, JSON.stringify(joinedDaoArrayParsed));
+    } else localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY, daoAddress);
+  };
+
   const handleJoinDao = async () => {
     try {
       if (!userAddress) return;
@@ -100,6 +113,8 @@ export const DaoCard: React.FC<DaoCardProps> = ({
         functionName: "joinDao",
       });
       localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS, daoAddress);
+      saveStorageArr(daoAddress);
+
       router.push(`/dao?address=${daoAddress}`);
     } catch (err) {
       console.log(err);
