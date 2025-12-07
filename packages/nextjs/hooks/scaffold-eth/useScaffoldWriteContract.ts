@@ -112,7 +112,7 @@ export function useScaffoldWriteContract<TContractName extends ContractName>(
 
       const writeContractObject = {
         abi: deployedContractData.abi as Abi,
-        address: deployedContractData.address,
+        address: contractAddress ?? deployedContractData.address,
         ...variables,
       } as WriteContractVariables<Abi, string, any[], Config, number>;
 

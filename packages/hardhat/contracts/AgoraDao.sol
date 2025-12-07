@@ -40,7 +40,7 @@ contract AgoraDao is Ownable {
 
         isUser[msg.sender] = true;
 
-        // IAgoraDaoFactory(fabric).addUserCounter(msg.sender);
+        IAgoraDaoFactory(fabric).addUserCounter(msg.sender);
 
         // (bool success, ) = fabric.call(abi.encodeWithSignature("addUserCounter(address)", msg.sender));
 

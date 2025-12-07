@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { UserJoinedTable } from "./DaoDetailsEvents/userJoined";
 import { UserJoinedEvent } from "./DaoDetailsEvents/userJoined/userJoinedColumns";
 import { Image, Info } from "lucide-react";
+import { Address } from "~~/components/scaffold-eth";
 import { Badge } from "~~/components/ui/shadcn/badge";
 import { Button } from "~~/components/ui/shadcn/button";
 import {
@@ -84,6 +85,7 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
           <Badge>ID #{daoID}</Badge>
         </div>
 
+        {/* Image  */}
         <div className="sm:max-w-md flex flex-col justify-center items-center">
           {imageUri.length > 4 ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -93,6 +95,10 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
             <Image className="w-12 h-12" />
           )}
           <span className="text-sm text-muted-foreground">Logo</span>
+        </div>
+
+        <div className="sm:max-w-md flex justify-center items-center">
+          <Address address={daoAddress} />
         </div>
 
         {isLoadingEvents ? (
