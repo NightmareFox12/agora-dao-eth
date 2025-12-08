@@ -41,7 +41,7 @@ export const FeatureSection: React.FC = async () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {mainFeatures.map((x, y) => (
+          {mainFeatures.map((x: Feature, y: number) => (
             <Card key={y} className="border-border hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
