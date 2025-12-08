@@ -27,7 +27,7 @@ const mainFeatures: Feature[] = [
     description: "Recibe tokens y NFTs exclusivos por tu participación activa en la gobernanza del DAO.",
     icon: Trophy,
   },
-];
+] as const;
 
 export const FeatureSection: React.FC = async () => {
   return (
