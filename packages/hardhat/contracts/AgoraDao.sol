@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./AgoraDao/Rol.sol";
 import "./AgoraDaoFactory.sol";
 
 interface IAgoraDaoFactory {
@@ -14,7 +14,7 @@ interface IAgoraDaoFactory {
  * @title AgoraDao
  * @author NightmareFox12
  */
-contract AgoraDao is Ownable {
+contract AgoraDao is Rol {
     // State Variables
     address public fabric;
     uint256 public daoID;
@@ -22,34 +22,30 @@ contract AgoraDao is Ownable {
 
     string[] internal daoCategories;
 
-    //mappings
-    mapping(address => bool) public isUser;
-
     //events
     event UserJoined(address indexed user, uint256 userID);
 
-    constructor(address _fabric, address _creator) Ownable(_creator) {
+    constructor(address _fabric, address _creator) {
         fabric = _fabric;
+        _grantRole(DEFAULT_ADMIN_ROLE, _creator);
+
         userCounter++;
     }
 
-    // --- write functions ---
+    // --- WRITE FUNCTIONS ---
     function joinDao() external {
-        require(!isUser[msg.sender], "User already joined");
-        require(msg.sender != owner(), "The owner can't join");
+        require(!hasRole(USER_ROLE, msg.sender), "User already joined");
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "The owner can't join");
 
-        isUser[msg.sender] = true;
-
+        _grantRole(USER_ROLE, msg.sender);
         IAgoraDaoFactory(fabric).addUserCounter(msg.sender);
-
-        // (bool success, ) = fabric.call(abi.encodeWithSignature("addUserCounter(address)", msg.sender));
-
-        // if (!success) {
-        //     revert("Failed to call addUserCounter");
-        // }
 
         emit UserJoined(msg.sender, userCounter);
         userCounter++;
+    }
+
+    function createUser() public {
+        _createUser(msg.sender);
     }
 
     // --- read functions ---
