@@ -4,13 +4,16 @@ import { useEffect, useTransition } from "react";
 import { Loader } from "lucide-react";
 import type { NextPage } from "next";
 import { useRouter } from "next-nprogress-bar";
+import { useAccount } from "wagmi";
 import { LOCAL_STORAGE_KEYS } from "~~/constants/localStorage";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useDaoStore } from "~~/services/store/dao.store";
 import { useHeaderStore } from "~~/services/store/header.store";
 
 const Home: NextPage = () => {
-  // const { address: connectedAddress } = useAccount();
+  const { address: userAddress } = useAccount();
   const { setShowHeader } = useHeaderStore();
+  const { daoAddress, setDaoAddress } = useDaoStore();
   const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
@@ -19,13 +22,13 @@ const Home: NextPage = () => {
   const { data: DEFAULT_ADMIN_ROLE } = useScaffoldReadContract({
     contractName: "AgoraDao",
     functionName: "DEFAULT_ADMIN_ROLE",
-    contractAddress: localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS)!,
+    contractAddress: daoAddress,
   });
   const { data: owner } = useScaffoldReadContract({
     contractName: "AgoraDao",
     functionName: "isRole",
-    contractAddress: localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS)!,
-    args: [DEFAULT_ADMIN_ROLE, localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS)!],
+    contractAddress: daoAddress,
+    args: [DEFAULT_ADMIN_ROLE, userAddress],
   });
 
   //effects
@@ -35,9 +38,11 @@ const Home: NextPage = () => {
       startTransition(() => {
         router.push("/daos");
       });
+    } else {
+      setDaoAddress(localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS)!);
     }
     setShowHeader(true);
-  }, [router, setShowHeader]);
+  }, [router, setShowHeader, setDaoAddress]);
 
   if (isPending) {
     return (
