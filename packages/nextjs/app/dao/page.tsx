@@ -24,7 +24,7 @@ const Home: NextPage = () => {
     functionName: "DEFAULT_ADMIN_ROLE",
     contractAddress: daoAddress,
   });
-  const { data: owner } = useScaffoldReadContract({
+  const { data: isOwner } = useScaffoldReadContract({
     contractName: "AgoraDao",
     functionName: "isRole",
     contractAddress: daoAddress,
@@ -52,7 +52,7 @@ const Home: NextPage = () => {
     );
   }
 
-  return <main>{owner?.toString()}</main>;
+  return <main>{isOwner?.toString()}</main>;
 };
 
 export default Home;
