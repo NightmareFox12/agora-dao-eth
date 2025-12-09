@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RoleCard } from "./RoleCard";
 import { Settings, Shield } from "lucide-react";
-import { useHeaderStore } from "~~/services/store/header.store";
 
 export type Role = {
   id: string;
@@ -50,18 +49,12 @@ const initialRoles: Role[] = [
 ] as const;
 
 export const RoleConfig: React.FC = () => {
-  const { setShowHeader } = useHeaderStore();
   //states
   const [roles, setRoles] = useState<Role[]>(initialRoles);
 
   const handleUpdateRole = (updatedRole: Role) => {
     setRoles(roles.map(role => (role.id === updatedRole.id ? updatedRole : role)));
   };
-
-  //effects
-  useEffect(() => {
-    setShowHeader(true);
-  }, [setShowHeader]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
