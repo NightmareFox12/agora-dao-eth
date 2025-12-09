@@ -9,62 +9,87 @@ abstract contract Rol is AccessControl {
     bytes32 public constant PROPOSAL_MANAGER_ROLE = keccak256("PROPOSAL_MANAGER_ROLE");
     bytes32 public constant USER_ROLE = keccak256("USER_ROLE");
 
-    //structs
-    struct Role {
-        uint256 rolID;
-        bytes32 role;
-        address user;
-    }
-
     //mappings
-    mapping(uint256 => Role) public roles;
+    mapping(bytes32 => address[]) private roleUsers;
+    mapping(bytes32 => mapping(address => bool)) private isMemberOfRole;
+    mapping(bytes32 => mapping(address => uint256)) private memberPosition;
 
     //state variables
-    uint256 public rolID;
+
+    //events
+    event RoleRegistered(bytes32 indexed role, address indexed user);
+    event RoleDeleted(bytes32 indexed role, address indexed user);
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     // --- READ FUNCTIONS ---
-    function getRole(uint256 _rolID) external view returns (Role memory) {
-        return roles[_rolID];
+    function getMemberByRole(bytes32 _role) external view returns (address[] memory) {
+        return roleUsers[_role];
     }
 
-    function getRoleID() external view returns (uint256) {
-        return rolID;
+    function isRole(bytes32 _role, address _user) external view returns (bool) {
+        return hasRole(_role, _user);
     }
 
     // --- WRITE FUNCTIONS ---
-    function _createUser(address _user) internal virtual {
+    function registerRole(bytes32 _role, address _user) internal virtual {
         require(_user != address(0), "User address cannot be zero");
-        require(!hasRole(USER_ROLE, _user), "User already exists");
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not the admin");
+        require(_user != msg.sender, "Caller cannot assign role to self");
 
-        _grantRole(USER_ROLE, _user);
+        // --- Verify Permissions ---
+        if (_role == AUDITOR_ROLE) {
+            require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Only admin can assign AUDITOR_ROLE");
+            require(_role != DEFAULT_ADMIN_ROLE, "Cannot assign DEFAULT_ADMIN_ROLE");
+        } else {
+            require(
+                hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(AUDITOR_ROLE, msg.sender),
+                "Caller must be Admin or Auditor to assign this role"
+            );
+        }
+
+        if (hasRole(DEFAULT_ADMIN_ROLE, _user)) {
+            require(_role == DEFAULT_ADMIN_ROLE, "Admin cannot assign other roles to self");
+        }
+
+        require(!isMemberOfRole[_role][_user], "User is already registered in this role's list");
+        require(!hasRole(_role, _user), "User already exists");
+
+        // --- Assign Role ---
+        _grantRole(_role, _user);
+        isMemberOfRole[_role][_user] = true;
+
+        roleUsers[_role].push(_user);
+        uint256 newPosition = roleUsers[_role].length - 1;
+        memberPosition[_role][_user] = newPosition;
+
+        emit RoleRegistered(_role, _user);
     }
 
-    function _createAuditor(address _user) internal virtual {
+    function deleteRole(bytes32 _role, address _user) external virtual {
         require(_user != address(0), "User address cannot be zero");
-        require(!hasRole(AUDITOR_ROLE, _user), "User already exists");
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not the admin");
+        require(_user != msg.sender, "Caller cannot revoke role from self");
 
-        _grantRole(AUDITOR_ROLE, _user);
-    }
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Only admin can revoke roles");
 
-    function createTaskManager(address _user) external {
-        require(_user != address(0), "User address cannot be zero");
-        require(!hasRole(TASK_MANAGER_ROLE, _user), "User already exists");
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not the admin");
+        require(isMemberOfRole[_role][_user], "User is not registered in this role's list");
+        require(hasRole(_role, _user), "User does not have this role");
 
-        _grantRole(TASK_MANAGER_ROLE, _user);
-    }
+        // --- Revoke Role ---
+        _revokeRole(_role, _user);
+        isMemberOfRole[_role][_user] = false;
 
-    function createProposalManager(address _user) external {
-        require(_user != address(0), "User address cannot be zero");
-        require(!hasRole(PROPOSAL_MANAGER_ROLE, _user), "User already exists");
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not the admin");
+        uint256 position = memberPosition[_role][_user];
+        uint256 lastPosition = roleUsers[_role].length - 1;
+        if (position != lastPosition) {
+            address lastUser = roleUsers[_role][lastPosition];
+            roleUsers[_role][position] = lastUser;
+            memberPosition[_role][lastUser] = position;
+        }
+        roleUsers[_role].pop();
+        delete memberPosition[_role][_user];
 
-        _grantRole(PROPOSAL_MANAGER_ROLE, _user);
+        emit RoleDeleted(_role, _user);
     }
 }

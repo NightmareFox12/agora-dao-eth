@@ -26,14 +26,8 @@ const deployedContracts = {
           type: "constructor",
         },
         {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-          ],
-          name: "OwnableInvalidOwner",
+          inputs: [],
+          name: "AccessControlBadConfirmation",
           type: "error",
         },
         {
@@ -43,8 +37,13 @@ const deployedContracts = {
               name: "account",
               type: "address",
             },
+            {
+              internalType: "bytes32",
+              name: "neededRole",
+              type: "bytes32",
+            },
           ],
-          name: "OwnableUnauthorizedAccount",
+          name: "AccessControlUnauthorizedAccount",
           type: "error",
         },
         {
@@ -52,18 +51,112 @@ const deployedContracts = {
           inputs: [
             {
               indexed: true,
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "previousAdminRole",
+              type: "bytes32",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "newAdminRole",
+              type: "bytes32",
+            },
+          ],
+          name: "RoleAdminChanged",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+            {
+              indexed: true,
               internalType: "address",
-              name: "previousOwner",
+              name: "user",
+              type: "address",
+            },
+          ],
+          name: "RoleDeleted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "account",
               type: "address",
             },
             {
               indexed: true,
               internalType: "address",
-              name: "newOwner",
+              name: "sender",
               type: "address",
             },
           ],
-          name: "OwnershipTransferred",
+          name: "RoleGranted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+          ],
+          name: "RoleRegistered",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+          ],
+          name: "RoleRevoked",
           type: "event",
         },
         {
@@ -87,6 +180,71 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: "AUDITOR_ROLE",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "DEFAULT_ADMIN_ROLE",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "PROPOSAL_MANAGER_ROLE",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "TASK_MANAGER_ROLE",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "USER_ROLE",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
           name: "daoID",
           outputs: [
             {
@@ -96,6 +254,24 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "_role",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+          ],
+          name: "deleteRole",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -114,12 +290,97 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "address",
+              internalType: "bytes32",
+              name: "_role",
+              type: "bytes32",
+            },
+          ],
+          name: "getMemberByRole",
+          outputs: [
+            {
+              internalType: "address[]",
               name: "",
+              type: "address[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+          ],
+          name: "getRoleAdmin",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "account",
               type: "address",
             },
           ],
-          name: "isUser",
+          name: "grantRole",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "hasRole",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "_role",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+          ],
+          name: "isRole",
           outputs: [
             {
               internalType: "bool",
@@ -138,21 +399,19 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "owner",
-          outputs: [
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
             {
               internalType: "address",
-              name: "",
+              name: "callerConfirmation",
               type: "address",
             },
           ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "renounceOwnership",
+          name: "renounceRole",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -160,14 +419,38 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "bytes32",
+              name: "role",
+              type: "bytes32",
+            },
+            {
               internalType: "address",
-              name: "newOwner",
+              name: "account",
               type: "address",
             },
           ],
-          name: "transferOwnership",
+          name: "revokeRole",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes4",
+              name: "interfaceId",
+              type: "bytes4",
+            },
+          ],
+          name: "supportsInterface",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -189,11 +472,22 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        owner: "@openzeppelin/contracts/access/Ownable.sol",
-        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
-        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+        AUDITOR_ROLE: "contracts/AgoraDao/Rol.sol",
+        DEFAULT_ADMIN_ROLE: "contracts/AgoraDao/Rol.sol",
+        PROPOSAL_MANAGER_ROLE: "contracts/AgoraDao/Rol.sol",
+        TASK_MANAGER_ROLE: "contracts/AgoraDao/Rol.sol",
+        USER_ROLE: "contracts/AgoraDao/Rol.sol",
+        deleteRole: "contracts/AgoraDao/Rol.sol",
+        getMemberByRole: "contracts/AgoraDao/Rol.sol",
+        getRoleAdmin: "contracts/AgoraDao/Rol.sol",
+        grantRole: "contracts/AgoraDao/Rol.sol",
+        hasRole: "contracts/AgoraDao/Rol.sol",
+        isRole: "contracts/AgoraDao/Rol.sol",
+        renounceRole: "contracts/AgoraDao/Rol.sol",
+        revokeRole: "contracts/AgoraDao/Rol.sol",
+        supportsInterface: "contracts/AgoraDao/Rol.sol",
       },
-      deployedOnBlock: 14,
+      deployedOnBlock: 15,
     },
     AgoraDaoFactory: {
       address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
@@ -599,7 +893,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 12,
+      deployedOnBlock: 13,
     },
   },
   11155111: {

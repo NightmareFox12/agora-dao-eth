@@ -69,6 +69,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   const isDarkMode = (resolvedTheme ?? "light") === "dark";
 
   //smart contract
+
   const { writeContractAsync: writeAgoraDaoAsync } = useScaffoldWriteContract({
     contractName: "AgoraDao",
     contractAddress: daoAddress,
@@ -80,10 +81,17 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     contractAddress: daoAddress,
   });
 
-  const { data: owner, isLoading: ownerLoading } = useScaffoldReadContract({
+  const { data: DEFAULT_ADMIN_ROLE } = useScaffoldReadContract({
     contractName: "AgoraDao",
-    functionName: "owner",
+    functionName: "DEFAULT_ADMIN_ROLE",
     contractAddress: daoAddress,
+  });
+
+  const { data: isOwner, isLoading: isOwnerLoading } = useScaffoldReadContract({
+    contractName: "AgoraDao",
+    functionName: "isRole",
+    contractAddress: daoAddress,
+    args: [DEFAULT_ADMIN_ROLE, userAddress],
   });
 
   //functions
@@ -102,7 +110,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     try {
       if (!userAddress) return;
 
-      if (userAddress === owner) {
+      if (isOwner) {
         localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS, daoAddress);
         router.push(`/dao?address=${daoAddress}`);
         return;
@@ -122,7 +130,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     <Card
       className={cn(
         "flex flex-col transition-all hover:shadow-lg",
-        userAddress === owner ? BORDER_COLOR[isDarkMode ? "dark" : "light"] : "",
+        isOwner ? BORDER_COLOR[isDarkMode ? "dark" : "light"] : "",
       )}
     >
       <CardHeader>
@@ -175,16 +183,16 @@ export const DaoCard: React.FC<DaoCardProps> = ({
         <div className="w-full flex items-center justify-between gap-1 md:gap-1.5">
           <Button
             onClick={handleJoinDao}
-            className={`flex-1 ${userAddress === owner ? "bg-secondary-foreground" : "bg-primary"}`}
+            className={`flex-1 ${isOwner ? "bg-secondary-foreground" : "bg-primary"}`}
             size="sm"
-            disabled={ownerLoading}
+            disabled={isOwnerLoading}
           >
-            {ownerLoading ? (
+            {isOwnerLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading...
               </>
-            ) : userAddress === owner ? (
+            ) : isOwner ? (
               <>
                 <DoorOpen className="h-4 w-4" />
                 Login

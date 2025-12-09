@@ -16,10 +16,16 @@ const Home: NextPage = () => {
   const [isPending, startTransition] = useTransition();
 
   //smart contract
+  const { data: DEFAULT_ADMIN_ROLE } = useScaffoldReadContract({
+    contractName: "AgoraDao",
+    functionName: "DEFAULT_ADMIN_ROLE",
+    contractAddress: localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS)!,
+  });
   const { data: owner } = useScaffoldReadContract({
     contractName: "AgoraDao",
-    functionName: "owner",
+    functionName: "isRole",
     contractAddress: localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS)!,
+    args: [DEFAULT_ADMIN_ROLE, localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS)!],
   });
 
   //effects

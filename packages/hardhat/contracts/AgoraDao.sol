@@ -44,11 +44,7 @@ contract AgoraDao is Rol {
         userCounter++;
     }
 
-    function createUser() public {
-        _createUser(msg.sender);
-    }
-
-    // --- read functions ---
+    // --- READ FUNCTIUONS ---
 
     receive() external payable {}
 }
