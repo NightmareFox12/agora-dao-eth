@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { RoleCard } from "./RoleCard";
 import { Settings, Shield } from "lucide-react";
+import { DEFAULT_ADMIN_ROLE } from "~~/constants/roles";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useDaoStore } from "~~/services/store/dao.store";
 
 export type Role = {
   id: string;
@@ -49,9 +52,22 @@ const initialRoles: Role[] = [
 ] as const;
 
 export const RoleConfig: React.FC = () => {
+  const { daoAddress } = useDaoStore();
+
   //states
   const [roles, setRoles] = useState<Role[]>(initialRoles);
 
+  //TODO: buyscar en viem una forma de hacer los roles con metodos de ts y evitar asi leer el smart contract para traerlo
+  //smart contract
+  const { data: isAdmin } = useScaffoldReadContract({
+    contractName: "AgoraDao",
+    functionName: "isRole",
+    args: [DEFAULT_ADMIN_ROLE, daoAddress],
+    contractAddress: daoAddress,
+  });
+
+  console.log(isAdmin);
+  //functions
   const handleUpdateRole = (updatedRole: Role) => {
     setRoles(roles.map(role => (role.id === updatedRole.id ? updatedRole : role)));
   };
