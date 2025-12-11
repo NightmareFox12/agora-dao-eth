@@ -10,6 +10,7 @@ import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { LOCAL_STORAGE_KEYS } from "~~/constants/localStorage";
+import { DEFAULT_ADMIN_ROLE } from "~~/constants/roles";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { cn } from "~~/lib/utils";
@@ -81,17 +82,11 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     contractAddress: daoAddress,
   });
 
-  const { data: DEFAULT_ADMIN_ROLE } = useScaffoldReadContract({
-    contractName: "AgoraDao",
-    functionName: "DEFAULT_ADMIN_ROLE",
-    contractAddress: daoAddress,
-  });
-
   const { data: isOwner, isLoading: isOwnerLoading } = useScaffoldReadContract({
     contractName: "AgoraDao",
     functionName: "isRole",
-    contractAddress: daoAddress,
     args: [DEFAULT_ADMIN_ROLE, userAddress],
+    contractAddress: daoAddress,
   });
 
   //functions

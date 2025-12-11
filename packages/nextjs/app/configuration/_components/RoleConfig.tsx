@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { RoleCard } from "./RoleCard";
 import { Settings, Shield } from "lucide-react";
+import { useAccount } from "wagmi";
 import { DEFAULT_ADMIN_ROLE } from "~~/constants/roles";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useDaoStore } from "~~/services/store/dao.store";
@@ -53,7 +54,7 @@ const initialRoles: Role[] = [
 
 export const RoleConfig: React.FC = () => {
   const { daoAddress } = useDaoStore();
-
+  const { address: userAddress } = useAccount();
   //states
   const [roles, setRoles] = useState<Role[]>(initialRoles);
 
@@ -62,11 +63,12 @@ export const RoleConfig: React.FC = () => {
   const { data: isAdmin } = useScaffoldReadContract({
     contractName: "AgoraDao",
     functionName: "isRole",
-    args: [DEFAULT_ADMIN_ROLE, daoAddress],
+    args: [DEFAULT_ADMIN_ROLE, userAddress],
     contractAddress: daoAddress,
   });
 
   console.log(isAdmin);
+
   //functions
   const handleUpdateRole = (updatedRole: Role) => {
     setRoles(roles.map(role => (role.id === updatedRole.id ? updatedRole : role)));
