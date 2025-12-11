@@ -19,7 +19,6 @@ contract AgoraDao is Rol {
     address public fabric;
     uint256 public daoID;
     uint256 public userCounter;
-
     string[] internal daoCategories;
 
     //events
@@ -35,7 +34,7 @@ contract AgoraDao is Rol {
     // --- WRITE FUNCTIONS ---
     function joinDao() external {
         require(!hasRole(USER_ROLE, msg.sender), "User already joined");
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "The owner can't join");
+        require(!hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "The owner can't join");
 
         _grantRole(USER_ROLE, msg.sender);
         IAgoraDaoFactory(fabric).addUserCounter(msg.sender);

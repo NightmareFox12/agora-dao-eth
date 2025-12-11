@@ -21,15 +21,13 @@ import { Textarea } from "~~/components/ui/shadcn/textarea";
 
 interface RoleCardProps {
   role: Role;
-  onUpdate: (role: Role) => void;
 }
 
-export const RoleCard: React.FC<RoleCardProps> = ({ role, onUpdate }) => {
+export const RoleCard: React.FC<RoleCardProps> = ({ role }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [editedRole, setEditedRole] = useState<Role>(role);
 
   const handleSave = () => {
-    onUpdate(editedRole);
     setIsOpen(false);
   };
 

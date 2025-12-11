@@ -25,8 +25,8 @@ export const DaoSetup: React.FC = () => {
       });
     } else {
       if (daoAddress === "") setDaoAddress(daoStoraged!);
+      setShowHeader(true);
     }
-    setShowHeader(true);
   }, [router, setShowHeader, setDaoAddress, daoAddress]);
 
   if (isPending) {

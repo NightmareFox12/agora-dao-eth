@@ -1,15 +1,21 @@
 "use client";
 
-import { useState } from "react";
 import { RoleCard } from "./RoleCard";
 import { Settings, Shield } from "lucide-react";
 import { useAccount } from "wagmi";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~~/components/ui/shadcn/dialog";
 import { DEFAULT_ADMIN_ROLE } from "~~/constants/roles";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useDaoStore } from "~~/services/store/dao.store";
 
 export type Role = {
-  id: string;
   name: string;
   description: string;
   permissions: string[];
@@ -19,7 +25,6 @@ export type Role = {
 
 const initialRoles: Role[] = [
   {
-    id: "auditor",
     name: "AUDITOR",
     description: "Puede revisar y auditar todas las transacciones y propuestas de la DAO",
     permissions: ["Ver transacciones", "Generar reportes", "Auditar propuestas", "Acceso de solo lectura"],
@@ -27,15 +32,6 @@ const initialRoles: Role[] = [
     color: "bg-amber-500",
   },
   {
-    id: "usuario",
-    name: "USUARIO",
-    description: "Miembro estándar con capacidad de votar y crear propuestas básicas",
-    permissions: ["Votar propuestas", "Crear propuestas", "Ver dashboard", "Participar en discusiones"],
-    memberCount: 45,
-    color: "bg-emerald-500",
-  },
-  {
-    id: "task_manager",
     name: "TASK_MANAGER",
     description: "Gestiona y asigna tareas dentro de la organización",
     permissions: ["Crear tareas", "Asignar miembros", "Establecer deadlines", "Aprobar entregas"],
@@ -43,12 +39,11 @@ const initialRoles: Role[] = [
     color: "bg-blue-500",
   },
   {
-    id: "owner",
-    name: "OWNER",
-    description: "Propietario de la DAO con total control sobre todas las operaciones",
-    permissions: ["Todo lo que el usuario puede hacer", "Administrar roles", "Gestionar miembros", "Acceso ilimitado"],
-    memberCount: 1,
-    color: "bg-primary",
+    name: "USUARIO",
+    description: "Miembro estándar con capacidad de votar y crear propuestas básicas",
+    permissions: ["Votar propuestas", "Crear propuestas", "Ver dashboard", "Participar en discusiones"],
+    memberCount: 45,
+    color: "bg-emerald-500",
   },
 ] as const;
 
@@ -56,7 +51,7 @@ export const RoleConfig: React.FC = () => {
   const { daoAddress } = useDaoStore();
   const { address: userAddress } = useAccount();
   //states
-  const [roles, setRoles] = useState<Role[]>(initialRoles);
+  // const [roles, setRoles] = useState<Role[]>(initialRoles);
 
   //TODO: buyscar en viem una forma de hacer los roles con metodos de ts y evitar asi leer el smart contract para traerlo
   //smart contract
@@ -70,9 +65,24 @@ export const RoleConfig: React.FC = () => {
   console.log(isAdmin);
 
   //functions
-  const handleUpdateRole = (updatedRole: Role) => {
-    setRoles(roles.map(role => (role.id === updatedRole.id ? updatedRole : role)));
-  };
+  // const handleUpdateRole = (updatedRole: Role) => {
+  //   setRoles(roles.map(role => (role.id === updatedRole.id ? updatedRole : role)));
+  // };
+  if (!isAdmin)
+    return (
+      <Dialog>
+        <DialogTrigger>Open</DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete your account and remove your data from our
+              servers.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -97,8 +107,8 @@ export const RoleConfig: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {roles.map(role => (
-            <RoleCard key={role.id} role={role} onUpdate={handleUpdateRole} />
+          {initialRoles.map((role, y) => (
+            <RoleCard key={y} role={role} />
           ))}
         </div>
       </section>
