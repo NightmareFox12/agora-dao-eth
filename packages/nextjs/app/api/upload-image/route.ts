@@ -12,17 +12,17 @@ export const POST = async (request: NextRequest) => {
     const name = formData.get("name") as string;
     const logo = formData.get("logo") as Blob;
 
-    if (!logo || !name) return NextResponse.json({ response: "No file provided" }, { status: 400 });
+    if (!logo || !name) return NextResponse.json({ response: "No se proporciono un archivo" }, { status: 400 });
 
     const fileName = `${name}-${Date.now()}`;
     const newFile = new File([logo], fileName);
     const upload = await pinata.upload.public.file(newFile);
 
-    return NextResponse.json({ response: "image upload success!", cid: upload.cid });
+    return NextResponse.json({ response: "Imagen subida exitosamente!", cid: upload.cid });
   } catch (err) {
     console.log(err);
     return NextResponse.json(
-      { response: "An error ocurred while uploading the image. Check your internet" },
+      { response: "Ocurrió un error al subir la imagen. Verifica tu conexión a internet" },
       { status: 500 },
     );
   }

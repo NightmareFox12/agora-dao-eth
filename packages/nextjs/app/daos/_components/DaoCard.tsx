@@ -70,7 +70,6 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   const isDarkMode = (resolvedTheme ?? "light") === "dark";
 
   //smart contract
-
   const { writeContractAsync: writeAgoraDaoAsync } = useScaffoldWriteContract({
     contractName: "AgoraDao",
     contractAddress: daoAddress,
@@ -97,17 +96,6 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   });
 
   //functions
-  // const saveStorageArr = (daoAddress: string) => {
-  //   const joinedDaoArray = localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY);
-
-  //   if (joinedDaoArray) {
-  //     const joinedDaoArrayParsed = JSON.parse(joinedDaoArray);
-  //     if (joinedDaoArrayParsed.includes(daoAddress)) return;
-  //     joinedDaoArrayParsed.push(daoAddress);
-  //     localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY, JSON.stringify(joinedDaoArrayParsed));
-  //   } else localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY, JSON.stringify([daoAddress]));
-  // };
-
   const handleJoinDao = async () => {
     try {
       if (!userAddress) return;

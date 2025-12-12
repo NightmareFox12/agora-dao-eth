@@ -54,7 +54,6 @@ export const CreateDaoDialog: React.FC = () => {
       description: "",
       categories: undefined,
       logo: undefined,
-      // isPublic: true,
     },
   });
 
@@ -98,7 +97,7 @@ export const CreateDaoDialog: React.FC = () => {
     setLoadImage(false);
 
     if (file.size >= 1024 * 1024) {
-      daoForm.setError("logo", { message: "The image is greater than 1MB" });
+      daoForm.setError("logo", { message: "La imagen debe ser menor a 1MB" });
       return undefined;
     }
 
@@ -108,7 +107,7 @@ export const CreateDaoDialog: React.FC = () => {
 
   const resetAll = () => {
     toast.dismiss();
-    toast.success("Dao created successfully");
+    toast.success("DAO creada exitosamente");
     daoForm.reset();
     daoForm.setValue("logo", undefined);
     daoForm.setValue("categories", "");
@@ -156,7 +155,7 @@ export const CreateDaoDialog: React.FC = () => {
             <Plus className="w-4 h-4" />
 
             <RotatingText
-              texts={["Create DAO", "Launch DAO", "Descentralize Now", "Start DAO"]}
+              texts={["Crear DAO", "Lanzar DAO", "Descentralizar ahora", "Iniciar DAO"]}
               mainClassName="px-2 sm:px-2 md:px-3 overflow-hidden  justify-center rounded-lg"
               staggerFrom={"last"}
               initial={{ y: "100%" }}
@@ -175,9 +174,9 @@ export const CreateDaoDialog: React.FC = () => {
       <DialogContent className="p-3">
         <ScrollArea className="h-[500px] p-1 px-1 mt-2.5">
           <DialogHeader>
-            <DialogTitle>Create your DAO!</DialogTitle>
+            <DialogTitle>Crear tu DAO!</DialogTitle>
             <DialogDescription>
-              Once you have completed all the required fields press the &quot;Launch DAO&quot; button.
+              Una vez que hayas completado todos los campos requeridos, presiona el botón &quot;Lanzar DAO&quot;.
             </DialogDescription>
           </DialogHeader>
 
@@ -196,7 +195,7 @@ export const CreateDaoDialog: React.FC = () => {
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>
-                      Name <span className="text-destructive font-bold text-bold">*</span>
+                      Nombre <span className="text-destructive font-bold text-bold">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. ETH Force" {...field} />
@@ -219,11 +218,11 @@ export const CreateDaoDialog: React.FC = () => {
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>
-                      Description <span className="text-destructive font-bold text-bold">*</span>
+                      Descripción <span className="text-destructive font-bold text-bold">*</span>
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g. A decentralized autonomous organization focused on empowering communities through blockchain-based governance, funding social impact initiatives, and promoting transparent decision-making."
+                        placeholder="e.g. Un organismo autónomo descentralizado enfocado en potenciar comunidades a través de la gobernanza basada en blockchain, financiando iniciativas de impacto social y promoviendo decisiones transparentes."
                         className="resize-none h-28"
                         {...field}
                       />
@@ -249,7 +248,7 @@ export const CreateDaoDialog: React.FC = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Categories <span className="text-destructive font-bold text-bold">*</span>
+                        Categorías <span className="text-destructive font-bold text-bold">*</span>
                       </FormLabel>
                       <Select value={field.value} onValueChange={field.onChange} disabled={submitLoading}>
                         <FormControl>
@@ -289,8 +288,8 @@ export const CreateDaoDialog: React.FC = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            Choose the logo that your DAO will represent. This field is optional and can be modified
-                            later.
+                            Elige el logo que representará tu DAO. Este campo es opcional y puede ser modificado más
+                            tarde.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -340,10 +339,10 @@ export const CreateDaoDialog: React.FC = () => {
                             className={`absolute inset-0 flex flex-col justify-center items-center pointer-events-none z-10  ${fieldState.error ? "text-destructive" : ""}`}
                           >
                             <Upload className="w-10 h-10" />
-                            <p className="my-0 font-semibold">Choose or drag an image</p>
-                            <span className="font-semibold">The image must be less than 1 MB</span>
+                            <p className="my-0 font-semibold">Selecciona o arrastra una imagen</p>
+                            <span className="font-semibold">La imagen debe ser menor a 1 MB</span>
                             <span className="text-center text-sm">
-                              It is recommended that the appearance of the image be 100x100
+                              Se recomienda que la apariencia de la imagen sea 100x100
                             </span>
                           </div>
                         ) : (
@@ -354,69 +353,27 @@ export const CreateDaoDialog: React.FC = () => {
                       </div>
                     </FormControl>
                     <FormMessage className="-my-1 ml-2" />
-                    <FormDescription className="-my-1 pl-2">Optional</FormDescription>
+                    <FormDescription className="-my-1 pl-2">Opcional</FormDescription>
                   </FormItem>
                 )}
               />
-
-              {/* Is Public */}
-              {/* <FormField
-                control={daoForm.control}
-                name="isPublic"
-                disabled={submitLoading}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="w-full flex justify-between">
-                      <div>
-                        Dao Visibility <span className="text-destructive font-bold text-bold">*</span>
-                      </div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button type="button" size="icon" variant="ghost">
-                            <CircleQuestionMarkIcon className="w-4 h-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>In any public DAO, anyone can join and help the growth of the community.</p>
-
-                          <p>
-                            A private DAO can only join those users who have the link{" "}
-                            <b>(private DAO will not appear in the search engine)</b>
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </FormLabel>
-                    <FormControl>
-                      <div className="flex justify-center gap-2">
-                        <Label htmlFor="airplane-mode">{field.value ? "Public DAO" : "Private DAO"}</Label>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={value => field.onChange(value)}
-                          disabled={submitLoading}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
 
               {/* Submit buttons */}
               <div className="w-full flex justify-center gap-6 mt-5">
                 <Button type="button" onClick={() => daoForm.reset()} disabled={submitLoading} variant="destructive">
                   <Trash className="w-4 h-4" />
-                  Clear all
+                  Borrar todo
                 </Button>
 
                 <Button type="submit" disabled={daoCategoriesLoading || submitLoading || !daoForm.formState.isValid}>
                   {daoCategoriesLoading || submitLoading ? (
                     <>
                       <Loader className="w-4 h-4 animate-spin" />
-                      Creating DAO
+                      Creando DAO
                     </>
                   ) : (
                     <>
-                      <Rocket className="w-4 h-4" /> Launch DAO
+                      <Rocket className="w-4 h-4" /> Lanzar DAO
                     </>
                   )}
                 </Button>

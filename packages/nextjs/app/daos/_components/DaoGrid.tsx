@@ -72,8 +72,8 @@ export const DaoGrid: React.FC = () => {
       ) : daos.length === 0 ? (
         <article className="h-96 mt-5 flex justify-center flex-col text-center py-12">
           <Frown className="h-20 w-20 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-2xl font-semibold mb-2">No DAOs are available</h3>
-          <p className="text-muted-foreground">Please check back later to see new organizations available.</p>
+          <h3 className="text-2xl font-semibold mb-2">No hay DAOS disponibles</h3>
+          <p className="text-muted-foreground">Por favor, vuelve más tarde para ver nuevas DAOS disponibles.</p>
         </article>
       ) : (
         <article className="container mx-auto px-4 py-8">
