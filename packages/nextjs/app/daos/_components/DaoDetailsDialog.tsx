@@ -76,12 +76,12 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader className="sm:max-w-md">
-          <DialogTitle>{name} Details</DialogTitle>
+          <DialogTitle>{name} Detalles</DialogTitle>
           <DialogDescription className="break-all overflow-ellipsis">{description}</DialogDescription>
         </DialogHeader>
 
         <div className="sm:max-w-md flex justify-between">
-          <span className="text-sm text-muted-foreground">Created on: {parsedDate}</span>
+          <span className="text-sm text-muted-foreground">Creado el: {parsedDate}</span>
           <Badge>ID #{daoID}</Badge>
         </div>
 
@@ -108,10 +108,10 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
             <Tabs defaultValue="users-joined" className="w-full">
               <TabsList className="w-full flex justify-center items-center">
                 <TabsTrigger className="flex-1" value="users-joined">
-                  User Joined
+                  Usuarios Unidos
                 </TabsTrigger>
                 <TabsTrigger className="flex-1" value="password">
-                  Password
+                  Contraseña
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="users-joined">
@@ -120,7 +120,7 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>
               </TabsContent>
-              <TabsContent value="password">Change your password here.</TabsContent>
+              <TabsContent value="password">Contraseña</TabsContent>
             </Tabs>
           </div>
         )}

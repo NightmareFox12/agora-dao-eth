@@ -179,17 +179,17 @@ export const DaoCard: React.FC<DaoCardProps> = ({
             {isOwnerLoading || isMemberLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Loading...
+                Cargando...
               </>
             ) : isOwner || isMember ? (
               <>
                 <DoorOpen className="h-4 w-4" />
-                Login
+                Entrar
               </>
             ) : (
               <>
                 <Users className="h-4 w-4" />
-                Join
+                Unirse
               </>
             )}
           </Button>
