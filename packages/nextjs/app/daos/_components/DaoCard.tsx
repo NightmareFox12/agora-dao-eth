@@ -10,7 +10,7 @@ import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { LOCAL_STORAGE_KEYS } from "~~/constants/localStorage";
-import { DEFAULT_ADMIN_ROLE } from "~~/constants/roles";
+import { DEFAULT_ADMIN_ROLE, USER_ROLE } from "~~/constants/roles";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { cn } from "~~/lib/utils";
@@ -89,23 +89,30 @@ export const DaoCard: React.FC<DaoCardProps> = ({
     contractAddress: daoAddress,
   });
 
-  //functions
-  const saveStorageArr = (daoAddress: string) => {
-    const joinedDaoArray = localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY);
+  const { data: isMember, isLoading: isMemberLoading } = useScaffoldReadContract({
+    contractName: "AgoraDao",
+    functionName: "isRole",
+    args: [USER_ROLE, userAddress],
+    contractAddress: daoAddress,
+  });
 
-    if (joinedDaoArray) {
-      const joinedDaoArrayParsed = JSON.parse(joinedDaoArray);
-      if (joinedDaoArrayParsed.includes(daoAddress)) return;
-      joinedDaoArrayParsed.push(daoAddress);
-      localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY, JSON.stringify(joinedDaoArrayParsed));
-    } else localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY, JSON.stringify([daoAddress]));
-  };
+  //functions
+  // const saveStorageArr = (daoAddress: string) => {
+  //   const joinedDaoArray = localStorage.getItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY);
+
+  //   if (joinedDaoArray) {
+  //     const joinedDaoArrayParsed = JSON.parse(joinedDaoArray);
+  //     if (joinedDaoArrayParsed.includes(daoAddress)) return;
+  //     joinedDaoArrayParsed.push(daoAddress);
+  //     localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY, JSON.stringify(joinedDaoArrayParsed));
+  //   } else localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_JOINED_ADDRESS_ARRAY, JSON.stringify([daoAddress]));
+  // };
 
   const handleJoinDao = async () => {
     try {
       if (!userAddress) return;
 
-      if (isOwner) {
+      if (isOwner || isMember) {
         localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS, daoAddress);
         router.push(`/dao?address=${daoAddress}`);
         return;
@@ -114,7 +121,6 @@ export const DaoCard: React.FC<DaoCardProps> = ({
         functionName: "joinDao",
       });
       localStorage.setItem(LOCAL_STORAGE_KEYS.DAO_ADDRESS, daoAddress);
-      saveStorageArr(daoAddress);
       router.push(`/dao?address=${daoAddress}`);
     } catch (err) {
       console.log(err);
@@ -180,14 +186,14 @@ export const DaoCard: React.FC<DaoCardProps> = ({
             onClick={handleJoinDao}
             className={`flex-1 ${isOwner ? "bg-secondary-foreground" : "bg-primary"}`}
             size="sm"
-            disabled={isOwnerLoading}
+            disabled={isOwnerLoading || isMemberLoading}
           >
-            {isOwnerLoading ? (
+            {isOwnerLoading || isMemberLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading...
               </>
-            ) : isOwner ? (
+            ) : isOwner || isMember ? (
               <>
                 <DoorOpen className="h-4 w-4" />
                 Login

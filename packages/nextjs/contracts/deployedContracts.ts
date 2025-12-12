@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AgoraDao: {
-      address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       abi: [
         {
           inputs: [
@@ -399,19 +399,6 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "num",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               internalType: "bytes32",
@@ -468,13 +455,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "test",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "userCounter",
           outputs: [
             {
@@ -507,10 +487,10 @@ const deployedContracts = {
         revokeRole: "contracts/AgoraDao/Rol.sol",
         supportsInterface: "contracts/AgoraDao/Rol.sol",
       },
-      deployedOnBlock: 23,
+      deployedOnBlock: 3,
     },
     AgoraDaoFactory: {
-      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [
@@ -913,7 +893,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 21,
+      deployedOnBlock: 1,
     },
   },
   11155111: {
