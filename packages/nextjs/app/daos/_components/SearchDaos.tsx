@@ -27,7 +27,7 @@ export const SearchDaos: React.FC = () => {
     <>
       <Input
         className="w-full md:w-1/4"
-        placeholder="Search DAOs..."
+        placeholder="Buscar DAOs..."
         value={selectedDao.name}
         onChange={e => setSelectedDao({ ...selectedDao, name: e.target.value })}
       />
@@ -44,16 +44,16 @@ export const SearchDaos: React.FC = () => {
             checked={selectedDao.category === "all"}
             onCheckedChange={() => setSelectedDao({ ...selectedDao, category: "all" })}
           >
-            All
+            Todo
           </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem
             checked={selectedDao.category === "myDaos"}
             onCheckedChange={() => setSelectedDao({ ...selectedDao, category: "myDaos" })}
           >
-            My DAOs
+            Mis DAOs
           </DropdownMenuCheckboxItem>
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>Categories</DropdownMenuLabel>
+          <DropdownMenuLabel>Categorias</DropdownMenuLabel>
           <DropdownMenuGroup>
             {daoCategories?.map((category, index) => (
               <DropdownMenuCheckboxItem
