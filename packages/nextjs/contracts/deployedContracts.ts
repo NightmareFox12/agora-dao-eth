@@ -180,59 +180,7 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "AUDITOR_ROLE",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "DEFAULT_ADMIN_ROLE",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "PROPOSAL_MANAGER_ROLE",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "TASK_MANAGER_ROLE",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "USER_ROLE",
           outputs: [
             {
               internalType: "bytes32",
@@ -472,11 +420,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        AUDITOR_ROLE: "contracts/AgoraDao/Rol.sol",
         DEFAULT_ADMIN_ROLE: "contracts/AgoraDao/Rol.sol",
-        PROPOSAL_MANAGER_ROLE: "contracts/AgoraDao/Rol.sol",
-        TASK_MANAGER_ROLE: "contracts/AgoraDao/Rol.sol",
-        USER_ROLE: "contracts/AgoraDao/Rol.sol",
         deleteRole: "contracts/AgoraDao/Rol.sol",
         getMemberByRole: "contracts/AgoraDao/Rol.sol",
         getRoleAdmin: "contracts/AgoraDao/Rol.sol",
