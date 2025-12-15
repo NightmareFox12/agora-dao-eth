@@ -26,7 +26,7 @@ export const menuLinks: HeaderMenuLink[] = [
   },
   {
     label: "Tasks",
-    href: "/tasks",
+    href: "/task",
     icon: <Files className="h-4 w-4" />,
   },
   {
