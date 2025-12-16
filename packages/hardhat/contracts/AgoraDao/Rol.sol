@@ -72,7 +72,6 @@ abstract contract Rol is AccessControl {
     }
 
     // --- WRITE FUNCTIONS ---
-
     function registerRoleBatch(bytes32 _role, address[] calldata _users) external virtual {
         if (_role == AUDITOR_ROLE) {
             require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Only admin can assign AUDITOR_ROLE");

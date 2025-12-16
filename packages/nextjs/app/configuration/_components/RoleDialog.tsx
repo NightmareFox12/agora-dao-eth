@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from "~~/components/ui/shadcn/dialog";
 import { Input } from "~~/components/ui/shadcn/input";
-import { Label } from "~~/components/ui/shadcn/label";
 
 type RoleDialogProps = {
   role: Role;
@@ -19,49 +18,49 @@ type RoleDialogProps = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+//TODO: tengo que hacer que el input tenga un + y - para eliminar y agrgar address, tambien tengo que verificar dichas address y por ultimo enviar el [] listo al contract
+//TODO: verificar que no se pueda agregar la address del que esta conectado
+//TODO: si el rol del que está conectado no cumple con los requisitos apagarle el button
+
 export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button size="icon" className="h-8 w-8">
           <Plus className="h-4 w-4" />
-          <span className="sr-only">Editar rol</span>
+          <span className="sr-only">Agregar {role.name}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Editar Rol</DialogTitle>
-          <DialogDescription>Modifica los detalles y permisos del rol {role.name}</DialogDescription>
+          <DialogTitle>Agregar {role.name}</DialogTitle>
+          <DialogDescription>Ingresa la dirección del usuario que deseas agregar.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre del Rol</Label>
-            {/* <Input
-                      id="name"
-                      value={editedRole.name}
-                      onChange={e => setEditedRole({ ...editedRole, name: e.target.value })}
-                    /> */}
+            <Input id="name" value={role.name} onChange={e => console.log(e.target.value)} />
           </div>
 
+          {/*  
           <div className="space-y-2">
             <Label htmlFor="description">Descripción</Label>
-            {/* <Textarea
+             <Textarea
                       id="description"
                       value={editedRole.description}
                       onChange={e => setEditedRole({ ...editedRole, description: e.target.value })}
                       rows={3}
-                    /> */}
+                    /> 
           </div>
 
           <div className="space-y-2">
             <Label>Permisos</Label>
             <div className="flex flex-wrap gap-2">
-              {/* {editedRole.permissions.map((permission, index) => (
+              {editedRole.permissions.map((permission, index) => (
                         <Badge key={index} variant="secondary" className="text-xs">
                           {permission}
                         </Badge>
-                      ))} */}
+                      ))} 
             </div>
             <Input
               placeholder="Agregar nuevo permiso y presiona Enter"
@@ -77,7 +76,7 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
                 //   }}
               }}
             />
-          </div>
+          </div> */}
         </div>
 
         <DialogFooter>

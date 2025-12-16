@@ -37,7 +37,7 @@ export const SheetRole: React.FC<SheetRoleProps> = ({ role, members, membersLoad
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="h-8 w-8">
+        <Button size="icon">
           <Eye className="h-4 w-4" />
           <span className="sr-only">Editar rol</span>
         </Button>
