@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AgoraDao: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [
@@ -258,6 +258,25 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "bytes32",
+              name: "_role",
+              type: "bytes32",
+            },
+          ],
+          name: "getMemberCount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
               name: "role",
               type: "bytes32",
             },
@@ -423,6 +442,7 @@ const deployedContracts = {
         DEFAULT_ADMIN_ROLE: "contracts/AgoraDao/Rol.sol",
         deleteRole: "contracts/AgoraDao/Rol.sol",
         getMemberByRole: "contracts/AgoraDao/Rol.sol",
+        getMemberCount: "contracts/AgoraDao/Rol.sol",
         getRoleAdmin: "contracts/AgoraDao/Rol.sol",
         grantRole: "contracts/AgoraDao/Rol.sol",
         hasRole: "contracts/AgoraDao/Rol.sol",
@@ -431,10 +451,10 @@ const deployedContracts = {
         revokeRole: "contracts/AgoraDao/Rol.sol",
         supportsInterface: "contracts/AgoraDao/Rol.sol",
       },
-      deployedOnBlock: 3,
+      deployedOnBlock: 9,
     },
     AgoraDaoFactory: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
       abi: [
         {
           inputs: [
@@ -837,7 +857,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 1,
+      deployedOnBlock: 7,
     },
   },
   11155111: {

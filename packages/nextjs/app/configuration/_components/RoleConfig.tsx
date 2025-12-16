@@ -11,38 +11,38 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~~/components/ui/shadcn/dialog";
-import { DEFAULT_ADMIN_ROLE } from "~~/constants/roles";
+import { AUDITOR_ROLE, DEFAULT_ADMIN_ROLE, TASK_MANAGER_ROLE, USER_ROLE } from "~~/constants/roles";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useDaoStore } from "~~/services/store/dao.store";
 
 export type Role = {
   name: string;
+  bytes: `0x${string}`;
   description: string;
   permissions: string[];
-  memberCount: number;
   color: string;
 };
 
 const initialRoles: Role[] = [
   {
     name: "AUDITOR",
+    bytes: AUDITOR_ROLE,
     description: "Puede revisar y auditar todas las transacciones y propuestas de la DAO",
     permissions: ["Ver transacciones", "Generar reportes", "Auditar propuestas", "Acceso de solo lectura"],
-    memberCount: 3,
     color: "bg-amber-500",
   },
   {
     name: "TASK_MANAGER",
+    bytes: TASK_MANAGER_ROLE,
     description: "Gestiona y asigna tareas dentro de la organización",
     permissions: ["Crear tareas", "Asignar miembros", "Establecer deadlines", "Aprobar entregas"],
-    memberCount: 8,
     color: "bg-blue-500",
   },
   {
     name: "USUARIO",
+    bytes: USER_ROLE,
     description: "Miembro estándar con capacidad de votar y crear propuestas básicas",
     permissions: ["Votar propuestas", "Crear propuestas", "Ver dashboard", "Participar en discusiones"],
-    memberCount: 45,
     color: "bg-emerald-500",
   },
 ] as const;

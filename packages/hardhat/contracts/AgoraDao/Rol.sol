@@ -33,6 +33,10 @@ abstract contract Rol is AccessControl {
         return hasRole(_role, _user);
     }
 
+    function getMemberCount(bytes32 _role) external view returns (uint256) {
+        return roleUsers[_role].length;
+    }
+
     // --- WRITE FUNCTIONS ---
     function registerRole(bytes32 _role, address _user) internal virtual {
         require(_user != address(0), "User address cannot be zero");
