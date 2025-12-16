@@ -33,8 +33,8 @@ abstract contract Rol is AccessControl {
         return hasRole(_role, _user);
     }
 
-    function getMemberCount(bytes32 _role) external view returns (uint256) {
-        return roleUsers[_role].length;
+    function getAllByRole(bytes32 _role) external view returns (address[] memory) {
+        return roleUsers[_role];
     }
 
     // --- WRITE FUNCTIONS ---

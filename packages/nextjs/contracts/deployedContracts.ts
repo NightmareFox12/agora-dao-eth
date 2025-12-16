@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AgoraDao: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
       abi: [
         {
           inputs: [
@@ -243,7 +243,7 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          name: "getMemberByRole",
+          name: "getAllByRole",
           outputs: [
             {
               internalType: "address[]",
@@ -262,12 +262,12 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          name: "getMemberCount",
+          name: "getMemberByRole",
           outputs: [
             {
-              internalType: "uint256",
+              internalType: "address[]",
               name: "",
-              type: "uint256",
+              type: "address[]",
             },
           ],
           stateMutability: "view",
@@ -441,8 +441,8 @@ const deployedContracts = {
       inheritedFunctions: {
         DEFAULT_ADMIN_ROLE: "contracts/AgoraDao/Rol.sol",
         deleteRole: "contracts/AgoraDao/Rol.sol",
+        getAllByRole: "contracts/AgoraDao/Rol.sol",
         getMemberByRole: "contracts/AgoraDao/Rol.sol",
-        getMemberCount: "contracts/AgoraDao/Rol.sol",
         getRoleAdmin: "contracts/AgoraDao/Rol.sol",
         grantRole: "contracts/AgoraDao/Rol.sol",
         hasRole: "contracts/AgoraDao/Rol.sol",
@@ -451,10 +451,10 @@ const deployedContracts = {
         revokeRole: "contracts/AgoraDao/Rol.sol",
         supportsInterface: "contracts/AgoraDao/Rol.sol",
       },
-      deployedOnBlock: 9,
+      deployedOnBlock: 18,
     },
     AgoraDaoFactory: {
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
       abi: [
         {
           inputs: [
@@ -857,7 +857,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 7,
+      deployedOnBlock: 16,
     },
   },
   11155111: {
