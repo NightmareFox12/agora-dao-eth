@@ -71,6 +71,43 @@ abstract contract Rol is AccessControl {
         emit RoleRegistered(_role, _user);
     }
 
+    // --- WRITE FUNCTIONS ---
+
+    function registerRoleBatch(bytes32 _role, address[] calldata _users) external virtual {
+        if (_role == AUDITOR_ROLE) {
+            require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Only admin can assign AUDITOR_ROLE");
+            require(_role != DEFAULT_ADMIN_ROLE, "Cannot assign DEFAULT_ADMIN_ROLE");
+        } else {
+            require(
+                hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(AUDITOR_ROLE, msg.sender),
+                "Caller must be Admin or Auditor to assign this role"
+            );
+        }
+
+        for (uint256 i = 0; i < _users.length; i++) {
+            address currentUser = _users[i];
+
+            require(currentUser != address(0), "User address cannot be zero");
+            require(currentUser != msg.sender, "Caller cannot assign role to self");
+
+            require(!isMemberOfRole[_role][currentUser], "User is already registered in this role's list");
+            require(!hasRole(_role, currentUser), "User already exists");
+
+            if (hasRole(DEFAULT_ADMIN_ROLE, currentUser)) {
+                require(_role == DEFAULT_ADMIN_ROLE, "Admin cannot assign other roles to self");
+            }
+
+            _grantRole(_role, currentUser);
+            isMemberOfRole[_role][currentUser] = true;
+
+            roleUsers[_role].push(currentUser);
+            uint256 newPosition = roleUsers[_role].length - 1;
+            memberPosition[_role][currentUser] = newPosition;
+
+            emit RoleRegistered(_role, currentUser);
+        }
+    }
+
     function deleteRole(bytes32 _role, address _user) external virtual {
         require(_user != address(0), "User address cannot be zero");
         require(_user != msg.sender, "Caller cannot revoke role from self");

@@ -1,5 +1,5 @@
 import { Role } from "./RoleConfig";
-import { Eye } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "~~/components/ui/shadcn/button";
 import {
   Dialog,
@@ -23,8 +23,8 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="h-8 w-8">
-          <Eye className="h-4 w-4" />
+        <Button size="icon" className="h-8 w-8">
+          <Plus className="h-4 w-4" />
           <span className="sr-only">Editar rol</span>
         </Button>
       </DialogTrigger>
