@@ -41,46 +41,9 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
           <div className="space-y-2">
             <Input id="name" value={role.name} onChange={e => console.log(e.target.value)} />
           </div>
-
-          {/*  
-          <div className="space-y-2">
-            <Label htmlFor="description">Descripción</Label>
-             <Textarea
-                      id="description"
-                      value={editedRole.description}
-                      onChange={e => setEditedRole({ ...editedRole, description: e.target.value })}
-                      rows={3}
-                    /> 
-          </div>
-
-          <div className="space-y-2">
-            <Label>Permisos</Label>
-            <div className="flex flex-wrap gap-2">
-              {editedRole.permissions.map((permission, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {permission}
-                        </Badge>
-                      ))} 
-            </div>
-            <Input
-              placeholder="Agregar nuevo permiso y presiona Enter"
-              onKeyDown={e => {
-                console.log(e);
-                //     if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                //       setEditedRole({
-                //         ...editedRole,
-                //         permissions: [...editedRole.permissions, e.currentTarget.value.trim()],
-                //       });
-                //       e.currentTarget.value = "";
-                //     }
-                //   }}
-              }}
-            />
-          </div> */}
         </div>
 
         <DialogFooter>
-          {/* <Button variant="outline" onClick={() => setIsOpen(false)}> */}
           <Button variant="outline" onClick={() => console.log("first")}>
             Cancelar
           </Button>
