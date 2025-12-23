@@ -31,7 +31,7 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
   };
 
   const checkInputError = (value: string): string | null => {
-    if (value.length === 0 || !value.match(/^0x[a-fA-F0-9]{40}$/)) {
+    if (value.length > 0 && !value.match(/^0x[a-fA-F0-9]{40}$/)) {
       return "Por favor, ingresa una dirección válida";
     }
     return null;
@@ -49,7 +49,9 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
   };
 
   //memos
+  //TODO: me falta comprobar si hay [""]
   const hasErrors = inputs.some(value => checkInputError(value) !== null);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
