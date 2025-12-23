@@ -30,13 +30,12 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
     setInputs(newInputs);
   };
 
-  const checkInputError = (index: number): string | null => {
-    if (inputs[index].length === 0 || !inputs[index].match(/^0x[a-fA-F0-9]{40}$/)) {
-      return "Por favor, ingresa una dirección valida";
+  const checkInputError = (value: string): string | null => {
+    if (value.length === 0 || !value.match(/^0x[a-fA-F0-9]{40}$/)) {
+      return "Por favor, ingresa una dirección válida";
     }
     return null;
   };
-
   // Función para eliminar un input (opcional pero recomendada)
   const removeInput = (index: number) => {
     if (inputs.length > 1) {
@@ -49,6 +48,8 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
     console.log("Datos a guardar:", inputs);
   };
 
+  //memos
+  const hasErrors = inputs.some(value => checkInputError(value) !== null);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -65,38 +66,40 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
         </DialogHeader>
 
         <div className="space-y-4 py-4 max-h-[300px] overflow-y-auto px-1">
-          {inputs.map((value, index) => (
-            <div key={index} className={`flex items-center gap-2 ${checkInputError(index) ? "py-1.5" : ""}`}>
-              <div className="w-full">
-                <Input
-                  placeholder="Dirección del usuario"
-                  value={value}
-                  onChange={e => handleInputChange(index, e.target.value)}
-                  maxLength={42}
-                />
-                {checkInputError(index) ? (
-                  <span className="text-xs absolute pl-1 text-destructive font-semibold pt-0.5">
-                    {checkInputError(index)}
-                  </span>
-                ) : null}
-              </div>
+          {inputs.map((value, index) => {
+            const error = checkInputError(value);
+            return (
+              <div key={index} className={`flex items-center gap-2 ${error ? "py-1.5" : ""}`}>
+                <div className="w-full">
+                  <Input
+                    placeholder="Dirección del usuario"
+                    value={value}
+                    onChange={e => handleInputChange(index, e.target.value)}
+                    maxLength={42}
+                    className={error ? "border-destructive focus-visible:ring-destructive" : ""}
+                  />
+                  {error ? (
+                    <span className="text-xs absolute pl-1 text-destructive font-semibold pt-0.5">{error}</span>
+                  ) : null}
+                </div>
 
-              {index === inputs.length - 1 ? (
-                <Button size="icon" variant="outline" className="h-9 w-9 shrink-0" onClick={addInput}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="h-9 w-9 shrink-0 text-destructive"
-                  onClick={() => removeInput(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          ))}
+                {index === inputs.length - 1 ? (
+                  <Button size="icon" variant="outline" className="h-9 w-9 shrink-0" onClick={addInput}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="h-9 w-9 shrink-0 text-destructive"
+                    onClick={() => removeInput(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <DialogFooter>
@@ -104,7 +107,7 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
             <Trash2 className="h-4 w-4" />
             Eliminar todo
           </Button>
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} disabled={hasErrors}>
             <UserCheck className="h-4 w-4" />
             Crear {inputs.length > 1 ? "roles" : "rol"}
           </Button>
