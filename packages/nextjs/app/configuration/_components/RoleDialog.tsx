@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Role } from "./RoleConfig";
-import { Plus } from "lucide-react";
+import { Plus, Trash2, UserCheck } from "lucide-react";
 import { Button } from "~~/components/ui/shadcn/button";
 import {
   Dialog,
@@ -14,15 +15,40 @@ import { Input } from "~~/components/ui/shadcn/input";
 
 type RoleDialogProps = {
   role: Role;
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-//TODO: tengo que hacer que el input tenga un + y - para eliminar y agrgar address, tambien tengo que verificar dichas address y por ultimo enviar el [] listo al contract
-//TODO: verificar que no se pueda agregar la address del que esta conectado
-//TODO: si el rol del que está conectado no cumple con los requisitos apagarle el button
-
 export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
+  const [inputs, setInputs] = useState<string[]>([""]);
+
+  const addInput = () => {
+    setInputs([...inputs, ""]);
+  };
+
+  const handleInputChange = (index: number, value: string) => {
+    const newInputs = [...inputs];
+    newInputs[index] = value;
+    setInputs(newInputs);
+  };
+
+  const checkInputError = (index: number): string | null => {
+    if (inputs[index].length === 0 || !inputs[index].match(/^0x[a-fA-F0-9]{40}$/)) {
+      return "Por favor, ingresa una dirección valida";
+    }
+    return null;
+  };
+
+  // Función para eliminar un input (opcional pero recomendada)
+  const removeInput = (index: number) => {
+    if (inputs.length > 1) {
+      setInputs(inputs.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleSave = () => {
+    // Aquí tienes todos los datos guardados en el array 'inputs'
+    console.log("Datos a guardar:", inputs);
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -31,23 +57,57 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role }) => {
           <span className="sr-only">Agregar {role.name}</span>
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Agregar {role.name}</DialogTitle>
-          <DialogDescription>Ingresa la dirección del usuario que deseas agregar.</DialogDescription>
+          <DialogDescription>Puedes agregar varias direcciones usando el botón con el simbolo +.</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Input id="name" value={role.name} onChange={e => console.log(e.target.value)} />
-          </div>
+        <div className="space-y-4 py-4 max-h-[300px] overflow-y-auto px-1">
+          {inputs.map((value, index) => (
+            <div key={index} className={`flex items-center gap-2 ${checkInputError(index) ? "py-1.5" : ""}`}>
+              <div className="w-full">
+                <Input
+                  placeholder="Dirección del usuario"
+                  value={value}
+                  onChange={e => handleInputChange(index, e.target.value)}
+                  maxLength={42}
+                />
+                {checkInputError(index) ? (
+                  <span className="text-xs absolute pl-1 text-destructive font-semibold pt-0.5">
+                    {checkInputError(index)}
+                  </span>
+                ) : null}
+              </div>
+
+              {index === inputs.length - 1 ? (
+                <Button size="icon" variant="outline" className="h-9 w-9 shrink-0" onClick={addInput}>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-9 w-9 shrink-0 text-destructive"
+                  onClick={() => removeInput(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          ))}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => console.log("first")}>
-            Cancelar
+          <Button variant="destructive" onClick={() => setInputs([""])}>
+            <Trash2 className="h-4 w-4" />
+            Eliminar todo
           </Button>
-          <Button onClick={() => console.log("s")}>Guardar cambios</Button>
+          <Button onClick={handleSave}>
+            <UserCheck className="h-4 w-4" />
+            Crear {inputs.length > 1 ? "roles" : "rol"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

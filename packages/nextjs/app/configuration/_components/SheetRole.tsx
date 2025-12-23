@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { Role } from "./RoleConfig";
 import { RoleDialog } from "./RoleDialog";
 import { Eye } from "lucide-react";
@@ -32,7 +32,7 @@ type SheetRoleProps = {
 
 export const SheetRole: React.FC<SheetRoleProps> = ({ role, members, membersLoading }) => {
   //states
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  // const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <Sheet>
@@ -58,7 +58,7 @@ export const SheetRole: React.FC<SheetRoleProps> = ({ role, members, membersLoad
           <div>
             <h2 className="font-bold text-xl text-center mt-40">Aún no hay miembros con este rol</h2>
             <div className="flex justify-center mt-4">
-              <RoleDialog role={role} isOpen={isOpen} setIsOpen={setIsOpen} />
+              <RoleDialog role={role} />
             </div>
           </div>
         ) : (

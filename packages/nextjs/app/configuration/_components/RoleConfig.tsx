@@ -70,8 +70,8 @@ export const RoleConfig: React.FC = () => {
   // };
   if (!isAdmin)
     return (
-      <Dialog>
-        <DialogTrigger>Open</DialogTrigger>
+      <Dialog open={true} onOpenChange={() => {}}>
+        <DialogTrigger className="hidden">Open</DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Are you absolutely sure?</DialogTitle>
