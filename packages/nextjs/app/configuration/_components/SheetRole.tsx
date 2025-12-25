@@ -3,7 +3,8 @@
 // import { useState } from "react";
 import { Role } from "./RoleConfig";
 import { RoleDialog } from "./RoleDialog";
-import { Eye } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
+import { Address } from "~~/components/scaffold-eth";
 import { Button } from "~~/components/ui/shadcn/button";
 import {
   Sheet,
@@ -23,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "~~/components/ui/shadcn/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~~/components/ui/shadcn/tooltip";
 
 type SheetRoleProps = {
   daoAddress: string;
@@ -62,33 +64,54 @@ export const SheetRole: React.FC<SheetRoleProps> = ({ daoAddress, role, members,
             </div>
           </div>
         ) : (
-          <Table>
-            <TableCaption>A list of your recent invoices.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">Invoice</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">
-                  <Skeleton className="w-20 h-4" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="w-20 h-4" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="w-20 h-4" />
-                </TableCell>
-                <TableCell className="text-right">
-                  <Skeleton className="w-20 h-4" />
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <>
+            <div className="flex justify-center -mt-7">
+              <RoleDialog daoAddress={daoAddress} role={role} />
+            </div>
+            <Table>
+              <TableCaption>Lista de {role.name}.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">ID</TableHead>
+                  <TableHead className="text-center">Address</TableHead>
+                  <TableHead className="text-center">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {members.map((member, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="text-center font-medium">{index + 1}</TableCell>
+                    <TableCell className="text-center flex mt-1.5 justify-center">
+                      <Address address={member} disableAddressLink size="sm" />
+                    </TableCell>
+                    <TableCell className="text-center space-x-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button size="icon">
+                            <Eye className="h-4 w-4" />
+                            <span className="sr-only">Editar rol</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p>Ver usuario</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button size="icon" variant="destructive">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p>Eliminar usuario</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </>
         )}
       </SheetContent>
     </Sheet>

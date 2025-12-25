@@ -72,6 +72,7 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role, daoAddress }) => {
           args: [role.bytes, inputs[0]],
         });
       }
+      setInputs([""]);
     } catch (err) {
       console.log(err);
     } finally {
