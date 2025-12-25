@@ -38,7 +38,7 @@ abstract contract Rol is AccessControl {
     }
 
     // --- WRITE FUNCTIONS ---
-    function registerRole(bytes32 _role, address _user) internal virtual {
+    function registerRole(bytes32 _role, address _user) external {
         require(_user != address(0), "User address cannot be zero");
         require(_user != msg.sender, "Caller cannot assign role to self");
 
@@ -72,7 +72,7 @@ abstract contract Rol is AccessControl {
     }
 
     // --- WRITE FUNCTIONS ---
-    function registerRoleBatch(bytes32 _role, address[] calldata _users) external virtual {
+    function registerRoleBatch(bytes32 _role, address[] calldata _users) external {
         if (_role == AUDITOR_ROLE) {
             require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Only admin can assign AUDITOR_ROLE");
             require(_role != DEFAULT_ADMIN_ROLE, "Cannot assign DEFAULT_ADMIN_ROLE");

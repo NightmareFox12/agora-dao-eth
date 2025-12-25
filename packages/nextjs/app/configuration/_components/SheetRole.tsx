@@ -25,14 +25,14 @@ import {
 } from "~~/components/ui/shadcn/table";
 
 type SheetRoleProps = {
+  daoAddress: string;
   role: Role;
   members: readonly string[] | undefined;
   membersLoading: boolean;
 };
 
-export const SheetRole: React.FC<SheetRoleProps> = ({ role, members, membersLoading }) => {
+export const SheetRole: React.FC<SheetRoleProps> = ({ daoAddress, role, members, membersLoading }) => {
   //states
-  // const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <Sheet>
@@ -58,7 +58,7 @@ export const SheetRole: React.FC<SheetRoleProps> = ({ role, members, membersLoad
           <div>
             <h2 className="font-bold text-xl text-center mt-40">Aún no hay miembros con este rol</h2>
             <div className="flex justify-center mt-4">
-              <RoleDialog role={role} />
+              <RoleDialog daoAddress={daoAddress} role={role} />
             </div>
           </div>
         ) : (

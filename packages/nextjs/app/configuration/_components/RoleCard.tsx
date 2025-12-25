@@ -51,7 +51,7 @@ export const RoleCard: React.FC<RoleCardProps> = ({ role }) => {
             </div>
           </div>
 
-          <SheetRole role={role} members={members} membersLoading={membersLoading} />
+          <SheetRole daoAddress={daoAddress} role={role} members={members} membersLoading={membersLoading} />
         </div>
       </CardHeader>
 
