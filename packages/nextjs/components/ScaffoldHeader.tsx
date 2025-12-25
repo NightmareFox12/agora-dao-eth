@@ -20,27 +20,27 @@ type HeaderMenuLink = {
 
 export const menuLinks: HeaderMenuLink[] = [
   {
-    label: "Home",
+    label: "Inicio",
     href: "/dao",
     icon: <Home />,
   },
   {
-    label: "Tasks",
+    label: "Tareas",
     href: "/task",
     icon: <Files className="h-4 w-4" />,
   },
   {
-    label: "Configuration",
+    label: "Configuración",
     href: "/configuration",
     icon: <Bolt className="h-4 w-4" />,
   },
   {
-    label: "Debug Contracts",
+    label: "Debug",
     href: "/debug",
     icon: <BugIcon className="h-4 w-4" />,
   },
   {
-    label: "Logout",
+    label: "Cerrar sesión",
     href: "/logout",
     icon: <DoorOpenIcon className="h-4 w-4" />,
   },
@@ -64,8 +64,8 @@ export const ScaffoldHeader = () => {
               <Image src="/logo.svg" alt="SE2 logo" className="cursor-pointer" fill />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold leading-tight">Scaffold-ETH</span>
-              <span className="text-xs">Ethereum dev stack</span>
+              <span className="font-bold leading-tight">Agora DAO</span>
+              <span className="text-xs">Gobierno descentralizado</span>
             </div>
           </Link>
         </div>
