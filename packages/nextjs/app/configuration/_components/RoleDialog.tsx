@@ -80,7 +80,6 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role, daoAddress }) => {
     }
   };
 
-  //memos
   const hasErrors = inputs.some(value => checkInputError(value) !== null || value.length === 0);
 
   return (

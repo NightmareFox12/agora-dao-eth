@@ -7,3 +7,6 @@
 
 //?--- 11/12/2025 (jueves)---
 //TODO: en el filtro del buscador de daos me toca meter la nueva categoria que lee las daos dentro del []
+
+// --- INFO ---
+//TODO: LA IA me dice que para evitar el ataque a la votaciones (Sybil attack) debo usar votacion cuadratica (apoyada por Vitalik en sus libros) junto con WhiteList (que solo el admin decida quienes van a votar y los nuevos tengan que pagar un monton)

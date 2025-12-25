@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AgoraDao: {
-      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [
@@ -489,10 +489,10 @@ const deployedContracts = {
         revokeRole: "contracts/AgoraDao/Rol.sol",
         supportsInterface: "contracts/AgoraDao/Rol.sol",
       },
-      deployedOnBlock: 14,
+      deployedOnBlock: 9,
     },
     AgoraDaoFactory: {
-      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
       abi: [
         {
           inputs: [
@@ -895,7 +895,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 12,
+      deployedOnBlock: 7,
     },
   },
   11155111: {

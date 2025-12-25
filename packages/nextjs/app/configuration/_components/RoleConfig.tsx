@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { RoleCard } from "./RoleCard";
-import { Settings, Shield } from "lucide-react";
+import { ArrowLeft, Settings, Shield } from "lucide-react";
 import { useAccount } from "wagmi";
+import { Button } from "~~/components/ui/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -50,10 +52,8 @@ const initialRoles: Role[] = [
 export const RoleConfig: React.FC = () => {
   const { daoAddress } = useDaoStore();
   const { address: userAddress } = useAccount();
-  //states
-  // const [roles, setRoles] = useState<Role[]>(initialRoles);
+  const router = useRouter();
 
-  //TODO: buyscar en viem una forma de hacer los roles con metodos de ts y evitar asi leer el smart contract para traerlo
   //smart contract
   const { data: isAdmin } = useScaffoldReadContract({
     contractName: "AgoraDao",
@@ -62,24 +62,21 @@ export const RoleConfig: React.FC = () => {
     contractAddress: daoAddress,
   });
 
-  console.log(isAdmin);
-
-  //functions
-  // const handleUpdateRole = (updatedRole: Role) => {
-  //   setRoles(roles.map(role => (role.id === updatedRole.id ? updatedRole : role)));
-  // };
   if (!isAdmin)
     return (
       <Dialog open={true} onOpenChange={() => {}}>
         <DialogTrigger className="hidden">Open</DialogTrigger>
-        <DialogContent>
+        <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete your account and remove your data from our
-              servers.
+            <DialogTitle>🚫 Sección restringida</DialogTitle>
+            <DialogDescription className="text-center">
+              Solo el administrador puede acceder a esta sección.
             </DialogDescription>
           </DialogHeader>
+          <Button onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4" />
+            Regresar
+          </Button>
         </DialogContent>
       </Dialog>
     );
