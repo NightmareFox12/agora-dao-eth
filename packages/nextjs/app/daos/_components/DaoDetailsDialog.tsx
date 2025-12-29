@@ -111,9 +111,9 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
                 <TabsTrigger className="flex-1" value="users-joined">
                   Usuarios Unidos
                 </TabsTrigger>
-                <TabsTrigger className="flex-1" value="password">
+                {/* <TabsTrigger className="flex-1" value="password">
                   Contraseña
-                </TabsTrigger>
+                </TabsTrigger> */}
               </TabsList>
               <TabsContent value="users-joined">
                 <ScrollArea className="w-[300px] sm:w-full">
@@ -121,7 +121,7 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>
               </TabsContent>
-              <TabsContent value="password">Contraseña</TabsContent>
+              {/* <TabsContent value="password">Contraseña</TabsContent> */}
             </Tabs>
           </div>
         )}
