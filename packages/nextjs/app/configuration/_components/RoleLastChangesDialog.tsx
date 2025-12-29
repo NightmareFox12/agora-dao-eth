@@ -79,17 +79,21 @@ export const RoleLastChangesDialog: React.FC<RoleLastChangesDialogProps> = ({ da
               <TableRow>
                 <TableHead className="text-center">Address</TableHead>
                 <TableHead className="text-center">Rol</TableHead>
+                <TableHead className="text-center">Executor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {lastChanges.map((event, index) => {
-                if (!event.args.role || !event.args.user) return null;
+                if (!event.args.role || !event.args.user || !event.args.executor) return null;
                 return (
                   <TableRow key={index}>
                     <TableCell className="flex justify-center">
                       <Address address={event.args.user} />
                     </TableCell>
                     <TableCell className="text-center">{rolesArr[event.args.role]}</TableCell>
+                    <TableCell className="flex justify-center">
+                      <Address address={event.args.executor} />
+                    </TableCell>
                   </TableRow>
                 );
               })}

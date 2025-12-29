@@ -17,7 +17,7 @@ abstract contract Rol is AccessControl {
     //state variables
 
     //events
-    event RoleRegistered(bytes32 indexed role, address indexed user);
+    event RoleRegistered(bytes32 indexed role, address indexed user, address executor);
     event RoleDeleted(bytes32 indexed role, address indexed user);
 
     constructor() {
@@ -68,7 +68,7 @@ abstract contract Rol is AccessControl {
         uint256 newPosition = roleUsers[_role].length - 1;
         memberPosition[_role][_user] = newPosition;
 
-        emit RoleRegistered(_role, _user);
+        emit RoleRegistered(_role, _user, msg.sender);
     }
 
     // --- WRITE FUNCTIONS ---
@@ -103,7 +103,7 @@ abstract contract Rol is AccessControl {
             uint256 newPosition = roleUsers[_role].length - 1;
             memberPosition[_role][currentUser] = newPosition;
 
-            emit RoleRegistered(_role, currentUser);
+            emit RoleRegistered(_role, currentUser, msg.sender);
         }
     }
 
