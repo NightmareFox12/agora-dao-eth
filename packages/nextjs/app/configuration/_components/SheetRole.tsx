@@ -1,6 +1,5 @@
 "use client";
 
-// import { useState } from "react";
 import { Role } from "./RoleConfig";
 import { RoleDialog } from "./RoleDialog";
 import { Eye, Trash2 } from "lucide-react";

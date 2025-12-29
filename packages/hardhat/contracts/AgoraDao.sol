@@ -36,10 +36,10 @@ contract AgoraDao is Rol {
         require(!hasRole(USER_ROLE, msg.sender), "User already joined");
         require(!hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "The owner can't join");
 
-        _grantRole(USER_ROLE, msg.sender);
         IAgoraDaoFactory(fabric).addUserCounter(msg.sender);
-
         emit UserJoined(msg.sender, userCounter);
+
+        _joinDaoUser(msg.sender);
         userCounter++;
     }
 

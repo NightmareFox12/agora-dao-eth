@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AgoraDao: {
-      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
       abi: [
         {
           inputs: [
@@ -86,6 +86,12 @@ const deployedContracts = {
               name: "user",
               type: "address",
             },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "executor",
+              type: "address",
+            },
           ],
           name: "RoleDeleted",
           type: "event",
@@ -131,7 +137,7 @@ const deployedContracts = {
               type: "address",
             },
             {
-              indexed: false,
+              indexed: true,
               internalType: "address",
               name: "executor",
               type: "address",
@@ -495,10 +501,10 @@ const deployedContracts = {
         revokeRole: "contracts/AgoraDao/Rol.sol",
         supportsInterface: "contracts/AgoraDao/Rol.sol",
       },
-      deployedOnBlock: 17,
+      deployedOnBlock: 37,
     },
     AgoraDaoFactory: {
-      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      address: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
       abi: [
         {
           inputs: [
@@ -901,7 +907,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 15,
+      deployedOnBlock: 35,
     },
   },
   11155111: {

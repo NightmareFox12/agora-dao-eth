@@ -17,8 +17,8 @@ abstract contract Rol is AccessControl {
     //state variables
 
     //events
-    event RoleRegistered(bytes32 indexed role, address indexed user, address executor);
-    event RoleDeleted(bytes32 indexed role, address indexed user);
+    event RoleRegistered(bytes32 indexed role, address indexed user, address indexed executor);
+    event RoleDeleted(bytes32 indexed role, address indexed user, address indexed executor);
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -107,6 +107,21 @@ abstract contract Rol is AccessControl {
         }
     }
 
+    function _joinDaoUser(address _user) internal {
+        require(!isMemberOfRole[USER_ROLE][_user], "User is already registered in this role's list");
+        require(!hasRole(USER_ROLE, _user), "User already exists");
+
+        // --- Assign Role ---
+        _grantRole(USER_ROLE, _user);
+        isMemberOfRole[USER_ROLE][_user] = true;
+
+        roleUsers[USER_ROLE].push(_user);
+        uint256 newPosition = roleUsers[USER_ROLE].length - 1;
+        memberPosition[USER_ROLE][_user] = newPosition;
+
+        emit RoleRegistered(USER_ROLE, _user, address(0));
+    }
+
     function deleteRole(bytes32 _role, address _user) external virtual {
         require(_user != address(0), "User address cannot be zero");
         require(_user != msg.sender, "Caller cannot revoke role from self");
@@ -130,6 +145,6 @@ abstract contract Rol is AccessControl {
         roleUsers[_role].pop();
         delete memberPosition[_role][_user];
 
-        emit RoleDeleted(_role, _user);
+        emit RoleDeleted(_role, _user, msg.sender);
     }
 }
