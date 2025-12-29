@@ -18,7 +18,7 @@ export default function Logout() {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <h2 className="text-2xl font-bold">Logging out...</h2>
+      <h2 className="text-2xl font-bold">Cerrando sesión...</h2>
     </div>
   );
 }

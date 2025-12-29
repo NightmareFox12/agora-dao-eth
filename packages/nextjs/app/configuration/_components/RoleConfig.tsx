@@ -93,7 +93,7 @@ export const RoleConfig: React.FC = () => {
           </TabsList>
           {/* Role section */}
           <TabsContent value="role">
-            <RoleLastChangesDialog />
+            <RoleLastChangesDialog daoAddress={daoAddress} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
               {initialRoles.map((role, y) => (
                 <RoleCard key={y} role={role} />
