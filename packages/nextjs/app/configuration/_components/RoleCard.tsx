@@ -4,6 +4,7 @@ import React from "react";
 import { Role } from "./RoleConfig";
 import { SheetRole } from "./SheetRole";
 import { CheckCircle2, Users } from "lucide-react";
+import { Badge } from "~~/components/ui/shadcn/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
@@ -45,7 +46,7 @@ export const RoleCard: React.FC<RoleCardProps> = ({ role }) => {
               ) : (
                 <div className="flex items-center gap-1 text-muted-foreground text-sm mt-1">
                   <Users className="h-3.5 w-3.5" />
-                  <span>{members?.length ?? 0} miembros</span>
+                  <Badge variant="secondary">{members?.length ?? 0} miembros</Badge>
                 </div>
               )}
             </div>
