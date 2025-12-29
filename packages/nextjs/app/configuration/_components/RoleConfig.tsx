@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { RoleCard } from "./RoleCard";
-import { ArrowLeft, Settings, Shield } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useAccount } from "wagmi";
 import { Button } from "~~/components/ui/shadcn/button";
 import {
@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~~/components/ui/shadcn/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~~/components/ui/shadcn/tabs";
 import { AUDITOR_ROLE, DEFAULT_ADMIN_ROLE, TASK_MANAGER_ROLE, USER_ROLE } from "~~/constants/roles";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useDaoStore } from "~~/services/store/dao.store";
@@ -82,32 +83,22 @@ export const RoleConfig: React.FC = () => {
     );
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Settings className="h-6 w-6 text-primary" />
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">Configuración de la DAO</h1>
-        </div>
-        <p className="text-muted-foreground ml-12">
-          Administra los roles y permisos de los miembros de tu organización descentralizada
-        </p>
-      </div>
-
-      {/* Roles Section */}
+    <div className="container mx-auto px-4 py-4 max-w-6xl">
       <section>
-        <div className="flex items-center gap-2 mb-6">
-          <Shield className="h-5 w-5 text-muted-foreground" />
-          <h2 className="text-xl font-semibold text-foreground">Gestión de Roles</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {initialRoles.map((role, y) => (
-            <RoleCard key={y} role={role} />
-          ))}
-        </div>
+        <Tabs defaultValue="role" className="w-full">
+          <TabsList className="w-full justify-center">
+            <TabsTrigger value="role">Gestionar roles</TabsTrigger>
+            <TabsTrigger value="permission">Gestionar permisos</TabsTrigger>
+          </TabsList>
+          <TabsContent value="role">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+              {initialRoles.map((role, y) => (
+                <RoleCard key={y} role={role} />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="permission">Change your password here.</TabsContent>
+        </Tabs>
       </section>
     </div>
   );
