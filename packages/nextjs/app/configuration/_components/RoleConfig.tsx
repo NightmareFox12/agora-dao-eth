@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { RoleCard } from "./RoleCard";
+import { RoleLastChangesDialog } from "./RoleLastChangesDialog";
 import { ArrowLeft } from "lucide-react";
 import { useAccount } from "wagmi";
 import { Button } from "~~/components/ui/shadcn/button";
@@ -90,7 +91,9 @@ export const RoleConfig: React.FC = () => {
             <TabsTrigger value="role">Gestionar roles</TabsTrigger>
             <TabsTrigger value="permission">Gestionar permisos</TabsTrigger>
           </TabsList>
+          {/* Role section */}
           <TabsContent value="role">
+            <RoleLastChangesDialog />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
               {initialRoles.map((role, y) => (
                 <RoleCard key={y} role={role} />
