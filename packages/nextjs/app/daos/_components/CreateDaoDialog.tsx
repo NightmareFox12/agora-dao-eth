@@ -253,7 +253,7 @@ export const CreateDaoDialog: React.FC = () => {
                       <Select value={field.value} onValueChange={field.onChange} disabled={submitLoading}>
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Choose a category" />
+                            <SelectValue placeholder="Selecciona una categoría" />
                           </SelectTrigger>
                         </FormControl>
 
