@@ -13,15 +13,18 @@ export type UserJoinedEvent = {
 
 export const columns: ColumnDef<UserJoinedEvent>[] = [
   {
+    id: "index",
+    header: "",
+    cell: ({ row }) => row.index + 1,
+  },
+  {
     accessorKey: "address",
     header: "User",
   },
   {
-    accessorKey: "transactionHash",
-    header: "Hash",
-  },
-  {
     accessorKey: "blockData.timestamp",
     header: "Date",
+    cell: ({ row }) =>
+      new Date(parseInt((row.original.blockData.timestamp * 1000n).toString())).toISOString().split("T")[0],
   },
 ];

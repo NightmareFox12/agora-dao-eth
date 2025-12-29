@@ -3,12 +3,12 @@
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~~/components/ui/shadcn/table";
 
-interface DataTableProps<TData, TValue> {
+interface JoinedTableTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function JoinedTable<TData, TValue>({ columns, data }: JoinedTableTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
@@ -43,7 +43,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                No hay resultados.
               </TableCell>
             </TableRow>
           )}

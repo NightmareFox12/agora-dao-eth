@@ -57,6 +57,7 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
 
   //TODO: agregar tabla de eventos con un tab para (unidos,votaciones o mas cosas)
 
+  console.log(userJoined);
   //memos
   const userJoinedArr = useMemo(() => {
     if (!userJoined || userJoined.length === 0 || isLoadingEvents) return [];

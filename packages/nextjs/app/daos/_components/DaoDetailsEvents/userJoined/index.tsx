@@ -1,5 +1,5 @@
 import React from "react";
-import { DataTable } from "./dataTable";
+import { JoinedTable } from "./JoinedTable";
 import { UserJoinedEvent, columns } from "./userJoinedColumns";
 
 type UserJoinedTableProps = {
@@ -9,7 +9,7 @@ type UserJoinedTableProps = {
 export const UserJoinedTable: React.FC<UserJoinedTableProps> = ({ data }) => {
   return (
     <div className="indent-0">
-      <DataTable columns={columns} data={data} />
+      <JoinedTable columns={columns} data={data} />
     </div>
   );
 };

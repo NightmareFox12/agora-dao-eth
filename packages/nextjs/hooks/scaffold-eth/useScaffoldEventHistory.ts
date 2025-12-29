@@ -162,7 +162,7 @@ export const useScaffoldEventHistory = <
 
       const data = await getEvents(
         {
-          address: deployedContractData?.address,
+          address: contractAddress ?? deployedContractData?.address,
           event,
           fromBlock: pageParam,
           toBlock: batchToBlock,
@@ -234,7 +234,7 @@ export const useScaffoldEventHistory = <
 
       const newEvents = await getEvents(
         {
-          address: deployedContractData?.address,
+          address: contractAddress ?? deployedContractData?.address,
           event,
           fromBlock: startBlock + 1n,
           toBlock: maxBlock,
