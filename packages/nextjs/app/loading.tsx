@@ -19,7 +19,7 @@ const Loading: NextPage = () => {
         transition={{ delay: 0.3 }}
         className="text-2xl font-bold mt-4"
       >
-        Loading...
+        Cargando...
       </motion.h1>
     </motion.div>
   );
