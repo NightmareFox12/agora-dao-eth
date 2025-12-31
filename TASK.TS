@@ -10,3 +10,6 @@
 
 // --- INFO ---
 //TODO: LA IA me dice que para evitar el ataque a la votaciones (Sybil attack) debo usar votacion cuadratica (apoyada por Vitalik en sus libros) junto con WhiteList (que solo el admin decida quienes van a votar y los nuevos tengan que pagar un monton)
+
+// ?--- CONFIGURATION ---
+//TODO: En el Sheet derecho el ojo de ver usuario y el delete no funcionan. Para el delete con un dialog basta. Y con el ojo de ver usuario inventar que poner ahi
