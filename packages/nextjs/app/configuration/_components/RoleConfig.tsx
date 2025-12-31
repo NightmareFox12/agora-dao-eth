@@ -100,7 +100,7 @@ export const RoleConfig: React.FC = () => {
               ))}
             </div>
           </TabsContent>
-          <TabsContent value="permission">Change your password here.</TabsContent>
+          <TabsContent value="permission">Gestionar permisos</TabsContent>
         </Tabs>
       </section>
     </div>
