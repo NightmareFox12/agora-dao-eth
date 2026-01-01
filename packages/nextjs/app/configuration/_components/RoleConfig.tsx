@@ -67,7 +67,7 @@ export const RoleConfig: React.FC = () => {
   if (!isAdmin)
     return (
       <Dialog open={true} onOpenChange={() => {}}>
-        <DialogTrigger className="hidden">Open</DialogTrigger>
+        <DialogTrigger className="hidden">Abrir</DialogTrigger>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>🚫 Sección restringida</DialogTitle>
