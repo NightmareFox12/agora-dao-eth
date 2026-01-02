@@ -30,7 +30,7 @@ const priorityColors = {
 export const TaskCard: React.FC<TaskProps> = ({ title, description, reward, status, category, priority, deadline }) => {
   return (
     <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 -mb-8">
         <div className="space-y-1">
           <Badge variant="secondary" className="mb-2 font-normal">
             {category}

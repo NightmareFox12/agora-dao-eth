@@ -51,7 +51,7 @@ const MOCK_TASKS = [
 
 export const TaskSection: React.FC = () => {
   return (
-    <main className="container mx-auto py-2 px-2 space-y-6">
+    <main className="container mx-auto py-2 px-4 space-y-6">
       <Suspense fallback={null}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
