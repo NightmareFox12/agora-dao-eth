@@ -40,6 +40,7 @@ export const FeatureSection: React.FC = async () => {
           </p>
         </div>
 
+        {/* Main Features */}
         <div className="grid md:grid-cols-3 gap-8">
           {mainFeatures.map((x: Feature, y: number) => (
             <Card key={y} className="border-border hover:shadow-lg transition-shadow">
