@@ -5,6 +5,7 @@ import { Button } from "~~/components/ui/shadcn/button";
 import { Input } from "~~/components/ui/shadcn/input";
 import { Tabs, TabsList, TabsTrigger } from "~~/components/ui/shadcn/tabs";
 
+//TODO: agregar modal para crear tareas
 const MOCK_TASKS = [
   {
     id: "1",
