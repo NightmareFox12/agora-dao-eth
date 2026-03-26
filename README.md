@@ -2,7 +2,7 @@
 
 ## 📖 Project Overview
 
-Agora DAO is a **decentralized autonomous organization** platform that enables community‑driven governance, task management, and token‑based incentives. Built on Ethereum (or compatible EVM chains) with a **Hardhat** smart‑contract suite and a **Next.js** front‑end, the Dapp lets users create DAOs, join them, and execute on‑chain actions in a trust‑less manner.
+Agora DAO is a decentralized autonomous organization platform that enables community‑driven governance, task management, and token‑based incentives. Built on Ethereum (or compatible EVM chains) with a **Hardhat** smart‑contract suite and a **Next.js** front‑end, the Dapp lets users create DAOs, join them, and execute on‑chain actions in a trust‑less manner.
 
 ## ✨ Key Features
 
