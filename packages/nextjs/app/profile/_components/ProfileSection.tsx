@@ -65,7 +65,7 @@ export const ProfileSection: React.FC = () => {
     return (
       <main className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold">Conecta tu wallet</h1>
-        <p className="mt-2 text-muted-foreground">Necesitamos tu wallet para mostrar tu perfil.</p>
+        <p className="m-0 mt-2 text-muted-foreground">Necesitamos tu wallet para mostrar tu perfil.</p>
       </main>
     );
   }
@@ -74,7 +74,7 @@ export const ProfileSection: React.FC = () => {
     <main className="container mx-auto px-4 py-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Mi perfil</h1>
-        <p className="text-muted-foreground">
+        <p className="m-0 text-muted-foreground">
           Tu actividad en {dao?.name ?? "la DAO"}, tu nivel y lo que vayas logrando.
         </p>
       </div>
@@ -101,7 +101,7 @@ export const ProfileSection: React.FC = () => {
             </div>
 
             {memberSince > 0 && (
-              <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <p className="m-0 flex items-center gap-1.5 text-sm text-muted-foreground">
                 <CalendarDays className="size-4" />
                 {isCreator ? "Creaste esta DAO" : "Miembro"} {formatRelativeTime(memberSince)}
               </p>
@@ -132,8 +132,8 @@ export const ProfileSection: React.FC = () => {
                     <Icon className="size-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{title}</p>
-                    <p className="text-xs text-muted-foreground">{description}</p>
+                    <p className="m-0 text-sm font-medium">{title}</p>
+                    <p className="m-0 text-xs text-muted-foreground">{description}</p>
                   </div>
                 </li>
               ))}
@@ -152,7 +152,7 @@ export const ProfileSection: React.FC = () => {
         </CardHeader>
         <CardContent>
           {assignedRoles.length === 0 ? (
-            <p className="py-4 text-center text-sm text-muted-foreground">Nadie te ha asignado un rol todavía.</p>
+            <p className="m-0 py-4 text-center text-sm text-muted-foreground">Nadie te ha asignado un rol todavía.</p>
           ) : (
             <ul className="space-y-3">
               {assignedRoles.map(x => (

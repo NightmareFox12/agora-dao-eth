@@ -166,7 +166,7 @@ export const DaoDashboard: React.FC = () => {
     return (
       <main className="container mx-auto px-4 py-16 flex flex-col items-center gap-4 text-center">
         <h1 className="text-2xl font-bold">No encontramos esta DAO</h1>
-        <p className="max-w-md text-muted-foreground">
+        <p className="m-0 max-w-md text-muted-foreground">
           La DAO que tenías guardada ya no existe en esta red. Sal de ella para elegir otra de la lista.
         </p>
         <Button asChild>
@@ -246,7 +246,7 @@ export const DaoDashboard: React.FC = () => {
                 </Badge>
               ))}
             </div>
-            <p className="text-muted-foreground break-words">{dao.description}</p>
+            <p className="m-0 text-muted-foreground break-words">{dao.description}</p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Crown className="size-4" />
               Creada por <Address address={dao.creator} />
@@ -270,7 +270,7 @@ export const DaoDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{value}</div>
-              <p className="text-xs text-muted-foreground">{hint}</p>
+              <p className="m-0 text-xs text-muted-foreground">{hint}</p>
             </CardContent>
           </Card>
         ))}
@@ -294,7 +294,7 @@ export const DaoDashboard: React.FC = () => {
                 ))}
               </div>
             ) : activity.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">Todavía no hay actividad.</p>
+              <p className="m-0 py-6 text-center text-sm text-muted-foreground">Todavía no hay actividad.</p>
             ) : (
               <ul className="space-y-3">
                 {activity.map(item => (
@@ -302,7 +302,7 @@ export const DaoDashboard: React.FC = () => {
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
                       {item.kind === "join" ? <UserPlus className="size-4" /> : <UserCog className="size-4" />}
                     </div>
-                    <p className="min-w-0 flex-1 text-sm">
+                    <p className="m-0 min-w-0 flex-1 text-sm">
                       <span className="font-medium">{shortAddress(item.user)}</span> {item.text}
                     </p>
                     {item.timestamp > 0 && (
@@ -332,8 +332,8 @@ export const DaoDashboard: React.FC = () => {
                       <Icon className="size-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium">{name}</p>
-                      <p className="truncate text-xs text-muted-foreground">{description}</p>
+                      <p className="m-0 text-sm font-medium">{name}</p>
+                      <p className="m-0 truncate text-xs text-muted-foreground">{description}</p>
                     </div>
                     <Badge variant={href ? "default" : "outline"} className="shrink-0 font-normal">
                       {status}

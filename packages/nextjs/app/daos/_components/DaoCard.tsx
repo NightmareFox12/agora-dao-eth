@@ -127,7 +127,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
                   <Skeleton className="h-5 w-5 bg-primary/50" />
                 ) : (
                   <span className="text-sm text-muted-foreground">
-                    {userCounter} {parseInt(`${userCounter}`) > 1 ? "users" : "user"}
+                    {userCounter} {userCounter === 1n ? "usuario" : "usuarios"}
                   </span>
                 )}
               </div>

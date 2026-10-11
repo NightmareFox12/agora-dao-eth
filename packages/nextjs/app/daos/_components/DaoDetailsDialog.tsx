@@ -86,12 +86,12 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
     {
       icon: Crown,
       label: "Creador",
-      value: (
-        <div className="flex flex-wrap items-center gap-2">
-          <Address address={creator} />
-          {isCreator && <Badge variant="secondary">Eres tú</Badge>}
-        </div>
-      ),
+      value: <Address address={creator} />,
+      badge: isCreator ? (
+        <Badge className="border-transparent bg-emerald-600 normal-case tracking-normal text-white dark:bg-emerald-500 dark:text-emerald-950">
+          Eres tú
+        </Badge>
+      ) : undefined,
     },
     {
       icon: CalendarDays,
@@ -154,11 +154,14 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
 
         {/* Info */}
         <dl className="grid gap-3 sm:grid-cols-2">
-          {infoItems.map(({ icon: Icon, label, value }) => (
+          {infoItems.map(({ icon: Icon, label, value, badge }) => (
             <div key={label} className="min-w-0 rounded-lg border bg-card p-3 space-y-1.5">
-              <dt className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Icon className="size-3.5" />
-                {label}
+              <dt className="flex items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Icon className="size-3.5" />
+                  {label}
+                </span>
+                {badge}
               </dt>
               <dd className="min-w-0">{value}</dd>
             </div>
