@@ -15,6 +15,7 @@ Este documento explica cómo funciona el módulo de tareas de Agora DAO: qué es
 - [El dinero](#el-dinero)
 - [Cuando algo sale mal](#cuando-algo-sale-mal)
 - [Qué no hace (todavía)](#qué-no-hace-todavía)
+- [Seguridad](#seguridad)
 - [Estado del módulo](#estado-del-módulo)
 - [Para desarrolladores](#para-desarrolladores)
 
@@ -168,10 +169,70 @@ Conviene conocer estos límites antes de usarlo o de ofrecerlo:
 - **Pago completo o ninguno.** No hay pagos parciales por hitos.
 - **Las categorías son una lista fija** de seis. No hay prioridad por tarea ni un chat para conversarla; están pensados para más adelante.
 - **Todo es público.** Títulos, descripciones, imágenes, enlaces de entrega y motivos de rechazo quedan visibles para cualquiera, en la blockchain o en el almacenamiento de archivos. Por eso no deben incluirse datos confidenciales; los enlaces a archivos (Figma, Drive...) deben tener sus propios permisos de acceso.
-- **Quien controle el almacenamiento puede dejar de servir un archivo.** No puede alterarlo sin que se detecte, pero sí borrarlo, y entonces la página mostraría que no se pueden leer los detalles. Por eso conviene hacer copias de seguridad del bucket. Además, si alguien sube sus archivos y luego cancela la transacción en su wallet, los archivos quedan guardados sin usarse.
+- **Los archivos dependen de quien opera la plataforma.** La cuenta de almacenamiento (Supabase) la administra quien despliega y mantiene la plataforma, **no los miembros de la DAO ni sus administradores**. Quien administre esa cuenta no puede cambiar el contenido de una tarea sin que se note, pero sí podría borrar un archivo, y entonces la página diría que no se pueden leer los detalles. Por eso conviene hacer copias de seguridad. Además, si alguien sube sus archivos y luego cancela la transacción en su wallet, los archivos quedan guardados sin usarse.
 - **Subir archivos requiere una firma.** El creador firma un mensaje con su wallet (no cuesta gas) para autorizar la subida, y el servidor comprueba en la blockchain que sea gestor de tareas o administrador de esa DAO.
 - **Las disputas necesitan un árbitro disponible.** Si el administrador es quien creó la tarea y la DAO no tiene ningún auditor, nadie puede arbitrar. Se recomienda que toda DAO tenga al menos un auditor distinto de quien crea tareas.
 - **Sin recuperación de wallet.** Quien pierde acceso a su wallet pierde lo que le corresponde. Es una propiedad de la blockchain, no del módulo.
+
+## Seguridad
+
+Una regla simple guía todo el diseño: **el contrato es quien hace cumplir las reglas, no la página.** La página solo evita ofrecer botones que fallarían. Si alguien se saltara la página y hablara directo con el contrato, seguiría chocando con las mismas reglas.
+
+### Cómo se protege el dinero
+
+| Riesgo | Cómo se evita |
+|---|---|
+| Alguien se lleva los fondos | El contrato no tiene dueño ni función de retiro. El dinero de una tarea solo sale por los caminos de las reglas: pagar a quien trabajó, o devolver al creador |
+| Cobrar dos veces (ataque de reentrada) | El estado de la tarea se cierra **antes** de enviar el ETH, y todas las funciones que mueven dinero llevan además un bloqueo contra reentrada |
+| Fondos atrapados para siempre | Cada estado tiene una salida: abandonar, quitar la tarea, cobrar tras 7 días, reembolso tras 30 días, disputa y resolución |
+| Un árbitro con conflicto de interés | Quien decide una disputa no puede ser el creador ni quien trabajó, y el creador no puede tomar su propia tarea |
+| Una carrera entre cobrar y rechazar en el último segundo | No pueden coincidir: el creador solo puede rechazar hasta el final del plazo, y cobrar solo se permite después |
+| Enviar ETH al contrato sin pasar por una tarea | El contrato lo rechaza: el único modo de depositar es publicar una tarea |
+| Datos absurdos | El contrato valida largos de texto, categoría válida y plazo de entrega entre 7 y 30 días, y que el depósito no sea cero |
+
+### Los permisos
+Los permisos los comprueba el contrato consultando los roles de la DAO. Al construir este módulo se corrigieron fallos del sistema de roles que lo habrían debilitado:
+- Un auditor podía nombrar administradores: ya no.
+- Los atajos estándar para dar y quitar roles saltaban las reglas: están bloqueados, y una DAO nunca se queda sin administrador.
+- Solo se aceptan los cinco roles conocidos.
+- Solo las DAOs creadas por la fábrica pueden hablar con ella, y cada DAO y su módulo se inicializan una sola vez, en la misma transacción en la que se crean, así que nadie puede adelantarse a configurarlos.
+
+### Cómo se protegen los archivos
+**Que no se puedan alterar.** La descripción, los criterios y las imágenes se guardan en archivos cuyo nombre es su huella digital (SHA-256). El contrato guarda esa huella, y la página la recalcula al abrir la tarea: si no coincide, se niega a mostrar el contenido.
+
+**Que no los suba cualquiera.** Los archivos solo se escriben desde el servidor, que guarda la llave del almacenamiento. El navegador nunca la tiene. Para que el servidor acepte una subida:
+- **Firma de wallet.** El usuario firma un mensaje (sin coste de gas) que lista los archivos exactos que autoriza. El servidor lo reconstruye y verifica la firma.
+- **Permiso en la blockchain.** Para los archivos de una tarea, el servidor comprueba que quien firma sea gestor de tareas o administrador de una DAO creada por nuestra fábrica. Una dirección que solo *dice* ser una DAO no sirve.
+- **La firma caduca a los 10 minutos** y está atada a una red concreta, así que no se puede reutilizar en otra.
+- **El servidor no se fía del navegador.** Calcula él mismo la huella de cada archivo, comprueba que sea uno de los firmados, detecta si es de verdad un PNG o JPG mirando su contenido (no su nombre ni lo que diga ser), valida el JSON de los detalles con su esquema y aplica los límites de tamaño. No se admiten SVG, que pueden llevar código.
+- **Los buckets no tienen ninguna regla de escritura:** con claves públicas no se puede escribir ni borrar nada.
+
+### Cómo se protege la página
+- Los textos escritos por los usuarios nunca se ejecutan: el Markdown no admite HTML.
+- Las imágenes escritas dentro de una descripción no se cargan, para que ningún servidor externo pueda saber quién abrió la tarea.
+- El enlace de entrega solo se muestra como enlace si es una dirección web. El contrato no lo comprueba, así que alguien podría enviar código disfrazado de enlace directamente al contrato, y la página lo muestra como texto.
+- Los detalles leídos del almacenamiento se validan con su esquema antes de mostrarse.
+- Las acciones que mueven dinero piden confirmación diciendo cuánto y a quién, y publicar una tarea no se envía con la tecla Enter.
+- Las claves secretas viven en un archivo que git ignora, y la del almacenamiento nunca lleva el prefijo que la expondría al navegador.
+
+### Cómo se comprobó
+- Pruebas automáticas de cada regla de este documento, incluidos los casos de ataque (permisos, plazos, doble cobro, árbitros con conflicto de interés).
+- Pruebas de la autorización de subidas con **firmas reales de wallet**: firma de otra persona, lista de archivos manipulada, firma caducada, red equivocada, DAO falsa.
+- Comprobación de que las pruebas detectan fallos: se rompieron reglas a propósito y se vio que los tests correspondientes fallaban.
+
+### Límites que conviene conocer
+| Tema | Situación |
+|---|---|
+| **Auditoría externa** | No se ha hecho. Es el paso recomendado antes de usar dinero real |
+| **Contrato no actualizable** | Es una decisión de diseño: nadie puede cambiar las reglas de una DAO ya creada, ni siquiera nosotros. La contrapartida es que un error encontrado después solo se corrige con una versión nueva |
+| **Disputas sin árbitro** | Si el administrador creó la tarea y la DAO no tiene ningún auditor, nadie puede arbitrar. Cada DAO debería tener al menos un auditor distinto de quien publica tareas |
+| **Poder del administrador** | Asigna roles y puede arbitrar. Por eso importa quién lo es |
+| **Quién opera el almacenamiento** | La cuenta de almacenamiento la administra quien opera la plataforma, **no** los miembros ni los administradores de las DAOs, que no tienen acceso a ella. Esa persona (o quien consiga la llave secreta) no puede alterar un archivo sin que se note, pero sí borrarlo. Por eso la llave se guarda solo en el servidor y se rota si se expone, y conviene tener copias de seguridad |
+| **Subidas de logos abiertas** | Cualquier wallet puede subir un logo (la DAO aún no existe, así que no hay a quién comprobar). Aún no hay límite de frecuencia |
+| **Pago a un contrato que rechaza ETH** | Si quien trabaja usa una wallet que es un contrato y este rechaza el pago, esa operación falla. El árbitro todavía puede devolver el dinero al creador |
+| **Hora de la blockchain** | Los plazos usan la hora del bloque, que puede diferir unos segundos de la real |
+| **Todo es público** | Lo que se escribe en una tarea lo ve cualquiera |
+| **Wallet perdida** | Quien pierde el acceso a su wallet pierde lo que le corresponde |
 
 ## Estado del módulo
 
@@ -179,7 +240,7 @@ Conviene conocer estos límites antes de usarlo o de ofrecerlo:
 |---|---|
 | **Contrato inteligente** | Terminado |
 | **Perfil** | Incluye «Mis tareas»: las que publicaste y las que tienes a tu cargo |
-| **Pruebas automáticas** | 60 pruebas que cubren el flujo completo, los plazos, los permisos y los casos límite |
+| **Pruebas automáticas** | 60 pruebas del contrato de tareas (97 entre todos los contratos), 21 de la autorización de subidas y 31 del editor de texto. Cubren el flujo completo, los plazos, los permisos y los casos límite |
 | **Interfaz: publicar y ver tareas** | Lista, buscador y filtros por estado y categoría, y página para publicar una tarea |
 | **Interfaz: trabajar una tarea** | Página de detalle con el contenido, el progreso y un panel que ofrece a cada persona solo lo que puede hacer en ese estado: tomar, entregar, aprobar, pedir cambios, disputar, resolver, cobrar, cancelar y reembolsar. Las acciones que mueven dinero piden confirmación |
 | **Auditoría externa de seguridad** | Pendiente. Recomendable antes de usar con dinero real |

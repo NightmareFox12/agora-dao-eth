@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { Clock, Coins, Timer, UserRound } from "lucide-react";
+import { Ban, CircleCheck, Clock, Coins, Timer, UserRound } from "lucide-react";
 import { formatEther } from "viem";
 import { Badge } from "~~/components/ui/shadcn/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "~~/components/ui/shadcn/card";
 import { TASK_CATEGORIES } from "~~/constants/taskCategories";
 import { getCategoryStyle } from "~~/lib/categoryColors";
-import { TASK_STATUS_META, getDeadlineText } from "~~/lib/tasks";
+import { TASK_STATUS, TASK_STATUS_META, getDeadlineText } from "~~/lib/tasks";
 import { cn, shortAddress } from "~~/lib/utils";
 
 type TaskCardProps = {
@@ -38,8 +38,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const deadlineText = getDeadlineText(status, deadline);
   const category = TASK_CATEGORIES[categoryId];
 
+  const isCancelled = status === TASK_STATUS.Cancelled;
+  const isCompleted = status === TASK_STATUS.Completed;
+  // the delivery window only matters while somebody can still work on the task
+  const showWorkDays = workDays !== undefined && !isCancelled && !isCompleted;
+
   const card = (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className={cn("transition-shadow hover:shadow-md", isCancelled && "opacity-70")}>
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           {category !== undefined ? (
@@ -58,11 +63,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         <p className="m-0 text-sm text-muted-foreground line-clamp-3 break-words">{summary}</p>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-          <div className="flex items-center gap-1 font-medium text-primary">
+          <div
+            className={cn(
+              "flex items-center gap-1 font-medium text-primary",
+              isCancelled && "text-muted-foreground line-through",
+            )}
+          >
             <Coins className="h-4 w-4" />
             {formatEther(reward)} ETH
           </div>
-          {workDays !== undefined && (
+          {showWorkDays && (
             <div className="flex items-center gap-1 text-muted-foreground">
               <Timer className="h-4 w-4" />
               {workDays} días para entregar
@@ -76,6 +86,18 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <span className="flex items-center gap-1">
             <UserRound className="h-3.5 w-3.5" />
             {shortAddress(creator)}
+          </span>
+        )}
+        {isCancelled && (
+          <span className="flex items-center gap-1">
+            <Ban className="h-3.5 w-3.5" />
+            Recompensa devuelta
+          </span>
+        )}
+        {isCompleted && (
+          <span className="flex items-center gap-1">
+            <CircleCheck className="h-3.5 w-3.5" />
+            Recompensa pagada
           </span>
         )}
         {deadlineText !== undefined && (

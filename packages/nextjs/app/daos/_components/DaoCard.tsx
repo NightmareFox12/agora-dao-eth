@@ -111,10 +111,11 @@ export const DaoCard: React.FC<DaoCardProps> = ({
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2">
+            {/* Fixed size: the logo can be any shape, so it is cropped to fit */}
+            <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary/10">
               {imageUri.length > 4 ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={getLogoUrl(imageUri)} alt={name} className="object-cover" />
+                <img src={getLogoUrl(imageUri)} alt={name} className="size-full object-cover" />
               ) : (
                 // eslint-disable-next-line jsx-a11y/alt-text
                 <Image className="w-6 h-6" />

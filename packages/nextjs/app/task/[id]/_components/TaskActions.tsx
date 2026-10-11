@@ -29,6 +29,8 @@ import { TASK_STATUS, type TaskData } from "~~/lib/tasks";
 import { shortAddress } from "~~/lib/utils";
 
 type Confirmation = {
+  /** Shows the confirm button in red: the action cannot be undone and nobody gets paid */
+  destructive?: boolean;
   title: string;
   description: string;
   label: string;
@@ -174,6 +176,7 @@ export const TaskActions: React.FC<{ task: TaskData; tasksAddress: string }> = (
 
   const askToCancel = () =>
     setConfirmation({
+      destructive: true,
       title: "¿Cancelar la tarea?",
       description: `Se te devolverán ${reward}. La tarea dejará de estar disponible.`,
       label: "Cancelar tarea",
@@ -259,7 +262,7 @@ export const TaskActions: React.FC<{ task: TaskData; tasksAddress: string }> = (
             {isCreator ? (
               <>
                 <Info>Esperando que un miembro la tome.</Info>
-                <Button className="w-full" variant="outline" disabled={busy} onClick={askToCancel}>
+                <Button className="w-full" variant="destructive" disabled={busy} onClick={askToCancel}>
                   {spinner("cancel")}
                   Cancelar tarea
                 </Button>
@@ -415,7 +418,9 @@ export const TaskActions: React.FC<{ task: TaskData; tasksAddress: string }> = (
             <Button variant="outline" onClick={() => setConfirmation(undefined)}>
               Volver
             </Button>
-            <Button onClick={confirmAndRun}>{confirmation?.label}</Button>
+            <Button variant={confirmation?.destructive ? "destructive" : "default"} onClick={confirmAndRun}>
+              {confirmation?.label}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
