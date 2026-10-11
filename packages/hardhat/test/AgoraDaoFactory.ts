@@ -139,4 +139,16 @@ describe("AgoraDaoFactory", function () {
       expect(await factory.isDaoNameAvailable("Solar Club")).to.equal(true);
     });
   });
+
+  describe("DAOs created by the factory", function () {
+    it("are recognized by isDao, and nothing else is", async function () {
+      const [, creator, outsider] = await ethers.getSigners();
+      await factory.connect(creator).createDao("ETH Force", "A DAO for testing", [0], "");
+      const [created] = await factory.getAllDaos();
+
+      expect(await factory.isDao(created.daoAddress)).to.equal(true);
+      expect(await factory.isDao(outsider.address)).to.equal(false);
+      expect(await factory.isDao(await factory.getAddress())).to.equal(false);
+    });
+  });
 });

@@ -34,16 +34,16 @@ export const menuLinks: HeaderMenuLink[] = [
     tour: "nav-tareas",
   },
   {
-    label: "Perfil",
-    href: "/profile",
-    icon: <UserRound className="h-4 w-4" />,
-    tour: "nav-perfil",
-  },
-  {
     label: "Configuración",
     href: "/configuration",
     icon: <Bolt className="h-4 w-4" />,
     tour: "nav-configuracion",
+  },
+  {
+    label: "Perfil",
+    href: "/profile",
+    icon: <UserRound className="h-4 w-4" />,
+    tour: "nav-perfil",
   },
   {
     label: "Debug",

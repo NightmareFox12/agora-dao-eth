@@ -9,7 +9,7 @@ import { ArrowLeft, ArrowRight, Check, ImagePlus, Info, Loader, Plus, Rocket, X 
 import { type FieldPath, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { formatEther, parseEther } from "viem";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useChainId, useSignMessage } from "wagmi";
 import { z } from "zod";
 import { MarkdownEditor } from "~~/components/MarkdownEditor";
 import { Badge } from "~~/components/ui/shadcn/badge";
@@ -33,6 +33,7 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWrite
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
 import { useTasksAddress } from "~~/hooks/useTasksAddress";
 import { getCategoryStyle } from "~~/lib/categoryColors";
+import { sha256Hex } from "~~/lib/files";
 import {
   TASK_CRITERION_MAX_LENGTH,
   TASK_DESCRIPTION_MAX_LENGTH,
@@ -48,7 +49,9 @@ import {
   type TaskMetadata,
 } from "~~/lib/schemes/task.scheme";
 import { TASK_STATUS } from "~~/lib/tasks";
+import { authorizeUploads, prepareImage, uploadFile } from "~~/lib/uploadClient";
 import { cn } from "~~/lib/utils";
+import { useDaoStore } from "~~/services/store/dao.store";
 
 const WORK_DAY_OPTIONS = [7, 10, 14, 21, 30];
 
@@ -67,7 +70,7 @@ const STEPS: {
   },
   {
     label: "Detalles",
-    description: "Se guardan en IPFS: quedan enlazados a la tarea y nadie puede alterarlos después.",
+    description: "Se guardan con una huella en el contrato: nadie podrá alterarlos después sin que se note.",
     fields: ["description", "images", "criteria", "links"],
     schema: TaskFormSchema.pick({
       description: true,
@@ -85,18 +88,21 @@ const STEPS: {
 ];
 const LAST_STEP = STEPS.length - 1;
 
-type UploadStep = "idle" | "images" | "details" | "wallet";
+type UploadStep = "idle" | "sign" | "upload" | "wallet";
 
 const SUBMIT_LABELS: Record<UploadStep, string> = {
   idle: "Publicar tarea",
-  images: "Subiendo imágenes...",
-  details: "Guardando detalles...",
+  sign: "Firma para autorizar la subida...",
+  upload: "Subiendo archivos...",
   wallet: "Confirma en tu wallet...",
 };
 
 export const CreateTaskForm: React.FC = () => {
   const router = useRouter();
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { signMessageAsync } = useSignMessage();
+  const { daoAddress } = useDaoStore();
   const { data: balance } = useBalance({ address });
   const tasksAddress = useTasksAddress();
   const { canCreateTasks, isLoading: rolesLoading } = useDaoRoles();
@@ -202,49 +208,47 @@ export const CreateTaskForm: React.FC = () => {
   };
 
   const onSubmit = async (data: TaskFormValues) => {
-    if (tasksAddress === undefined) return;
+    if (tasksAddress === undefined || address === undefined || daoAddress === "") return;
 
-    let phase: UploadStep = "images";
+    let phase: UploadStep = "sign";
     try {
-      // 1. images
-      setUploadStep("images");
-      const images: string[] = [];
-      for (const file of data.images) {
-        const formData = new FormData();
-        formData.append("name", data.title);
-        formData.append("logo", file);
+      // 1. the hashes of every file are known before anything is uploaded: the images, and the details file that
+      // lists them (the long description, criteria and links)
+      setUploadStep("sign");
+      const images = await Promise.all(data.images.map(prepareImage));
 
-        const res = await fetch("/api/upload-image", { method: "POST", body: formData });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.response);
-        images.push(json.cid);
-      }
-
-      // 2. details (the long description, images, criteria and links live on IPFS)
-      phase = "details";
-      setUploadStep("details");
       const metadata: TaskMetadata = {
         version: 1,
         description: data.description,
-        images,
+        images: images.map(image => image.name),
         criteria: data.criteria.map(x => x.text).filter(text => text.length > 0),
         links: data.links.filter(x => x.url.length > 0),
       };
+      const detailsBytes = new TextEncoder().encode(JSON.stringify(metadata));
+      const detailsHash = await sha256Hex(detailsBytes);
 
-      const res = await fetch("/api/upload-task", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(metadata),
+      // 2. one signature authorizes all of them
+      const authorization = await authorizeUploads({
+        action: "task",
+        hashes: [...images.map(image => image.hash), detailsHash],
+        dao: daoAddress,
+        address,
+        chainId,
+        signMessage: message => signMessageAsync({ message }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.response);
 
-      // 3. the transaction: the reward is deposited with it
+      // 3. upload
+      phase = "upload";
+      setUploadStep("upload");
+      for (const image of images) await uploadFile("task-image", image.bytes, authorization);
+      await uploadFile("task-details", detailsBytes, authorization);
+
+      // 4. the transaction: the reward is deposited with it, and the hash of the details is what gets agreed
       phase = "wallet";
       setUploadStep("wallet");
       await writeTasksAsync({
         functionName: "createTask",
-        args: [data.title, data.summary, BigInt(data.category), BigInt(data.workDays), json.cid],
+        args: [data.title, data.summary, BigInt(data.category), BigInt(data.workDays), `0x${detailsHash}`],
         value: parseEther(data.reward),
       });
 
@@ -252,8 +256,17 @@ export const CreateTaskForm: React.FC = () => {
       router.push("/task");
     } catch (err) {
       console.error(err);
-      // wallet errors are already shown by the transaction notifications
-      if (phase !== "wallet") toast.error(err instanceof Error ? err.message : "No se pudo publicar la tarea.");
+      // wallet errors in the transaction are already shown by the transaction notifications
+      if (phase !== "wallet") {
+        const rejected = err instanceof Error && /reject|denied/i.test(err.message);
+        toast.error(
+          rejected
+            ? "Cancelaste la firma. No se publicó nada."
+            : err instanceof Error
+              ? err.message
+              : "No se pudo publicar la tarea.",
+        );
+      }
     } finally {
       setUploadStep("idle");
     }

@@ -14,6 +14,7 @@ import { DEFAULT_ADMIN_ROLE, USER_ROLE } from "~~/constants/roles";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { getCategoryStyle } from "~~/lib/categoryColors";
+import { getLogoUrl } from "~~/lib/storage";
 import { cn } from "~~/lib/utils";
 
 //dinamycs
@@ -113,7 +114,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
             <div className="rounded-lg bg-primary/10 p-2">
               {imageUri.length > 4 ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={`https://ipfs.io/ipfs/${imageUri}`} alt={name} className="object-cover" />
+                <img src={getLogoUrl(imageUri)} alt={name} className="object-cover" />
               ) : (
                 // eslint-disable-next-line jsx-a11y/alt-text
                 <Image className="w-6 h-6" />

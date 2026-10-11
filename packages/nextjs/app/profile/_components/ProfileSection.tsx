@@ -1,6 +1,8 @@
 "use client";
 
-import { Award, CalendarDays, History, Lock, Medal, TrendingUp, UserCog } from "lucide-react";
+import Link from "next/link";
+import { Award, CalendarDays, ClipboardList, History, Lock, Medal, TrendingUp, UserCog } from "lucide-react";
+import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { BlockieAvatar } from "~~/components/scaffold-eth/BlockieAvatar";
@@ -9,8 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~~/co
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { getRoleLabel } from "~~/constants/roles";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth/useScaffoldEventHistory";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useCurrentDao } from "~~/hooks/useCurrentDao";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
+import { useTasksAddress } from "~~/hooks/useTasksAddress";
+import { TASK_STATUS_META } from "~~/lib/tasks";
 import { formatRelativeTime, getEventTimestamp, shortAddress } from "~~/lib/utils";
 
 const UPCOMING = [
@@ -27,6 +32,7 @@ export const ProfileSection: React.FC = () => {
   const { address } = useAccount();
   const { daoAddress, dao } = useCurrentDao();
   const { roles, isLoading: rolesLoading } = useDaoRoles();
+  const tasksAddress = useTasksAddress();
 
   const enabled = address !== undefined && daoAddress !== "";
 
@@ -52,6 +58,13 @@ export const ProfileSection: React.FC = () => {
     enabled,
   });
 
+  const { data: allTasks } = useScaffoldReadContract({
+    contractName: "AgoraTasks",
+    functionName: "getAllTasks",
+    contractAddress: tasksAddress,
+    query: { enabled: tasksAddress !== undefined },
+  });
+
   //consts
   const isCreator = dao !== undefined && address !== undefined && dao.creator.toLowerCase() === address.toLowerCase();
   const memberSince = isCreator ? Number(dao.creationTimestamp) : getEventTimestamp(joinEvents?.[0] ?? {});
@@ -60,6 +73,14 @@ export const ProfileSection: React.FC = () => {
   const assignedRoles = (roleEvents ?? [])
     .filter(x => x.args.executor !== "0x0000000000000000000000000000000000000000")
     .reverse();
+
+  // the tasks this user published or is working on, newest first
+  const myTasks = [...(allTasks ?? [])].reverse().flatMap(task => {
+    const me = address?.toLowerCase();
+    if (task.creator.toLowerCase() === me) return [{ task, role: "Creador" }];
+    if (task.assignee.toLowerCase() === me) return [{ task, role: "Responsable" }];
+    return [];
+  });
 
   if (address === undefined) {
     return (
@@ -141,6 +162,48 @@ export const ProfileSection: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* My tasks */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ClipboardList className="size-5" />
+            Mis tareas
+          </CardTitle>
+          <CardDescription>Las que publicaste y las que tienes a tu cargo.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {myTasks.length === 0 ? (
+            <p className="m-0 py-4 text-center text-sm text-muted-foreground">
+              Todavía no tienes tareas.{" "}
+              <Link href="/task" className="text-primary underline underline-offset-2">
+                Ver las tareas de la DAO
+              </Link>
+            </p>
+          ) : (
+            <ul className="m-0 list-none space-y-1 p-0">
+              {myTasks.map(({ task, role }) => (
+                <li key={task.id.toString()}>
+                  <Link
+                    href={`/task/${task.id}`}
+                    className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="m-0 truncate text-sm font-medium">{task.title}</p>
+                      <p className="m-0 text-xs text-muted-foreground">
+                        {role} · {formatEther(task.reward)} ETH
+                      </p>
+                    </div>
+                    <Badge variant="secondary" className="shrink-0 font-normal">
+                      {TASK_STATUS_META[task.status]?.label}
+                    </Badge>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Roles received */}
       <Card>

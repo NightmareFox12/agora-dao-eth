@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Clock, Coins, Timer, UserRound } from "lucide-react";
 import { formatEther } from "viem";
 import { Badge } from "~~/components/ui/shadcn/badge";
@@ -18,6 +19,8 @@ type TaskCardProps = {
   /** Days the assignee has to deliver once they take it */
   workDays?: number;
   creator?: string;
+  /** Makes the whole card a link (the preview in the publish form is not one) */
+  href?: string;
 };
 
 export const TaskCard: React.FC<TaskCardProps> = ({
@@ -29,12 +32,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   deadline = 0n,
   workDays,
   creator,
+  href,
 }) => {
   const statusMeta = TASK_STATUS_META[status];
   const deadlineText = getDeadlineText(status, deadline);
   const category = TASK_CATEGORIES[categoryId];
 
-  return (
+  const card = (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between gap-2">
@@ -82,5 +86,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         )}
       </CardFooter>
     </Card>
+  );
+
+  if (href === undefined) return card;
+
+  return (
+    <Link
+      href={href}
+      className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+    >
+      {card}
+    </Link>
   );
 };

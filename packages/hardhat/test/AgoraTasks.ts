@@ -15,7 +15,8 @@ const REWARD = ethers.parseEther("1");
 const LINK = "https://www.figma.com/file/landing";
 const SUMMARY = "Design and build the landing page";
 const CATEGORY = 1;
-const METADATA = "bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy";
+// SHA-256 of the details file of the task
+const METADATA = ethers.sha256(ethers.toUtf8Bytes("details of the landing page"));
 
 describe("AgoraTasks", function () {
   let factory: AgoraDaoFactory;
@@ -111,7 +112,7 @@ describe("AgoraTasks", function () {
       expect(task.title).to.equal("Landing page");
       expect(task.summary).to.equal(SUMMARY);
       expect(task.categoryId).to.equal(CATEGORY);
-      expect(task.metadataURI).to.equal(METADATA);
+      expect(task.metadataHash).to.equal(METADATA);
       expect(task.workWindow).to.equal(BigInt(30 * DAY));
       expect(task.status).to.equal(Status.Open);
       expect(task.assignee).to.equal(ethers.ZeroAddress);
@@ -137,16 +138,17 @@ describe("AgoraTasks", function () {
     });
 
     it("validates the texts", async function () {
-      const create = (title: string, summary: string, metadata = METADATA) =>
+      const create = (title: string, summary: string, metadata: string = METADATA) =>
         tasks.connect(manager).createTask(title, summary, CATEGORY, 30, metadata, { value: REWARD });
 
       await expect(create("", "summary")).to.be.revertedWith("The title must not be empty");
       await expect(create("t".repeat(81), "summary")).to.be.revertedWith("The title is too long");
       await expect(create("title", "")).to.be.revertedWith("The summary must not be empty");
       await expect(create("title", "s".repeat(161))).to.be.revertedWith("The summary is too long");
-      await expect(create("title", "summary", "")).to.be.revertedWith("The details link must not be empty");
-      await expect(create("title", "summary", "c".repeat(101))).to.be.revertedWith("The details link is too long");
-      await create("t".repeat(80), "s".repeat(160), "c".repeat(100));
+      await expect(create("title", "summary", ethers.ZeroHash)).to.be.revertedWith(
+        "The details hash must not be empty",
+      );
+      await create("t".repeat(80), "s".repeat(160), METADATA);
     });
 
     it("only accepts the categories that exist", async function () {

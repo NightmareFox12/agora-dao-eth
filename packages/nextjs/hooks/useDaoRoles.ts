@@ -32,6 +32,9 @@ export const useDaoRoles = () => {
     isAdmin: roles.some(x => x.label === "Administrador"),
     /** Who can publish tasks (same rule as AgoraTasks.createTask). */
     canCreateTasks: roles.some(x => x.label === "Administrador" || x.label === "Gestor de tareas"),
+    isMember: roles.some(x => x.label === "Miembro"),
+    /** Who can resolve disputes (same rule as AgoraTasks.resolveDispute, before excluding the people in the task). */
+    canArbitrate: roles.some(x => x.label === "Administrador" || x.label === "Auditor"),
     isLoading,
   };
 };

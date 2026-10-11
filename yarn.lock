@@ -4821,6 +4821,7 @@ __metadata:
     "@radix-ui/react-tabs": ^1.1.13
     "@radix-ui/react-tooltip": ^1.2.8
     "@rainbow-me/rainbowkit": 2.2.8
+    "@supabase/supabase-js": 2.117.2
     "@tailwindcss/postcss": latest
     "@tanstack/react-query": ^5.59.15
     "@trivago/prettier-plugin-sort-imports": ^4.3.0
@@ -4845,7 +4846,6 @@ __metadata:
     next: ^15.2.3
     next-nprogress-bar: ^2.3.13
     next-themes: ^0.4.6
-    pinata: ^2.5.0
     postcss: ^8.4.45
     prettier: ^3.5.3
     qrcode.react: ^4.0.1
@@ -5646,6 +5646,78 @@ __metadata:
   version: 0.3.0
   resolution: "@standard-schema/utils@npm:0.3.0"
   checksum: 7084f875d322792f2e0a5904009434c8374b9345b09ba89828b68fd56fa3c2b366d35bf340d9e8c72736ef01793c2f70d350c372ed79845dc3566c58d34b4b51
+  languageName: node
+  linkType: hard
+
+"@supabase/auth-js@npm:2.117.2":
+  version: 2.117.2
+  resolution: "@supabase/auth-js@npm:2.117.2"
+  dependencies:
+    tslib: 2.8.1
+  checksum: 266544fc1817fc0b63476f4cbd8cae8c595bd47535c6856d49b561583d71b173f897488fed314d3d0f8fedf22819672443448bd835730af343d9d2cbf3fd352a
+  languageName: node
+  linkType: hard
+
+"@supabase/functions-js@npm:2.117.2":
+  version: 2.117.2
+  resolution: "@supabase/functions-js@npm:2.117.2"
+  dependencies:
+    tslib: 2.8.1
+  checksum: 13ef1e1016be7d5f61799e3f8ba70fed3c417fdd3dd2441413eb8441a1734b80a96ff0dcd1449260f2a6c04b71dcdc1477d072d03a96351b386f5942fdf6f00d
+  languageName: node
+  linkType: hard
+
+"@supabase/phoenix@npm:0.4.5":
+  version: 0.4.5
+  resolution: "@supabase/phoenix@npm:0.4.5"
+  checksum: 49dd1dad8083df687fa54cbaa75f65cd5900b13e2f193c2e266ac8a2c7a71f1a250db748ef01297845533f9a9cb62c8f867e93058ecb05c003208276092601d4
+  languageName: node
+  linkType: hard
+
+"@supabase/postgrest-js@npm:2.117.2":
+  version: 2.117.2
+  resolution: "@supabase/postgrest-js@npm:2.117.2"
+  dependencies:
+    tslib: 2.8.1
+  checksum: 5c8a90a2d394dca530c1ec1cad13e2a4bf5c304eb4b7d2a8d8edc3bacb2f64004e42892c03fedb4144b1f1bdf70caaf8271ffe97a226a1cfa46033570e5e4c51
+  languageName: node
+  linkType: hard
+
+"@supabase/realtime-js@npm:2.117.2":
+  version: 2.117.2
+  resolution: "@supabase/realtime-js@npm:2.117.2"
+  dependencies:
+    "@supabase/phoenix": 0.4.5
+    tslib: 2.8.1
+  checksum: 04ebebf69a3cda59770c9a614ea1635bd69b28e680dd188fb1669b3316912ac66acac23300b5d44c0d3885521cd42fa077383661811f0e44ae0c00c673e4c5c1
+  languageName: node
+  linkType: hard
+
+"@supabase/storage-js@npm:2.117.2":
+  version: 2.117.2
+  resolution: "@supabase/storage-js@npm:2.117.2"
+  dependencies:
+    iceberg-js: ^0.8.1
+    tslib: 2.8.1
+  checksum: f0c1a8cd22ca8432119f5765f5580af0705de57724a277e60609361fcd048a8b1c99a82de6c5a5f6f2ce1b8e86e3c014798f830432b88f46e5613b753a7e3832
+  languageName: node
+  linkType: hard
+
+"@supabase/supabase-js@npm:2.117.2":
+  version: 2.117.2
+  resolution: "@supabase/supabase-js@npm:2.117.2"
+  dependencies:
+    "@supabase/auth-js": 2.117.2
+    "@supabase/functions-js": 2.117.2
+    "@supabase/postgrest-js": 2.117.2
+    "@supabase/realtime-js": 2.117.2
+    "@supabase/storage-js": 2.117.2
+  peerDependencies:
+    "@opentelemetry/api": ">=1.0.0"
+  peerDependenciesMeta:
+    "@opentelemetry/api":
+      optional: true
+  checksum: e662598948d5fd25b2e047c69315a029c30d5481c6dc7704280dd021ae8d6254123753b352d5063adec15180b46184ecc75126bc1931fd64b4f73a3c7846e93f
   languageName: node
   linkType: hard
 
@@ -12667,6 +12739,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iceberg-js@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "iceberg-js@npm:0.8.1"
+  checksum: 679e52f82a285b3e1da69bfb7c6c54af95067ca56293299b4ffcc196329a4f2eeb1502fe55c0b44cc80e9eb1bf34001b76ee9f0e13268a753d0cfe8d27072e56
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:0.4.24, iconv-lite@npm:^0.4.24":
   version: 0.4.24
   resolution: "iconv-lite@npm:0.4.24"
@@ -17145,21 +17224,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinata@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "pinata@npm:2.5.0"
-  peerDependencies:
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-  peerDependenciesMeta:
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 92a91a010bbedbc118b1b82b5918987a9ca0d69cd8ba4a6970da341199749a5ca9ceff0c24ed3c2502fdaf4a735b469616711b39210698253ea108aefe3e7c9c
-  languageName: node
-  linkType: hard
-
 "pino-abstract-transport@npm:v0.5.0":
   version: 0.5.0
   resolution: "pino-abstract-transport@npm:0.5.0"
@@ -20004,17 +20068,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tslib@npm:2.8.1, tslib@npm:^2.6.0, tslib@npm:^2.8.0, tslib@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "tslib@npm:2.8.1"
+  checksum: e4aba30e632b8c8902b47587fd13345e2827fa639e7c3121074d5ee0880723282411a8838f830b55100cbe4517672f84a2472667d355b81e8af165a55dc6203a
+  languageName: node
+  linkType: hard
+
 "tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.4.0":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.6.0, tslib@npm:^2.8.0, tslib@npm:^2.8.1":
-  version: 2.8.1
-  resolution: "tslib@npm:2.8.1"
-  checksum: e4aba30e632b8c8902b47587fd13345e2827fa639e7c3121074d5ee0880723282411a8838f830b55100cbe4517672f84a2472667d355b81e8af165a55dc6203a
   languageName: node
   linkType: hard
 

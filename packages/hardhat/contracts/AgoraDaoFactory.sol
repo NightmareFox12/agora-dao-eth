@@ -42,7 +42,7 @@ contract AgoraDaoFactory is Ownable, Validation {
     //mappings
     mapping(address => Dao[]) public daosByUser;
     mapping(address => bool) internal isUser;
-    mapping(address => bool) internal isDao;
+    mapping(address => bool) public isDao;
     mapping(bytes32 => bool) internal usedNames;
 
     //events

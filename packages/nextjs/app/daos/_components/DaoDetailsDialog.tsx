@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~~/components/ui/shadc
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth/useScaffoldEventHistory";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { getCategoryStyle } from "~~/lib/categoryColors";
+import { getLogoUrl } from "~~/lib/storage";
 
 type DaoDetailsDialogProps = {
   daoID: bigint;
@@ -129,7 +130,7 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
             <div className="size-20 shrink-0 overflow-hidden rounded-xl border bg-primary/10 flex items-center justify-center">
               {imageUri.length > 4 ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={`https://ipfs.io/ipfs/${imageUri}`} alt={name} className="size-full object-cover" />
+                <img src={getLogoUrl(imageUri)} alt={name} className="size-full object-cover" />
               ) : (
                 <ImageIcon className="size-8 text-muted-foreground" />
               )}

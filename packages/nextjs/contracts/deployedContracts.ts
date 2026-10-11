@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AgoraDao: {
-      address: "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [],
@@ -526,10 +526,10 @@ const deployedContracts = {
         revokeRole: "contracts/AgoraDao/Rol.sol",
         supportsInterface: "contracts/AgoraDao/Rol.sol",
       },
-      deployedOnBlock: 28,
+      deployedOnBlock: 1,
     },
     AgoraDaoFactory: {
-      address: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       abi: [
         {
           inputs: [
@@ -929,6 +929,25 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "isDao",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "string",
               name: "_name",
               type: "string",
@@ -1024,10 +1043,10 @@ const deployedContracts = {
         MAX_DESCRIPTION_LENGTH: "contracts/AgoraDaoFactory/Validation.sol",
         MAX_NAME_LENGTH: "contracts/AgoraDaoFactory/Validation.sol",
       },
-      deployedOnBlock: 37,
+      deployedOnBlock: 12,
     },
     AgoraTasks: {
-      address: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       abi: [
         {
           inputs: [],
@@ -1134,19 +1153,6 @@ const deployedContracts = {
         {
           inputs: [],
           name: "MAX_LINK_LENGTH",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "MAX_METADATA_URI_LENGTH",
           outputs: [
             {
               internalType: "uint256",
@@ -1310,9 +1316,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
+              internalType: "bytes32",
+              name: "_metadataHash",
+              type: "bytes32",
             },
           ],
           name: "createTask",
@@ -1394,9 +1400,9 @@ const deployedContracts = {
                   type: "uint256",
                 },
                 {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
+                  internalType: "bytes32",
+                  name: "metadataHash",
+                  type: "bytes32",
                 },
                 {
                   internalType: "enum AgoraTasks.Status",
@@ -1490,9 +1496,9 @@ const deployedContracts = {
                   type: "uint256",
                 },
                 {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
+                  internalType: "bytes32",
+                  name: "metadataHash",
+                  type: "bytes32",
                 },
                 {
                   internalType: "enum AgoraTasks.Status",
@@ -1664,7 +1670,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 35,
+      deployedOnBlock: 10,
     },
   },
   11155111: {

@@ -6,7 +6,7 @@ Los 6 módulos base de la plataforma. Marca cada casilla al completar el módulo
 
 | # | Módulo | Qué incluye | Estado |
 |---|---|---|---|
-| 1 | **Tareas** | Crear, tomar, entregar, revisar y pagar con escrow | Contrato, publicar y ver tareas listos; falta el detalle y las acciones (tomar, entregar, aprobar...) |
+| 1 | **Tareas** | Crear, tomar, entregar, revisar y pagar con escrow | Completo: contrato, publicar, lista, detalle y acciones |
 | 2 | **Votaciones** | Propuestas y decisiones de la DAO | Pendiente |
 | 3 | **Eventos públicos** | Pendiente de definir | Pendiente |
 | 4 | **Recompensas** | Tokens y NFTs | Pendiente |
@@ -47,16 +47,22 @@ Reputación y Recompensas se tocan: los NFTs de nivel son recompensas. Van como 
 - Crean tareas: gestor de tareas o administrador, enviando la recompensa en ETH (queda retenida en el contrato).
 - Toma una tarea cualquier miembro (no el creador). Mientras nadie la toma corre una cuenta de **30 días**: si vence, se reembolsa al creador (cualquiera puede ejecutar el reembolso). Al tomarla, la cuenta se apaga.
 - Quien la toma tiene el plazo de entrega que fijó el creador (**de 7 a 30 días**) para entregar un enlace (Figma, GitHub...). Si no entrega, el creador puede quitarle la tarea y vuelve a abrirse. El que trabaja también puede abandonarla.
-- Los detalles de la tarea (descripción larga, hasta 3 imágenes, criterios de aceptación y enlaces) viven en IPFS; el contrato solo guarda su enlace, así que lo acordado no se puede alterar.
+- Los detalles de la tarea (descripción larga, hasta 3 imágenes, criterios de aceptación y enlaces) viven en un archivo en Supabase Storage; el contrato solo guarda su SHA-256, y la página lo comprueba al leerlo: lo acordado no se puede alterar sin que se note.
 - El creador revisa en **7 días**. Aprueba y se paga al instante, o rechaza con un motivo. Si no responde en 7 días, quien entregó puede cobrar.
 - Si el rechazo no convence, el que trabajó abre una disputa y un **auditor o administrador** (que no sea parte de la tarea) decide: pagar o reembolsar.
 - Una vez tomada, el creador no puede cancelarla.
 
 ## Pendientes conocidos
 
-- Detalle de la tarea y sus acciones (tomar, entregar, aprobar, rechazar, disputar, cobrar y reembolsar).
-- Borrar de Pinata lo que se subió si el usuario rechaza la transacción en su wallet (también aplica al logo de las DAOs). Hay que proteger antes la ruta de borrado, porque sin autenticación cualquiera podría borrar archivos ajenos.
-- Las rutas `/api/upload-image` y `/api/upload-task` tampoco tienen autenticación: cualquiera puede subir archivos a la cuenta de Pinata.
+- Rutas de subida (`/api/upload`) sin límite de frecuencia: cualquier wallet puede subir logos. Conviene añadir un límite por wallet o por IP antes de abrirlo al público.
+- Hacer copias de seguridad periódicas de los tres buckets de Supabase (el archivo no se puede alterar sin detectarse, pero sí borrar).
+- Los archivos que se suben y luego no se usan (la persona cancela la transacción) quedan huérfanos. Se pueden limpiar con un proceso que compare los archivos con los que referencia la blockchain.
+
+## Configuración del almacenamiento
+
+- Tres buckets públicos en Supabase Storage, sin ninguna policy (nadie escribe con claves públicas): `dao-logos` y `task-images` (1 MB, PNG y JPG) y `task-details` (100 KB, JSON).
+- Variables en `packages/nextjs/.env`: `SUPABASE_URL` y `SUPABASE_SECRET_KEY` (solo servidor; **la clave secreta nunca lleva el prefijo `NEXT_PUBLIC_`**) y `NEXT_PUBLIC_SUPABASE_URL` (para armar las direcciones públicas de los archivos).
+- Solo el servidor escribe en Supabase. Cada subida pide una firma de wallet que el servidor verifica; para los archivos de una tarea comprueba además en la blockchain que quien firma sea gestor o admin de esa DAO.
 
 ## Para cuando se agreguen pantallas
 

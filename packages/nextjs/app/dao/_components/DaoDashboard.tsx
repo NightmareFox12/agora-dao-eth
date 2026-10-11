@@ -40,6 +40,7 @@ import { useCurrentDao } from "~~/hooks/useCurrentDao";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
 import { useTour } from "~~/hooks/useTour";
 import { getCategoryStyle } from "~~/lib/categoryColors";
+import { getLogoUrl } from "~~/lib/storage";
 import { cn, formatRelativeTime, getEventTimestamp, shortAddress } from "~~/lib/utils";
 
 type Module = { name: string; description: string; icon: LucideIcon; href?: string; status: string };
@@ -228,7 +229,7 @@ export const DaoDashboard: React.FC = () => {
           <div className="size-24 shrink-0 overflow-hidden rounded-xl border bg-primary/10 flex items-center justify-center">
             {dao.imageURI.length > 4 ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={`https://ipfs.io/ipfs/${dao.imageURI}`} alt={dao.name} className="size-full object-cover" />
+              <img src={getLogoUrl(dao.imageURI)} alt={dao.name} className="size-full object-cover" />
             ) : (
               <ImageIcon className="size-9 text-muted-foreground" />
             )}

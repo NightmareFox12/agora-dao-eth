@@ -151,6 +151,7 @@ export const TaskSection: React.FC = () => {
               deadline={task.deadline}
               workDays={Number(task.workWindow / 86400n)}
               creator={task.creator}
+              href={`/task/${task.id}`}
             />
           ))}
         </div>

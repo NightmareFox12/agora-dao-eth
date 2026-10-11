@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, CircleQuestionMarkIcon, Loader, Plus, Rocket, Trash, Upload } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useAccount, useChainId, useSignMessage } from "wagmi";
 import { z } from "zod";
 import RotatingText from "~~/components/ui/RotatingText";
 import { Badge } from "~~/components/ui/shadcn/badge";
@@ -41,6 +42,7 @@ import {
   DaoFormSchema,
   MAX_DAO_CATEGORIES,
 } from "~~/lib/schemes/dao.scheme";
+import { authorizeUploads, prepareImage, uploadFile } from "~~/lib/uploadClient";
 import { cn } from "~~/lib/utils";
 
 export const CreateDaoDialog: React.FC = () => {
@@ -67,6 +69,11 @@ export const CreateDaoDialog: React.FC = () => {
 
   //Subscriptions
   const logoFile = daoForm.watch("logo");
+
+  //wallet
+  const { address } = useAccount();
+  const chainId = useChainId();
+  const { signMessageAsync } = useSignMessage();
   const nameValue = daoForm.watch("name");
 
   //Smart contract
@@ -141,25 +148,31 @@ export const CreateDaoDialog: React.FC = () => {
   const onSubmit = async (data: z.infer<typeof DaoFormSchema>) => {
     try {
       setSubmitLoading(true);
-      let res: { response: string; cid: string } | undefined;
+
+      // the logo is saved first (the user signs once to allow it), and the contract keeps its file name
+      let logoName = "";
       if (data.logo) {
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("logo", data.logo);
+        if (address === undefined) return toast.error("Conecta tu wallet para subir el logo.");
 
-        const req = await fetch("/api/upload-image", {
-          method: "POST",
-          body: formData,
-        });
-
-        res = await req.json();
-
-        if (!req.ok) return toast.error(res!.response);
+        try {
+          const logo = await prepareImage(data.logo);
+          const authorization = await authorizeUploads({
+            action: "logo",
+            hashes: [logo.hash],
+            address,
+            chainId,
+            signMessage: message => signMessageAsync({ message }),
+          });
+          logoName = await uploadFile("logo", logo.bytes, authorization);
+        } catch (err) {
+          console.error(err);
+          return toast.error(err instanceof Error ? err.message : "No se pudo subir el logo.");
+        }
       }
 
       await writeAgoraDaoFabricAsync({
         functionName: "createDao",
-        args: [data.name, data.description, data.categories.map(BigInt), res?.cid || ""],
+        args: [data.name, data.description, data.categories.map(BigInt), logoName],
       });
 
       resetAll();

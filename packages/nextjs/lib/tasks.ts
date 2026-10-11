@@ -61,3 +61,25 @@ export const getDeadlineText = (status: number, deadline: bigint) => {
 
   return seconds * 1000 < Date.now() ? `Plazo vencido ${relative}` : `${label} ${relative}`;
 };
+
+/** A task as AgoraTasks.getTask returns it */
+export type TaskData = {
+  id: bigint;
+  creator: string;
+  assignee: string;
+  /** In wei */
+  reward: bigint;
+  title: string;
+  summary: string;
+  categoryId: bigint;
+  /** SHA-256 of the details file (0x + 64 hexadecimal characters) */
+  metadataHash: string;
+  status: number;
+  createdAt: bigint;
+  deadline: bigint;
+  /** Seconds the assignee has to deliver */
+  workWindow: bigint;
+  submissionURI: string;
+  submissionNote: string;
+  rejectionReason: string;
+};

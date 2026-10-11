@@ -58,7 +58,7 @@ Al publicarla, el creador completa un asistente de **3 pasos** (lo básico, deta
 
 Antes de pagar, la página muestra cómo se verá la tarjeta y cuánto se va a depositar. Las imágenes escritas dentro de la descripción no se cargan (se muestran como enlace); para adjuntar imágenes está su propio campo.
 
-**Lo acordado no se puede cambiar.** La descripción, las imágenes, los criterios y los enlaces se guardan en IPFS, y la blockchain guarda un enlace que es una huella del contenido. Si alguien cambiara una sola letra, la huella ya no coincidiría. Así, en una disputa, el árbitro ve exactamente lo que se pidió, y ninguna de las dos partes puede reescribirlo.
+**Lo acordado no se puede alterar sin que se note.** La descripción, los criterios y los enlaces se guardan en un archivo, y la blockchain guarda su huella digital (SHA-256). Cada vez que alguien abre la tarea, la página calcula la huella del archivo y la compara con la del contrato: si alguien hubiera cambiado una sola letra, no coincidiría y la página se negaría a mostrarlo. Así, en una disputa, el árbitro ve exactamente lo que se pidió, y ninguna de las dos partes puede reescribirlo en silencio. Los archivos viven en Supabase Storage, con el nombre de su huella, de modo que ni siquiera se puede reemplazar uno por otro.
 
 ## Quién puede hacer qué
 
@@ -167,8 +167,9 @@ Conviene conocer estos límites antes de usarlo o de ofrecerlo:
 - **Un solo responsable por tarea.** No hay trabajo en equipo ni pagos divididos.
 - **Pago completo o ninguno.** No hay pagos parciales por hitos.
 - **Las categorías son una lista fija** de seis. No hay prioridad por tarea ni un chat para conversarla; están pensados para más adelante.
-- **Todo es público.** Títulos, descripciones, imágenes, enlaces de entrega y motivos de rechazo quedan visibles para cualquiera, en la blockchain o en IPFS. Por eso no deben incluirse datos confidenciales; los enlaces a archivos (Figma, Drive...) deben tener sus propios permisos de acceso.
-- **Lo que se sube a IPFS no se borra automáticamente.** Si alguien sube imágenes y luego cancela la transacción en su wallet, esos archivos quedan guardados sin usarse.
+- **Todo es público.** Títulos, descripciones, imágenes, enlaces de entrega y motivos de rechazo quedan visibles para cualquiera, en la blockchain o en el almacenamiento de archivos. Por eso no deben incluirse datos confidenciales; los enlaces a archivos (Figma, Drive...) deben tener sus propios permisos de acceso.
+- **Quien controle el almacenamiento puede dejar de servir un archivo.** No puede alterarlo sin que se detecte, pero sí borrarlo, y entonces la página mostraría que no se pueden leer los detalles. Por eso conviene hacer copias de seguridad del bucket. Además, si alguien sube sus archivos y luego cancela la transacción en su wallet, los archivos quedan guardados sin usarse.
+- **Subir archivos requiere una firma.** El creador firma un mensaje con su wallet (no cuesta gas) para autorizar la subida, y el servidor comprueba en la blockchain que sea gestor de tareas o administrador de esa DAO.
 - **Las disputas necesitan un árbitro disponible.** Si el administrador es quien creó la tarea y la DAO no tiene ningún auditor, nadie puede arbitrar. Se recomienda que toda DAO tenga al menos un auditor distinto de quien crea tareas.
 - **Sin recuperación de wallet.** Quien pierde acceso a su wallet pierde lo que le corresponde. Es una propiedad de la blockchain, no del módulo.
 
@@ -177,9 +178,10 @@ Conviene conocer estos límites antes de usarlo o de ofrecerlo:
 | | |
 |---|---|
 | **Contrato inteligente** | Terminado |
+| **Perfil** | Incluye «Mis tareas»: las que publicaste y las que tienes a tu cargo |
 | **Pruebas automáticas** | 60 pruebas que cubren el flujo completo, los plazos, los permisos y los casos límite |
 | **Interfaz: publicar y ver tareas** | Lista, buscador y filtros por estado y categoría, y página para publicar una tarea |
-| **Interfaz: trabajar una tarea** | En desarrollo: ver el detalle, tomarla, entregar, aprobar o rechazar, disputar y cobrar |
+| **Interfaz: trabajar una tarea** | Página de detalle con el contenido, el progreso y un panel que ofrece a cada persona solo lo que puede hacer en ese estado: tomar, entregar, aprobar, pedir cambios, disputar, resolver, cobrar, cancelar y reembolsar. Las acciones que mueven dinero piden confirmación |
 | **Auditoría externa de seguridad** | Pendiente. Recomendable antes de usar con dinero real |
 | **Red** | Solo pruebas locales. Aún no desplegado en una red pública |
 
@@ -200,7 +202,7 @@ Conviene conocer estos límites antes de usarlo o de ofrecerlo:
 
 | Función | Quién | Cuándo |
 |---|---|---|
-| `createTask(título, resumen, categoría, díasDeEntrega, enlaceDetalles)` _(payable)_ | Gestor de tareas o admin | Siempre. La recompensa es el ETH enviado |
+| `createTask(título, resumen, categoría, díasDeEntrega, huellaDetalles)` _(payable)_ | Gestor de tareas o admin | Siempre. La recompensa es el ETH enviado |
 | `takeTask(id)` | Miembro (no el creador) | Tarea abierta y dentro de los 30 días |
 | `submitWork(id, enlace, nota)` | Quien la tomó | Tomada o rechazada |
 | `approveWork(id)` | Creador | Entregada |
@@ -217,21 +219,21 @@ Conviene conocer estos límites antes de usarlo o de ofrecerlo:
 
 **Eventos:** `TaskCreated(id, creator, reward)` y `TaskStatusChanged(id, status, actor)`. Con ellos se arma el historial de actividad sin guardar nada extra.
 
-**Límites de texto:** título 80 caracteres, resumen 160, enlace a los detalles 100, enlace de entrega 300, nota 300, motivo de rechazo 300. Categorías: ids de 0 a 5 (los nombres viven en `packages/nextjs/constants/taskCategories.ts`). Días de entrega: de 7 a 30.
+**Límites de texto:** título 80 caracteres, resumen 160, enlace de entrega 300, nota 300, motivo de rechazo 300. Categorías: ids de 0 a 5 (los nombres viven en `packages/nextjs/constants/taskCategories.ts`). Días de entrega: de 7 a 30.
 
-**Los detalles en IPFS:** `enlaceDetalles` es el CID de un JSON que guarda el frontend con esta forma:
+**Los detalles fuera de la cadena:** `huellaDetalles` es el SHA-256 de un archivo JSON que arma el frontend con esta forma. El archivo se guarda con ese mismo hash como nombre (`<hash>.json`) en el bucket `task-details`:
 
 ```json
 {
   "version": 1,
   "description": "Texto largo en Markdown",
-  "images": ["<CID de la imagen>"],
+  "images": ["<hash>.png"],
   "criteria": ["Se ve bien en móvil"],
   "links": [{ "label": "Guía de marca", "url": "https://..." }]
 }
 ```
 
-El contrato no lee ese JSON: solo guarda el CID. El esquema que valida el contenido está en [`packages/nextjs/lib/schemes/task.scheme.ts`](../../packages/nextjs/lib/schemes/task.scheme.ts), y la página de publicar en [`packages/nextjs/app/task/new`](../../packages/nextjs/app/task/new).
+El contrato no lee ese JSON: solo guarda su huella. Las imágenes se guardan en el bucket `task-images`, también con su hash como nombre. El esquema que valida el contenido está en [`packages/nextjs/lib/schemes/task.scheme.ts`](../../packages/nextjs/lib/schemes/task.scheme.ts), y la página de publicar en [`packages/nextjs/app/task/new`](../../packages/nextjs/app/task/new).
 
 **Probar**
 

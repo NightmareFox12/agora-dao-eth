@@ -15,8 +15,9 @@ import "./shared/RoleIds.sol";
  *                              +-> Completed   the creator did not answer in time: the assignee is paid
  *  Open (nobody took it in time) or cancelled by the creator -> Cancelled     the creator is refunded
  *
- * What a task is about (long description, images, acceptance criteria, links) lives on IPFS: the contract only keeps
- * the link (`metadataURI`). Since the link is a hash of the content, what was agreed cannot be changed afterwards.
+ * What a task is about (long description, images, acceptance criteria, links) lives in a file outside the chain:
+ * the contract only keeps its SHA-256 (`metadataHash`). Whoever reads the file recalculates the hash and compares,
+ * so what was agreed cannot be changed afterwards without it being noticed.
  *
  * Every DAO has its own copy of this contract (a clone created by the factory) and asks the DAO who has which role.
  * @title AgoraTasks
@@ -47,7 +48,7 @@ contract AgoraTasks is ReentrancyGuard {
         string title;
         string summary;
         uint256 categoryId;
-        string metadataURI;
+        bytes32 metadataHash;
         Status status;
         uint256 createdAt;
         uint256 deadline;
@@ -60,7 +61,6 @@ contract AgoraTasks is ReentrancyGuard {
     // Keep in sync with packages/nextjs/lib/schemes/task.scheme.ts and constants/taskCategories.ts
     uint256 public constant MAX_TITLE_LENGTH = 80;
     uint256 public constant MAX_SUMMARY_LENGTH = 160;
-    uint256 public constant MAX_METADATA_URI_LENGTH = 100;
     uint256 public constant MAX_LINK_LENGTH = 300;
     uint256 public constant MAX_TEXT_LENGTH = 300;
     // Categories are ids from 0 to CATEGORY_COUNT - 1; their names live in the frontend (constants/taskCategories.ts)
@@ -108,13 +108,13 @@ contract AgoraTasks is ReentrancyGuard {
 
     /// @notice Publishes a task. The reward is the ETH sent with the call and stays here until the task ends.
     /// @param _workDays how many days the assignee will have to send the work once they take it
-    /// @param _metadataURI IPFS link (CID) to the details: description, images, acceptance criteria and references
+    /// @param _metadataHash SHA-256 of the details file: description, images, acceptance criteria and references
     function createTask(
         string calldata _title,
         string calldata _summary,
         uint256 _categoryId,
         uint256 _workDays,
-        string calldata _metadataURI
+        bytes32 _metadataHash
     ) external payable returns (uint256 id) {
         require(
             dao.isRole(TASK_MANAGER_ROLE, msg.sender) || dao.isRole(DEFAULT_ADMIN, msg.sender),
@@ -127,8 +127,7 @@ contract AgoraTasks is ReentrancyGuard {
         require(bytes(_summary).length <= MAX_SUMMARY_LENGTH, "The summary is too long");
         require(_categoryId < CATEGORY_COUNT, "Invalid category");
         require(_workDays >= MIN_WORK_DAYS && _workDays <= MAX_WORK_DAYS, "Invalid work days");
-        require(bytes(_metadataURI).length > 0, "The details link must not be empty");
-        require(bytes(_metadataURI).length <= MAX_METADATA_URI_LENGTH, "The details link is too long");
+        require(_metadataHash != bytes32(0), "The details hash must not be empty");
 
         id = tasks.length;
         Task storage task = tasks.push();
@@ -138,7 +137,7 @@ contract AgoraTasks is ReentrancyGuard {
         task.title = _title;
         task.summary = _summary;
         task.categoryId = _categoryId;
-        task.metadataURI = _metadataURI;
+        task.metadataHash = _metadataHash;
         task.status = Status.Open;
         task.createdAt = block.timestamp;
         task.deadline = block.timestamp + ACCEPTANCE_WINDOW;

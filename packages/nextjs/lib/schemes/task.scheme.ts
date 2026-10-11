@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TASK_CATEGORIES } from "~~/constants/taskCategories";
+import { IMAGE_NAME_PATTERN } from "~~/lib/files";
 
 // Limits that AgoraTasks.sol enforces too (MAX_TITLE_LENGTH, MAX_SUMMARY_LENGTH, MIN_WORK_DAYS, MAX_WORK_DAYS).
 // If you change one of them, change it in both places. The form counters read from here too.
@@ -8,7 +9,7 @@ export const TASK_SUMMARY_MAX_LENGTH = 160;
 export const TASK_MIN_WORK_DAYS = 7;
 export const TASK_MAX_WORK_DAYS = 30;
 
-// Limits of what is stored on IPFS: the contract does not check them.
+// Limits of what is stored in the details file: the contract does not check them.
 export const TASK_DESCRIPTION_MAX_LENGTH = 5000;
 export const TASK_MAX_IMAGES = 3;
 export const TASK_IMAGE_MAX_BYTES = 1024 * 1024;
@@ -22,7 +23,8 @@ const TASK_TITLE_MIN_LENGTH = 3;
 const TASK_SUMMARY_MIN_LENGTH = 10;
 const TASK_DESCRIPTION_MIN_LENGTH = 30;
 
-const isHttpUrl = (value: string) => {
+/** Only web addresses are shown as links: anything else (javascript:...) is plain text. */
+export const isHttpUrl = (value: string) => {
   try {
     const { protocol } = new URL(value);
     return protocol === "http:" || protocol === "https:";
@@ -106,14 +108,39 @@ export const TaskFormSchema = z.object({
     .refine(value => Number(value) > 0, { message: "La recompensa debe ser mayor a cero." }),
 });
 
+// What the assignee and the creator write while working on a task (AgoraTasks: MAX_LINK_LENGTH, MAX_TEXT_LENGTH)
+export const TASK_LINK_MAX_LENGTH = 300;
+export const TASK_TEXT_MAX_LENGTH = 300;
+
+export const TaskSubmissionSchema = z.object({
+  link: z
+    .string()
+    .trim()
+    .min(1, { message: "Pega el enlace de tu trabajo." })
+    .max(TASK_LINK_MAX_LENGTH, { message: `El enlace no puede superar los ${TASK_LINK_MAX_LENGTH} caracteres.` })
+    .refine(isHttpUrl, { message: LINK_MESSAGE }),
+  note: z
+    .string()
+    .trim()
+    .max(TASK_TEXT_MAX_LENGTH, { message: `La nota no puede superar los ${TASK_TEXT_MAX_LENGTH} caracteres.` }),
+});
+
+export const TaskRejectionSchema = z.object({
+  reason: z
+    .string()
+    .trim()
+    .min(5, { message: "Explica qué hay que cambiar (mínimo 5 caracteres)." })
+    .max(TASK_TEXT_MAX_LENGTH, { message: `El motivo no puede superar los ${TASK_TEXT_MAX_LENGTH} caracteres.` }),
+});
+
 export type TaskFormValues = z.infer<typeof TaskFormSchema>;
 
-/** What is stored on IPFS for each task. The contract only keeps the link to it. */
+/** The details file of each task. The contract only keeps its SHA-256. */
 export const TaskMetadataSchema = z.object({
   version: z.literal(1),
   description: z.string().trim().min(TASK_DESCRIPTION_MIN_LENGTH).max(TASK_DESCRIPTION_MAX_LENGTH),
-  /** IPFS ids (CIDs) of the images */
-  images: z.array(z.string().min(10).max(100)).max(TASK_MAX_IMAGES),
+  /** File names of the images in the task-images bucket (their SHA-256 + extension) */
+  images: z.array(z.string().regex(IMAGE_NAME_PATTERN)).max(TASK_MAX_IMAGES),
   criteria: z.array(z.string().trim().min(1).max(TASK_CRITERION_MAX_LENGTH)).max(TASK_MAX_CRITERIA),
   links: z
     .array(
