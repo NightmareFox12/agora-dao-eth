@@ -48,8 +48,6 @@ contract AgoraDaoFactory is Ownable, Validation {
         daoCategories.push("ENERGY");
     }
 
-    //TODO: hacer un mapping de daos para verificar desde el padre y asi saber que llama solo un hijo canonico
-
     // --- write functions ---
     function createDao(
         string memory _name,
@@ -86,7 +84,7 @@ contract AgoraDaoFactory is Ownable, Validation {
         daoCounter++;
 
         //add user counter
-        addUserCounter(msg.sender);
+        _addUser(msg.sender);
 
         //emit event
         emit DaoCreated(daoCounter, msg.sender, _name);
@@ -105,7 +103,13 @@ contract AgoraDaoFactory is Ownable, Validation {
         daoCategories.push(newCategory);
     }
 
-    function addUserCounter(address _newUser) public {
+    /// @dev Called by the DAOs created by this factory when somebody joins them.
+    function addUserCounter(address _newUser) external {
+        require(isDao[msg.sender], "Only DAOs created by this factory");
+        _addUser(_newUser);
+    }
+
+    function _addUser(address _newUser) internal {
         if (!isUser[_newUser] && _newUser != address(0) && _newUser != address(this)) {
             isUser[_newUser] = true;
             userCounter++;

@@ -4834,6 +4834,7 @@ __metadata:
     burner-connector: 0.0.18
     class-variance-authority: ^0.7.1
     daisyui: ^5.0.9
+    driver.js: 1.9.0
     eslint: ^9.23.0
     eslint-config-next: ^15.2.3
     eslint-config-prettier: ^10.1.1
@@ -9655,6 +9656,13 @@ __metadata:
   version: 16.4.5
   resolution: "dotenv@npm:16.4.5"
   checksum: 301a12c3d44fd49888b74eb9ccf9f07a1f5df43f489e7fcb89647a2edcd84c42d6bc349dc8df099cd18f07c35c7b04685c1a4f3e6a6a9e6b30f8d48c15b7f49c
+  languageName: node
+  linkType: hard
+
+"driver.js@npm:1.9.0":
+  version: 1.9.0
+  resolution: "driver.js@npm:1.9.0"
+  checksum: dfc37739784d04ef54722eaadf4a77023e0ec7004050257774bf1b3b3a13b3c16ad1f8e7a68fac1957525e075982d861e31a75355fe9e5f44d1d97073fe93de6
   languageName: node
   linkType: hard
 

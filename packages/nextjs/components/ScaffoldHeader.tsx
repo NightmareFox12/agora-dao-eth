@@ -7,15 +7,18 @@ import { FaucetButton } from "./scaffold-eth/FaucetButton";
 import { RainbowKitCustomConnectButton } from "./scaffold-eth/RainbowKitCustomConnectButton";
 import { Button } from "./ui/shadcn/button";
 import { useSidebar } from "./ui/shadcn/sidebar";
-import { Bolt, BugIcon, DoorOpenIcon, Files, Home, Menu } from "lucide-react";
+import { Bolt, BugIcon, DoorOpenIcon, Files, Home, Menu, UserRound } from "lucide-react";
 import { hardhat } from "viem/chains";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useCurrentDao } from "~~/hooks/useCurrentDao";
 import { useHeaderStore } from "~~/services/store/header.store";
 
 type HeaderMenuLink = {
   label: string;
   href: string;
   icon?: React.ReactNode;
+  /** Lets the guided tour point at this link (data-tour attribute). */
+  tour?: string;
 };
 
 export const menuLinks: HeaderMenuLink[] = [
@@ -28,11 +31,19 @@ export const menuLinks: HeaderMenuLink[] = [
     label: "Tareas",
     href: "/task",
     icon: <Files className="h-4 w-4" />,
+    tour: "nav-tareas",
+  },
+  {
+    label: "Perfil",
+    href: "/profile",
+    icon: <UserRound className="h-4 w-4" />,
+    tour: "nav-perfil",
   },
   {
     label: "Configuración",
     href: "/configuration",
     icon: <Bolt className="h-4 w-4" />,
+    tour: "nav-configuracion",
   },
   {
     label: "Debug",
@@ -52,6 +63,7 @@ export const ScaffoldHeader = () => {
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
   const { showHeader } = useHeaderStore();
+  const { dao } = useCurrentDao();
 
   if (!showHeader) return null;
 
@@ -63,17 +75,17 @@ export const ScaffoldHeader = () => {
             <div className="flex relative w-10 h-10">
               <Image src="/logo.svg" alt="SE2 logo" className="cursor-pointer" fill />
             </div>
-            <div className="flex flex-col">
+            <div className="flex min-w-0 max-w-48 flex-col">
               <span className="font-bold leading-tight">Agora DAO</span>
-              <span className="text-xs">Gobierno descentralizado</span>
+              <span className="truncate text-xs">{dao?.name ?? "Gobierno descentralizado"}</span>
             </div>
           </Link>
         </div>
         <nav className="hidden md:flex space-x-4 flex-1">
-          {menuLinks.map(({ label, href, icon }) => {
+          {menuLinks.map(({ label, href, icon, tour }) => {
             const isActive = pathname === href;
             return (
-              <Link key={href} href={href}>
+              <Link key={href} href={href} data-tour={tour}>
                 <Button variant={isActive ? "default" : "ghost"} className={!isActive ? "border-[0.5px]" : ""}>
                   {icon}
                   <span>{label}</span>

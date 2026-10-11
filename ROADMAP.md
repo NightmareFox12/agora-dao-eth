@@ -11,13 +11,13 @@ Los 6 módulos base de la plataforma. Marca cada casilla al completar el módulo
 | 3 | **Eventos públicos** | Pendiente de definir | Pendiente |
 | 4 | **Recompensas** | Tokens y NFTs | Pendiente |
 | 5 | **Tesorería / escrow** | Fondos de la DAO y pagos de tareas | Pendiente |
-| 6 | **Reputación** | Niveles y NFTs según cuánto aportas | Pendiente |
+| 6 | **Reputación** | Niveles y NFTs según cuánto aportas | Pendiente (la pantalla de Perfil ya espera este módulo) |
 
 Reputación y Recompensas se tocan: los NFTs de nivel son recompensas. Van como contratos separados. Reputación lleva la cuenta de puntos y nivel, y Recompensas emite los NFTs cuando se alcanza un nivel.
 
 ## Orden propuesto
 
-- [ ] 1. Arreglar los dos bugs de seguridad (ver abajo)
+- [x] 1. Arreglar los bugs de seguridad de roles
 - [ ] 2. Tesorería
 - [ ] 3. Tareas (paga desde la tesorería y suma puntos de reputación)
 - [ ] 4. Votaciones
@@ -26,18 +26,21 @@ Reputación y Recompensas se tocan: los NFTs de nivel son recompensas. Van como 
 
 ## Ya hecho
 
-- [x] Factory para crear DAOs, con categorías y listado
+- [x] Factory para crear DAOs, con categorías múltiples (máx. 3) y nombres únicos
 - [x] Unirse a una DAO y roles (`AUDITOR`, `TASK_MANAGER`, `PROPOSAL_MANAGER`, `USER`)
 - [x] Configuración de roles en el frontend
-- [x] Landing
+- [x] Landing, lista de DAOs (con filtros múltiples) y creación de DAOs
+- [x] Bugs de seguridad de roles (`Rol.sol` y factory), con tests
+- [x] Inicio de la DAO: dashboard con datos reales
+- [x] Perfil: roles, antigüedad y espacio reservado para nivel y NFTs
+- [x] Guía de bienvenida para usuarios nuevos (se guarda por DAO)
 
-## Bugs de seguridad pendientes (paso 1)
+## Para cuando se agreguen pantallas
 
-- [ ] `Rol.sol`: un `AUDITOR` puede asignar `DEFAULT_ADMIN_ROLE` a cualquiera (en `registerRole` y `registerRoleBatch`)
-- [ ] `AgoraDaoFactory.addUserCounter` es público y sin control: cualquiera puede inflar `userCounter`
-- [ ] `Rol.sol`: el factory queda como admin de cada DAO por el constructor
-- [ ] `grantRole`, `revokeRole` y `renounceRole` de OpenZeppelin siguen públicos y desincronizan `roleUsers`
+- Cada pantalla nueva puede tener su propia guía: define los pasos en un archivo `*.tour.ts` junto a la página y llama a `useTour(id, pasos)`. Los elementos se señalan con `data-tour="..."`.
+- El Perfil crece con el módulo de Reputación: nivel, experiencia, insignias NFT e historial de contribuciones.
 
 ## Por decidir
 
 - ¿Qué es un "evento público"? Puede ser un meetup con asistentes, o una actividad abierta a quien no es miembro de la DAO.
+- Ocultar "Configuración" del menú a quien no es administrador.
