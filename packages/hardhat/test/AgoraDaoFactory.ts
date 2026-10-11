@@ -1,15 +1,13 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { AgoraDaoFactory } from "../typechain-types";
+import { deployFactory } from "./helpers/deployFactory";
 
 describe("AgoraDaoFactory", function () {
   let factory: AgoraDaoFactory;
 
   beforeEach(async () => {
-    const [owner] = await ethers.getSigners();
-    const factoryContract = await ethers.getContractFactory("AgoraDaoFactory");
-    factory = (await factoryContract.deploy(owner.address)) as AgoraDaoFactory;
-    await factory.waitForDeployment();
+    factory = await deployFactory();
   });
 
   describe("createDao categories", function () {

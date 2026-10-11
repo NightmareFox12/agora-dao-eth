@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { AgoraDao, AgoraDaoFactory } from "../typechain-types";
+import { deployFactory } from "./helpers/deployFactory";
 
 const DEFAULT_ADMIN_ROLE = ethers.ZeroHash;
 const AUDITOR_ROLE = ethers.id("AUDITOR_ROLE");
@@ -19,12 +20,10 @@ describe("AgoraDao roles", function () {
   let target: HardhatEthersSigner;
 
   beforeEach(async () => {
-    const [owner, ...signers] = await ethers.getSigners();
+    const [, ...signers] = await ethers.getSigners();
     [creator, auditor, member, outsider, target] = signers;
 
-    const factoryContract = await ethers.getContractFactory("AgoraDaoFactory");
-    factory = (await factoryContract.deploy(owner.address)) as AgoraDaoFactory;
-    await factory.waitForDeployment();
+    factory = await deployFactory();
 
     await factory.connect(creator).createDao("ETH Force", "A DAO for testing", [0], "");
     const [created] = await factory.getAllDaos();

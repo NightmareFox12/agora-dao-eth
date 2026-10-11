@@ -2,13 +2,16 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
 
 import "./AgoraDao.sol";
+import "./AgoraTasks.sol";
 import "./AgoraDaoFactory/Validation.sol";
 
 /**
- * A smart contract that allows changing a state variable of the contract and tracking the changes
- * It also allows the owner to withdraw the Ether in the contract
+ * Creates the DAOs. Every DAO is a minimal proxy (clone) of one AgoraDao implementation, and so is each of
+ * its modules, which are created together with it. The code of the DAO and the modules is not part of this
+ * contract, so it stays small however many modules there are.
  * @title AgoraDaoFabric
  * @author NightmareFox12
  */
@@ -26,6 +29,10 @@ contract AgoraDaoFactory is Ownable, Validation {
         uint256 creationTimestamp;
     }
 
+    // Implementations that every DAO (and its modules) clones
+    address public immutable daoImplementation;
+    address public immutable tasksImplementation;
+
     // State Variables
     uint256 public userCounter;
     uint256 public daoCounter;
@@ -41,7 +48,11 @@ contract AgoraDaoFactory is Ownable, Validation {
     //events
     event DaoCreated(uint256 indexed daoID, address indexed creator, string indexed name);
 
-    constructor(address initialOwner) Ownable(initialOwner) {
+    constructor(address initialOwner, address _daoImplementation, address _tasksImplementation) Ownable(initialOwner) {
+        require(_daoImplementation != address(0) && _tasksImplementation != address(0), "Invalid implementation");
+        daoImplementation = _daoImplementation;
+        tasksImplementation = _tasksImplementation;
+
         daoCategories.push("SERVICE");
         daoCategories.push("GOVERNANCE");
         daoCategories.push("SOCIAL IMPACT");
@@ -62,13 +73,17 @@ contract AgoraDaoFactory is Ownable, Validation {
         require(!usedNames[nameKey], "A DAO with this name already exists");
         usedNames[nameKey] = true;
 
-        //create dao
-        AgoraDao createdDaoContract = new AgoraDao(address(this), msg.sender);
+        //create the dao and its modules, all at once
+        address daoAddress = Clones.clone(daoImplementation);
+        address tasksAddress = Clones.clone(tasksImplementation);
+
+        AgoraDao(payable(daoAddress)).initialize(address(this), msg.sender, tasksAddress);
+        AgoraTasks(tasksAddress).initialize(daoAddress);
 
         Dao memory newDao = Dao(
             daoCounter,
             msg.sender,
-            address(createdDaoContract),
+            daoAddress,
             _name,
             _description,
             _categoryIDs,
@@ -80,7 +95,7 @@ contract AgoraDaoFactory is Ownable, Validation {
         //store dao
         daosByUser[msg.sender].push(newDao);
         allDaos.push(newDao);
-        isDao[address(createdDaoContract)] = true;
+        isDao[daoAddress] = true;
         daoCounter++;
 
         //add user counter

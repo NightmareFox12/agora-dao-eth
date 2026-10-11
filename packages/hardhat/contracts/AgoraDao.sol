@@ -2,15 +2,15 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./AgoraDao/Rol.sol";
-import "./AgoraDaoFactory.sol";
 
 interface IAgoraDaoFactory {
     function addUserCounter(address _user) external;
 }
 
 /**
- * A smart contract that allows changing a state variable of the contract and tracking the changes
- * It also allows the owner to withdraw the Ether in the contract
+ * One DAO: its members, roles and the addresses of its modules.
+ * The factory deploys it as a minimal proxy (clone) of a single implementation, so it is set up with
+ * `initialize` instead of a constructor.
  * @title AgoraDao
  * @author NightmareFox12
  */
@@ -20,12 +20,25 @@ contract AgoraDao is Rol {
     uint256 public daoID;
     uint256 public userCounter;
     string[] internal daoCategories;
+    bool private initialized;
+
+    // Modules (each one is its own contract, created together with the DAO)
+    address public tasks;
 
     //events
     event UserJoined(address indexed user, uint256 userID);
 
-    constructor(address _fabric, address _creator) {
+    /// @dev Locks the implementation: only the clones can be initialized.
+    constructor() {
+        initialized = true;
+    }
+
+    function initialize(address _fabric, address _creator, address _tasks) external {
+        require(!initialized, "Already initialized");
+        initialized = true;
+
         fabric = _fabric;
+        tasks = _tasks;
         _grantRole(DEFAULT_ADMIN_ROLE, _creator);
 
         userCounter++;

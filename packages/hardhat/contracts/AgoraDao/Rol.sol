@@ -2,13 +2,9 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import "../shared/RoleIds.sol";
 
 abstract contract Rol is AccessControl {
-    bytes32 internal constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");
-    bytes32 internal constant TASK_MANAGER_ROLE = keccak256("TASK_MANAGER_ROLE");
-    bytes32 internal constant PROPOSAL_MANAGER_ROLE = keccak256("PROPOSAL_MANAGER_ROLE");
-    bytes32 internal constant USER_ROLE = keccak256("USER_ROLE");
-
     //mappings
     mapping(bytes32 => address[]) private roleUsers;
     mapping(bytes32 => mapping(address => uint256)) private memberPosition;
