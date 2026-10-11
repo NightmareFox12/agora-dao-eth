@@ -13,6 +13,9 @@ const Status = { Open: 0, Taken: 1, Submitted: 2, Rejected: 3, Disputed: 4, Comp
 const DAY = 24 * 60 * 60;
 const REWARD = ethers.parseEther("1");
 const LINK = "https://www.figma.com/file/landing";
+const SUMMARY = "Design and build the landing page";
+const CATEGORY = 1;
+const METADATA = "bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy";
 
 describe("AgoraTasks", function () {
   let factory: AgoraDaoFactory;
@@ -26,8 +29,8 @@ describe("AgoraTasks", function () {
   let otherMember: HardhatEthersSigner;
   let outsider: HardhatEthersSigner; // not in the DAO
 
-  const createTask = (signer = manager, value = REWARD) =>
-    tasks.connect(signer).createTask("Landing page", "Design and build the landing page", { value });
+  const createTask = (signer = manager, value = REWARD, workDays = 30) =>
+    tasks.connect(signer).createTask("Landing page", SUMMARY, CATEGORY, workDays, METADATA, { value });
 
   // creates task 0 and leaves it taken by `worker`
   const takenTask = async () => {
@@ -106,6 +109,10 @@ describe("AgoraTasks", function () {
       expect(task.creator).to.equal(manager.address);
       expect(task.reward).to.equal(REWARD);
       expect(task.title).to.equal("Landing page");
+      expect(task.summary).to.equal(SUMMARY);
+      expect(task.categoryId).to.equal(CATEGORY);
+      expect(task.metadataURI).to.equal(METADATA);
+      expect(task.workWindow).to.equal(BigInt(30 * DAY));
       expect(task.status).to.equal(Status.Open);
       expect(task.assignee).to.equal(ethers.ZeroAddress);
       expect(task.deadline).to.equal(BigInt(await time.latest()) + BigInt(30 * DAY));
@@ -129,15 +136,46 @@ describe("AgoraTasks", function () {
       await expect(createTask(manager, 0n)).to.be.revertedWith("The reward must be greater than zero");
     });
 
-    it("validates the title and the description", async function () {
-      const create = (title: string, description: string) =>
-        tasks.connect(manager).createTask(title, description, { value: REWARD });
+    it("validates the texts", async function () {
+      const create = (title: string, summary: string, metadata = METADATA) =>
+        tasks.connect(manager).createTask(title, summary, CATEGORY, 30, metadata, { value: REWARD });
 
-      await expect(create("", "description")).to.be.revertedWith("The title must not be empty");
-      await expect(create("t".repeat(81), "description")).to.be.revertedWith("The title is too long");
-      await expect(create("title", "")).to.be.revertedWith("The description must not be empty");
-      await expect(create("title", "d".repeat(501))).to.be.revertedWith("The description is too long");
-      await create("t".repeat(80), "d".repeat(500));
+      await expect(create("", "summary")).to.be.revertedWith("The title must not be empty");
+      await expect(create("t".repeat(81), "summary")).to.be.revertedWith("The title is too long");
+      await expect(create("title", "")).to.be.revertedWith("The summary must not be empty");
+      await expect(create("title", "s".repeat(161))).to.be.revertedWith("The summary is too long");
+      await expect(create("title", "summary", "")).to.be.revertedWith("The details link must not be empty");
+      await expect(create("title", "summary", "c".repeat(101))).to.be.revertedWith("The details link is too long");
+      await create("t".repeat(80), "s".repeat(160), "c".repeat(100));
+    });
+
+    it("only accepts the categories that exist", async function () {
+      const create = (category: number) =>
+        tasks.connect(manager).createTask("title", SUMMARY, category, 30, METADATA, { value: REWARD });
+
+      await expect(create(6)).to.be.revertedWith("Invalid category");
+      await create(5);
+      await create(0);
+    });
+
+    it("lets the creator choose between 7 and 30 days to deliver", async function () {
+      await expect(createTask(manager, REWARD, 6)).to.be.revertedWith("Invalid work days");
+      await expect(createTask(manager, REWARD, 31)).to.be.revertedWith("Invalid work days");
+      await expect(createTask(manager, REWARD, 0)).to.be.revertedWith("Invalid work days");
+
+      await createTask(manager, REWARD, 7);
+      await createTask(manager, REWARD, 30);
+      expect((await tasks.getTask(0)).workWindow).to.equal(BigInt(7 * DAY));
+      expect((await tasks.getTask(1)).workWindow).to.equal(BigInt(30 * DAY));
+    });
+
+    it("keeps the limits the frontend form expects", async function () {
+      // dao.scheme-like check: packages/nextjs/lib/schemes/task.scheme.ts hardcodes these numbers
+      expect(await tasks.MAX_TITLE_LENGTH()).to.equal(80n);
+      expect(await tasks.MAX_SUMMARY_LENGTH()).to.equal(160n);
+      expect(await tasks.CATEGORY_COUNT()).to.equal(6n);
+      expect(await tasks.MIN_WORK_DAYS()).to.equal(7n);
+      expect(await tasks.MAX_WORK_DAYS()).to.equal(30n);
     });
 
     it("lists all the tasks", async function () {
@@ -506,6 +544,38 @@ describe("AgoraTasks", function () {
       expect(task.submissionURI).to.equal("");
       expect(task.submissionNote).to.equal("");
       expect(task.rejectionReason).to.equal("");
+    });
+  });
+
+  describe("a work window chosen by the creator", function () {
+    beforeEach(async () => {
+      await createTask(manager, REWARD, 10);
+      await tasks.connect(worker).takeTask(0);
+    });
+
+    it("is the time the assignee has once they take the task", async function () {
+      expect((await tasks.getTask(0)).deadline).to.equal(BigInt(await time.latest()) + BigInt(10 * DAY));
+
+      await time.increase(9 * DAY);
+      await expect(tasks.connect(manager).unassignTask(0)).to.be.revertedWith("The assignee still has time");
+
+      await time.increase(2 * DAY);
+      await tasks.connect(manager).unassignTask(0);
+      expect((await tasks.getTask(0)).status).to.equal(Status.Open);
+    });
+
+    it("is the time to fix the work after a rejection", async function () {
+      await tasks.connect(worker).submitWork(0, LINK, "");
+      await tasks.connect(manager).rejectWork(0, "Needs changes");
+
+      expect((await tasks.getTask(0)).deadline).to.equal(BigInt(await time.latest()) + BigInt(10 * DAY));
+    });
+
+    it("is kept when the task opens again", async function () {
+      await tasks.connect(worker).abandonTask(0);
+      await tasks.connect(otherMember).takeTask(0);
+
+      expect((await tasks.getTask(0)).deadline).to.equal(BigInt(await time.latest()) + BigInt(10 * DAY));
     });
   });
 

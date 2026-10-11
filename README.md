@@ -12,6 +12,21 @@ Agora DAO is a decentralized autonomous organization platform that enables commu
 - **Join & Participate** – Members can join a DAO, earn reputation, and interact with on‑chain governance mechanisms.
 - **Token & NFT Rewards** – Integrated reward system (tokens/NFTs) for active contributors.
 
+## 📚 Módulos (documentación en español)
+
+Cada módulo de la plataforma tiene su propia guía: qué hace, cómo funciona, sus reglas, plazos y límites.
+
+| Módulo | Estado | Guía |
+|---|---|---|
+| **Tareas** – publicar trabajo con recompensa en escrow, entrega, revisión y pago | Contrato listo, interfaz en desarrollo | [Leer la guía de Tareas](docs/modules/tasks.md) |
+| **Votaciones** | Próximamente | – |
+| **Tesorería** | Próximamente | – |
+| **Eventos públicos** | Próximamente | – |
+| **Recompensas** | Próximamente | – |
+| **Reputación** | Próximamente | – |
+
+El orden de construcción y las decisiones de arquitectura están en el [ROADMAP](ROADMAP.md).
+
 ## 🛠️ Installation
 
 ```bash
@@ -55,8 +70,8 @@ yarn workspace @se-2/nextjs dev
 
 1. **Create a DAO** – Navigate to the _Create DAO_ dialog, fill in details, and submit. The transaction deploys a new `AgoraDao` contract.
 2. **Join a DAO** – Click _Join DAO_ on the DAO page. Your address is added to the DAO’s member list.
-3. **Create a Task** – (Future feature) Submit a task with a reward. Funds are escrowed in the contract.
-4. **Complete & Release** – Once the task is marked complete, the escrow releases payment to the assignee.
+3. **Create a Task** – Submit a task with a reward. Funds are escrowed in the contract. _(Smart contract ready, UI in progress.)_
+4. **Complete & Release** – Once the creator approves the delivered work, the escrow releases payment to the assignee. See the [Tasks guide](docs/modules/tasks.md) for the full flow, deadlines and rules.
 
 ## 🤝 Contributing
 

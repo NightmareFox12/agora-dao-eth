@@ -1,95 +1,160 @@
-import React, { Suspense } from "react";
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
 import { TaskCard } from "./TaskCard";
-import { Filter, Plus, Search } from "lucide-react";
+import { ClipboardList, Plus, Search } from "lucide-react";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Input } from "~~/components/ui/shadcn/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~~/components/ui/shadcn/select";
+import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "~~/components/ui/shadcn/tabs";
+import { TASK_CATEGORIES } from "~~/constants/taskCategories";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
+import { useDaoRoles } from "~~/hooks/useDaoRoles";
+import { useTasksAddress } from "~~/hooks/useTasksAddress";
+import { TASK_STATUS } from "~~/lib/tasks";
 
-//TODO: agregar modal para crear tareas
-const MOCK_TASKS = [
-  {
-    id: "1",
-    title: "Auditoría de Smart Contracts v2",
-    description:
-      "Revisión exhaustiva de la nueva implementación de gobernanza para detectar posibles vulnerabilidades.",
-    reward: "500 USDC",
-    status: "open" as const,
-    category: "Desarrollo",
-    priority: "high" as const,
-    deadline: "5 días",
-  },
-  {
-    id: "2",
-    title: "Rediseño de Landing Page",
-    description: "Actualizar la interfaz de usuario principal siguiendo las nuevas guías de marca de la DAO.",
-    reward: "350 USDC",
-    status: "in-progress" as const,
-    category: "Diseño",
-    priority: "medium" as const,
-    deadline: "12 días",
-  },
-  {
-    id: "3",
-    title: "Artículo de Investigación: MEV",
-    description: "Escribir un reporte detallado sobre el impacto de MEV en nuestra red y posibles mitigaciones.",
-    reward: "200 USDC",
-    status: "open" as const,
-    category: "Contenido",
-    priority: "low" as const,
-    deadline: "8 días",
-  },
-  {
-    id: "4",
-    title: "Integración de Oráculos",
-    description: "Implementar feeds de precios externos para los nuevos pools de liquidez propuestos.",
-    reward: "600 USDC",
-    status: "completed" as const,
-    category: "Desarrollo",
-    priority: "high" as const,
-    deadline: "Finalizado",
-  },
-];
+// Which statuses each tab shows
+const TABS: Record<string, readonly number[] | undefined> = {
+  all: undefined,
+  open: [TASK_STATUS.Open],
+  active: [TASK_STATUS.Taken, TASK_STATUS.Submitted, TASK_STATUS.Rejected, TASK_STATUS.Disputed],
+  done: [TASK_STATUS.Completed, TASK_STATUS.Cancelled],
+};
 
 export const TaskSection: React.FC = () => {
+  const tasksAddress = useTasksAddress();
+  const { canCreateTasks } = useDaoRoles();
+
+  //states
+  const [search, setSearch] = useState<string>("");
+  const [tab, setTab] = useState<string>("all");
+  const [category, setCategory] = useState<string>("all");
+
+  //smart contract
+  const { data: tasks, isLoading } = useScaffoldReadContract({
+    contractName: "AgoraTasks",
+    functionName: "getAllTasks",
+    contractAddress: tasksAddress,
+    query: { enabled: tasksAddress !== undefined },
+  });
+
+  //memos
+  const tasksFiltered = useMemo(() => {
+    const text = search.trim().toLowerCase();
+    const statuses = TABS[tab];
+
+    // newest first
+    return [...(tasks ?? [])]
+      .reverse()
+      .filter(task => statuses === undefined || statuses.includes(task.status))
+      .filter(task => category === "all" || Number(task.categoryId) === Number(category))
+      .filter(
+        task =>
+          text.length === 0 || task.title.toLowerCase().includes(text) || task.summary.toLowerCase().includes(text),
+      );
+  }, [tasks, search, tab, category]);
+
+  const hasTasks = (tasks?.length ?? 0) > 0;
+
   return (
     <main className="container mx-auto py-2 px-4 space-y-6">
-      <Suspense fallback={null}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tareas de la DAO</h1>
-            <p className="text-muted-foreground">Contribuye a la organización y gana recompensas.</p>
-          </div>
-          <Button className="w-full md:w-auto">
-            <Plus className="mr-2 h-4 w-4" /> Proponer Tarea
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Tareas de la DAO</h1>
+          <p className="text-muted-foreground">Contribuye a la organización y gana recompensas.</p>
+        </div>
+        {canCreateTasks ? (
+          <Button asChild className="w-full md:w-auto">
+            <Link href="/task/new">
+              <Plus className="h-4 w-4" /> Nueva tarea
+            </Link>
           </Button>
-        </div>
+        ) : (
+          <p className="m-0 max-w-xs text-xs text-muted-foreground md:text-right">
+            Solo los gestores de tareas y los administradores publican tareas.
+          </p>
+        )}
+      </div>
 
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="relative w-full md:max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar tareas..." className="pl-10" />
-          </div>
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <Tabs defaultValue="all" className="w-full md:w-auto">
-              <TabsList className="grid grid-cols-4 w-full md:w-auto">
-                <TabsTrigger value="all">Todas</TabsTrigger>
-                <TabsTrigger value="open">Abiertas</TabsTrigger>
-                <TabsTrigger value="active">Activas</TabsTrigger>
-                <TabsTrigger value="done">Hechas</TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <Button variant="outline" size="icon" className="shrink-0 bg-transparent">
-              <Filter className="h-4 w-4" />
-            </Button>
-          </div>
+      <div className="flex flex-col lg:flex-row gap-4 lg:items-center">
+        <div className="relative w-full lg:max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar tareas..."
+            className="pl-10"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
         </div>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
+          <Tabs value={tab} onValueChange={setTab} className="w-full sm:w-auto">
+            <TabsList className="grid grid-cols-4 w-full sm:w-auto">
+              <TabsTrigger value="all">Todas</TabsTrigger>
+              <TabsTrigger value="open">Abiertas</TabsTrigger>
+              <TabsTrigger value="active">En curso</TabsTrigger>
+              <TabsTrigger value="done">Cerradas</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="w-full sm:w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              {TASK_CATEGORIES.map((name, id) => (
+                <SelectItem key={id} value={id.toString()}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
+      {tasksAddress === undefined || isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MOCK_TASKS.map(task => (
-            <TaskCard key={task.id} {...task} />
+          {[0, 1, 2].map(x => (
+            <Skeleton key={x} className="h-56" />
           ))}
         </div>
-      </Suspense>
+      ) : tasksFiltered.length === 0 ? (
+        <article className="flex flex-col items-center gap-3 py-16 text-center">
+          <ClipboardList className="h-16 w-16 text-muted-foreground" />
+          <h3 className="m-0 text-xl font-semibold">{hasTasks ? "Ninguna tarea coincide" : "Aún no hay tareas"}</h3>
+          <p className="m-0 max-w-sm text-muted-foreground">
+            {hasTasks
+              ? "Prueba con otra búsqueda o cambia los filtros."
+              : canCreateTasks
+                ? "Publica la primera tarea de tu DAO."
+                : "Cuando un gestor de tareas publique una, aparecerá aquí."}
+          </p>
+          {!hasTasks && canCreateTasks && (
+            <Button asChild>
+              <Link href="/task/new">
+                <Plus className="h-4 w-4" /> Nueva tarea
+              </Link>
+            </Button>
+          )}
+        </article>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tasksFiltered.map(task => (
+            <TaskCard
+              key={task.id.toString()}
+              title={task.title}
+              summary={task.summary}
+              categoryId={Number(task.categoryId)}
+              reward={task.reward}
+              status={task.status}
+              deadline={task.deadline}
+              workDays={Number(task.workWindow / 86400n)}
+              creator={task.creator}
+            />
+          ))}
+        </div>
+      )}
     </main>
   );
 };

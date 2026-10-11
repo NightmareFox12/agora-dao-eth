@@ -30,6 +30,8 @@ export const useDaoRoles = () => {
     /** The most important role the user has. */
     mainRole: roles[0],
     isAdmin: roles.some(x => x.label === "Administrador"),
+    /** Who can publish tasks (same rule as AgoraTasks.createTask). */
+    canCreateTasks: roles.some(x => x.label === "Administrador" || x.label === "Gestor de tareas"),
     isLoading,
   };
 };

@@ -6,7 +6,7 @@ Los 6 módulos base de la plataforma. Marca cada casilla al completar el módulo
 
 | # | Módulo | Qué incluye | Estado |
 |---|---|---|---|
-| 1 | **Tareas** | Crear, tomar, entregar, revisar y pagar con escrow | Contrato y tests listos; falta la interfaz |
+| 1 | **Tareas** | Crear, tomar, entregar, revisar y pagar con escrow | Contrato, publicar y ver tareas listos; falta el detalle y las acciones (tomar, entregar, aprobar...) |
 | 2 | **Votaciones** | Propuestas y decisiones de la DAO | Pendiente |
 | 3 | **Eventos públicos** | Pendiente de definir | Pendiente |
 | 4 | **Recompensas** | Tokens y NFTs | Pendiente |
@@ -46,10 +46,17 @@ Reputación y Recompensas se tocan: los NFTs de nivel son recompensas. Van como 
 
 - Crean tareas: gestor de tareas o administrador, enviando la recompensa en ETH (queda retenida en el contrato).
 - Toma una tarea cualquier miembro (no el creador). Mientras nadie la toma corre una cuenta de **30 días**: si vence, se reembolsa al creador (cualquiera puede ejecutar el reembolso). Al tomarla, la cuenta se apaga.
-- Quien la toma tiene **30 días** para entregar un enlace (Figma, GitHub...). Si no entrega, el creador puede quitarle la tarea y vuelve a abrirse. El que trabaja también puede abandonarla.
+- Quien la toma tiene el plazo de entrega que fijó el creador (**de 7 a 30 días**) para entregar un enlace (Figma, GitHub...). Si no entrega, el creador puede quitarle la tarea y vuelve a abrirse. El que trabaja también puede abandonarla.
+- Los detalles de la tarea (descripción larga, hasta 3 imágenes, criterios de aceptación y enlaces) viven en IPFS; el contrato solo guarda su enlace, así que lo acordado no se puede alterar.
 - El creador revisa en **7 días**. Aprueba y se paga al instante, o rechaza con un motivo. Si no responde en 7 días, quien entregó puede cobrar.
 - Si el rechazo no convence, el que trabajó abre una disputa y un **auditor o administrador** (que no sea parte de la tarea) decide: pagar o reembolsar.
 - Una vez tomada, el creador no puede cancelarla.
+
+## Pendientes conocidos
+
+- Detalle de la tarea y sus acciones (tomar, entregar, aprobar, rechazar, disputar, cobrar y reembolsar).
+- Borrar de Pinata lo que se subió si el usuario rechaza la transacción en su wallet (también aplica al logo de las DAOs). Hay que proteger antes la ruta de borrado, porque sin autenticación cualquiera podría borrar archivos ajenos.
+- Las rutas `/api/upload-image` y `/api/upload-task` tampoco tienen autenticación: cualquiera puede subir archivos a la cuenta de Pinata.
 
 ## Para cuando se agreguen pantallas
 

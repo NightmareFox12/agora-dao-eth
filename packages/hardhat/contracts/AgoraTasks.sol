@@ -15,6 +15,9 @@ import "./shared/RoleIds.sol";
  *                              +-> Completed   the creator did not answer in time: the assignee is paid
  *  Open (nobody took it in time) or cancelled by the creator -> Cancelled     the creator is refunded
  *
+ * What a task is about (long description, images, acceptance criteria, links) lives on IPFS: the contract only keeps
+ * the link (`metadataURI`). Since the link is a hash of the content, what was agreed cannot be changed afterwards.
+ *
  * Every DAO has its own copy of this contract (a clone created by the factory) and asks the DAO who has which role.
  * @title AgoraTasks
  * @author NightmareFox12
@@ -34,6 +37,7 @@ contract AgoraTasks is ReentrancyGuard {
      * `deadline` depends on the status:
      *  Open: until when somebody can take it. Taken / Rejected: until when the work must be sent.
      *  Submitted: until when the creator can answer. Any other status: 0.
+     * `workWindow` is how long (in seconds) the assignee has to send the work; the creator chooses it.
      */
     struct Task {
         uint256 id;
@@ -41,23 +45,30 @@ contract AgoraTasks is ReentrancyGuard {
         address assignee;
         uint256 reward;
         string title;
-        string description;
+        string summary;
+        uint256 categoryId;
+        string metadataURI;
         Status status;
         uint256 createdAt;
         uint256 deadline;
+        uint256 workWindow;
         string submissionURI;
         string submissionNote;
         string rejectionReason;
     }
 
-    // Keep in sync with packages/nextjs/lib/schemes/task.scheme.ts
+    // Keep in sync with packages/nextjs/lib/schemes/task.scheme.ts and constants/taskCategories.ts
     uint256 public constant MAX_TITLE_LENGTH = 80;
-    uint256 public constant MAX_DESCRIPTION_LENGTH = 500;
+    uint256 public constant MAX_SUMMARY_LENGTH = 160;
+    uint256 public constant MAX_METADATA_URI_LENGTH = 100;
     uint256 public constant MAX_LINK_LENGTH = 300;
     uint256 public constant MAX_TEXT_LENGTH = 300;
+    // Categories are ids from 0 to CATEGORY_COUNT - 1; their names live in the frontend (constants/taskCategories.ts)
+    uint256 public constant CATEGORY_COUNT = 6;
 
     uint256 public constant ACCEPTANCE_WINDOW = 30 days;
-    uint256 public constant WORK_WINDOW = 30 days;
+    uint256 public constant MIN_WORK_DAYS = 7;
+    uint256 public constant MAX_WORK_DAYS = 30;
     uint256 public constant REVIEW_WINDOW = 7 days;
 
     IAgoraDao public dao;
@@ -96,7 +107,15 @@ contract AgoraTasks is ReentrancyGuard {
     // --- WRITE FUNCTIONS ---
 
     /// @notice Publishes a task. The reward is the ETH sent with the call and stays here until the task ends.
-    function createTask(string calldata _title, string calldata _description) external payable returns (uint256 id) {
+    /// @param _workDays how many days the assignee will have to send the work once they take it
+    /// @param _metadataURI IPFS link (CID) to the details: description, images, acceptance criteria and references
+    function createTask(
+        string calldata _title,
+        string calldata _summary,
+        uint256 _categoryId,
+        uint256 _workDays,
+        string calldata _metadataURI
+    ) external payable returns (uint256 id) {
         require(
             dao.isRole(TASK_MANAGER_ROLE, msg.sender) || dao.isRole(DEFAULT_ADMIN, msg.sender),
             "Only task managers or admins can create tasks"
@@ -104,8 +123,12 @@ contract AgoraTasks is ReentrancyGuard {
         require(msg.value > 0, "The reward must be greater than zero");
         require(bytes(_title).length > 0, "The title must not be empty");
         require(bytes(_title).length <= MAX_TITLE_LENGTH, "The title is too long");
-        require(bytes(_description).length > 0, "The description must not be empty");
-        require(bytes(_description).length <= MAX_DESCRIPTION_LENGTH, "The description is too long");
+        require(bytes(_summary).length > 0, "The summary must not be empty");
+        require(bytes(_summary).length <= MAX_SUMMARY_LENGTH, "The summary is too long");
+        require(_categoryId < CATEGORY_COUNT, "Invalid category");
+        require(_workDays >= MIN_WORK_DAYS && _workDays <= MAX_WORK_DAYS, "Invalid work days");
+        require(bytes(_metadataURI).length > 0, "The details link must not be empty");
+        require(bytes(_metadataURI).length <= MAX_METADATA_URI_LENGTH, "The details link is too long");
 
         id = tasks.length;
         Task storage task = tasks.push();
@@ -113,10 +136,13 @@ contract AgoraTasks is ReentrancyGuard {
         task.creator = msg.sender;
         task.reward = msg.value;
         task.title = _title;
-        task.description = _description;
+        task.summary = _summary;
+        task.categoryId = _categoryId;
+        task.metadataURI = _metadataURI;
         task.status = Status.Open;
         task.createdAt = block.timestamp;
         task.deadline = block.timestamp + ACCEPTANCE_WINDOW;
+        task.workWindow = _workDays * 1 days;
 
         emit TaskCreated(id, msg.sender, msg.value);
         emit TaskStatusChanged(id, Status.Open, msg.sender);
@@ -132,7 +158,7 @@ contract AgoraTasks is ReentrancyGuard {
         require(dao.isRole(USER_ROLE, msg.sender), "Only members can take tasks");
 
         task.assignee = msg.sender;
-        task.deadline = block.timestamp + WORK_WINDOW;
+        task.deadline = block.timestamp + task.workWindow;
         _setStatus(task, Status.Taken);
     }
 
@@ -195,7 +221,7 @@ contract AgoraTasks is ReentrancyGuard {
         require(bytes(_reason).length <= MAX_TEXT_LENGTH, "The reason is too long");
 
         task.rejectionReason = _reason;
-        task.deadline = block.timestamp + WORK_WINDOW;
+        task.deadline = block.timestamp + task.workWindow;
         _setStatus(task, Status.Rejected);
     }
 

@@ -1,63 +1,85 @@
-import { Clock, Coins } from "lucide-react";
+import { Clock, Coins, Timer, UserRound } from "lucide-react";
+import { formatEther } from "viem";
 import { Badge } from "~~/components/ui/shadcn/badge";
-import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardFooter, CardHeader } from "~~/components/ui/shadcn/card";
-import { cn } from "~~/lib/utils";
+import { TASK_CATEGORIES } from "~~/constants/taskCategories";
+import { getCategoryStyle } from "~~/lib/categoryColors";
+import { TASK_STATUS_META, getDeadlineText } from "~~/lib/tasks";
+import { cn, shortAddress } from "~~/lib/utils";
 
-interface TaskProps {
-  id: string;
+type TaskCardProps = {
   title: string;
-  description: string;
-  reward: string;
-  status: "open" | "in-progress" | "completed";
-  category: string;
-  priority: "low" | "medium" | "high";
-  deadline: string;
-}
-
-const statusColors = {
-  open: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  "in-progress": "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  completed: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
+  summary: string;
+  categoryId: number;
+  /** In wei */
+  reward: bigint;
+  status: number;
+  deadline?: bigint;
+  /** Days the assignee has to deliver once they take it */
+  workDays?: number;
+  creator?: string;
 };
 
-const priorityColors = {
-  low: "text-blue-500",
-  medium: "text-yellow-500",
-  high: "text-red-500",
-};
+export const TaskCard: React.FC<TaskCardProps> = ({
+  title,
+  summary,
+  categoryId,
+  reward,
+  status,
+  deadline = 0n,
+  workDays,
+  creator,
+}) => {
+  const statusMeta = TASK_STATUS_META[status];
+  const deadlineText = getDeadlineText(status, deadline);
+  const category = TASK_CATEGORIES[categoryId];
 
-export const TaskCard: React.FC<TaskProps> = ({ title, description, reward, status, category, priority, deadline }) => {
   return (
     <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 -mb-8">
-        <div className="space-y-1">
-          <Badge variant="secondary" className="mb-2 font-normal">
-            {category}
-          </Badge>
-          <h3 className="font-semibold leading-none tracking-tight">{title}</h3>
+      <CardHeader className="space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          {category !== undefined ? (
+            <Badge variant="outline" className={getCategoryStyle(categoryId).soft}>
+              {category.toLowerCase()}
+            </Badge>
+          ) : (
+            <span />
+          )}
+          <Badge className={cn("border-transparent", statusMeta?.className)}>{statusMeta?.label}</Badge>
         </div>
-        <Badge className={statusColors[status]}>{status.replace("-", " ")}</Badge>
+        <h3 className="m-0 font-semibold leading-snug tracking-tight break-words">{title}</h3>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{description}</p>
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-1 text-primary font-medium">
+
+      <CardContent className="space-y-4">
+        <p className="m-0 text-sm text-muted-foreground line-clamp-3 break-words">{summary}</p>
+
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+          <div className="flex items-center gap-1 font-medium text-primary">
             <Coins className="h-4 w-4" />
-            {reward}
+            {formatEther(reward)} ETH
           </div>
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Clock className="h-4 w-4" />
-            {deadline}
-          </div>
+          {workDays !== undefined && (
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Timer className="h-4 w-4" />
+              {workDays} días para entregar
+            </div>
+          )}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between border-t pt-4">
-        <div className="flex items-center text-xs text-muted-foreground">
-          <span className={cn("mr-1 font-bold", priorityColors[priority])}>•</span>
-          Prioridad {priority}
-        </div>
-        <Button size="sm">Ver Detalles</Button>
+
+      <CardFooter className="flex items-center justify-between gap-2 border-t pt-4 text-xs text-muted-foreground">
+        {creator !== undefined && (
+          <span className="flex items-center gap-1">
+            <UserRound className="h-3.5 w-3.5" />
+            {shortAddress(creator)}
+          </span>
+        )}
+        {deadlineText !== undefined && (
+          <span className="flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" />
+            {deadlineText}
+          </span>
+        )}
       </CardFooter>
     </Card>
   );
