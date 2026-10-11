@@ -1,21 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Rocket } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Rocket } from "lucide-react";
 import { useAccount } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth/RainbowKitCustomConnectButton";
 import DecryptedText from "~~/components/ui/DecryptedText";
 import RotatingText from "~~/components/ui/RotatingText";
 import { Badge } from "~~/components/ui/shadcn/badge";
+import { Button } from "~~/components/ui/shadcn/button";
+import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 
 export const HeroSection: React.FC = () => {
-  const { isConnected } = useAccount();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isConnected) router.push("/daos");
-  }, [isConnected, router]);
+  const { status } = useAccount();
 
   return (
     <section className="py-20 px-4 relative z-10">
@@ -52,7 +48,18 @@ export const HeroSection: React.FC = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <RainbowKitCustomConnectButton />
+          {status === "connecting" || status === "reconnecting" ? (
+            <Skeleton className="h-9 w-40" />
+          ) : status === "connected" ? (
+            <Button asChild size="lg">
+              <Link href="/daos">
+                Ir a mis DAOs
+                <ArrowRight />
+              </Link>
+            </Button>
+          ) : (
+            <RainbowKitCustomConnectButton />
+          )}
         </div>
       </div>
     </section>
