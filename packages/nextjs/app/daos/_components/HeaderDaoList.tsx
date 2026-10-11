@@ -6,14 +6,15 @@ import { useAccount } from "wagmi";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export const HeaderDaoList: React.FC = () => {
-  const { isConnected } = useAccount();
+  const { status } = useAccount();
   const router = useRouter();
 
   useEffect(() => {
-    if (isConnected) return;
+    // "reconnecting" happens on every page reload; only a real disconnect should leave
+    if (status !== "disconnected") return;
 
     router.push("/");
-  }, [isConnected, router]);
+  }, [status, router]);
 
   return (
     <header className="border-b bg-card">

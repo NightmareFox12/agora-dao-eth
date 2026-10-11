@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, Rocket } from "lucide-react";
-import { useAccount } from "wagmi";
+import { toast } from "sonner";
+import { useAccount, useAccountEffect } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth/RainbowKitCustomConnectButton";
 import DecryptedText from "~~/components/ui/DecryptedText";
 import RotatingText from "~~/components/ui/RotatingText";
@@ -12,6 +14,20 @@ import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 
 export const HeroSection: React.FC = () => {
   const { status } = useAccount();
+  const router = useRouter();
+
+  // only for a fresh connection: the user may be reading further down and miss that the button changed
+  useAccountEffect({
+    onConnect({ isReconnected }) {
+      if (isReconnected) return;
+
+      toast.success("Wallet conectada", {
+        description: "Ya puedes ver las DAOs disponibles.",
+        duration: 15000,
+        action: { label: "Ir a mis DAOs", onClick: () => router.push("/daos") },
+      });
+    },
+  });
 
   return (
     <section className="py-20 px-4 relative z-10">
