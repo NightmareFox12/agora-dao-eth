@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import RotatingText from "~~/components/ui/RotatingText";
+import { Badge } from "~~/components/ui/shadcn/badge";
 import { Button } from "~~/components/ui/shadcn/button";
 import {
   Dialog,
@@ -28,13 +29,13 @@ import {
 import { Input } from "~~/components/ui/shadcn/input";
 import { Progress } from "~~/components/ui/shadcn/progress";
 import { ScrollArea } from "~~/components/ui/shadcn/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~~/components/ui/shadcn/select";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { Textarea } from "~~/components/ui/shadcn/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~~/components/ui/shadcn/tooltip";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useBreakpoint } from "~~/hooks/useBreakpoint";
-import { DaoFormSchema } from "~~/lib/schemes/dao.scheme";
+import { DaoFormSchema, MAX_DAO_CATEGORIES } from "~~/lib/schemes/dao.scheme";
+import { cn } from "~~/lib/utils";
 
 export const CreateDaoDialog: React.FC = () => {
   const { isMd } = useBreakpoint();
@@ -52,7 +53,7 @@ export const CreateDaoDialog: React.FC = () => {
     defaultValues: {
       name: "",
       description: "",
-      categories: undefined,
+      categories: [],
       logo: undefined,
     },
   });
@@ -110,7 +111,7 @@ export const CreateDaoDialog: React.FC = () => {
     toast.success("DAO creada exitosamente");
     daoForm.reset();
     daoForm.setValue("logo", undefined);
-    daoForm.setValue("categories", "");
+    daoForm.setValue("categories", []);
     setOpenModal(false);
   };
 
@@ -135,7 +136,7 @@ export const CreateDaoDialog: React.FC = () => {
 
       await writeAgoraDaoFabricAsync({
         functionName: "createDao",
-        args: [data.name, data.description, BigInt(data.categories), res?.cid || ""],
+        args: [data.name, data.description, data.categories.map(BigInt), res?.cid || ""],
       });
 
       resetAll();
@@ -171,11 +172,11 @@ export const CreateDaoDialog: React.FC = () => {
         </DialogTrigger>
       </div>
 
-      <DialogContent className="p-3">
+      <DialogContent className="p-3 sm:max-w-xl">
         <ScrollArea className="h-[500px] p-1 px-1 mt-2.5">
-          <DialogHeader>
-            <DialogTitle>Crear tu DAO!</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="px-1.5">
+            <DialogTitle>¡Crea tu DAO!</DialogTitle>
+            <DialogDescription className="text-foreground/80 font-bold">
               Una vez que hayas completado todos los campos requeridos, presiona el botón &quot;Lanzar DAO&quot;.
             </DialogDescription>
           </DialogHeader>
@@ -245,29 +246,55 @@ export const CreateDaoDialog: React.FC = () => {
                   control={daoForm.control}
                   name="categories"
                   disabled={submitLoading}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Categorías <span className="text-destructive font-bold text-bold">*</span>
-                      </FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange} disabled={submitLoading}>
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Selecciona una categoría" />
-                          </SelectTrigger>
-                        </FormControl>
+                  render={({ field }) => {
+                    const isAtLimit = field.value.length >= MAX_DAO_CATEGORIES;
 
-                        <SelectContent>
-                          {daoCategories.map((x, y) => (
-                            <SelectItem key={y} value={y.toString()}>
-                              {x.toString()}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage className="-my-1" />
-                    </FormItem>
-                  )}
+                    const toggleCategory = (id: number) => {
+                      if (field.value.includes(id)) field.onChange(field.value.filter(x => x !== id));
+                      else if (!isAtLimit) field.onChange([...field.value, id]);
+                    };
+
+                    return (
+                      <FormItem>
+                        <FormLabel>
+                          Categorías <span className="text-destructive font-bold text-bold">*</span>
+                        </FormLabel>
+                        <div className="flex flex-wrap gap-2">
+                          {daoCategories.map((category, id) => {
+                            const isSelected = field.value.includes(id);
+
+                            return (
+                              <Badge
+                                key={id}
+                                asChild
+                                variant={isSelected ? "default" : "outline"}
+                                className="text-sm px-3 py-1"
+                              >
+                                <button
+                                  type="button"
+                                  aria-pressed={isSelected}
+                                  disabled={submitLoading || (isAtLimit && !isSelected)}
+                                  onClick={() => toggleCategory(id)}
+                                  className={cn(
+                                    "cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+                                    !isSelected && "hover:bg-accent",
+                                  )}
+                                >
+                                  {category}
+                                </button>
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                        <div className="w-full flex justify-between px-1">
+                          <FormMessage className="-my-1" />
+                          <FormDescription className="-my-1 ml-auto">
+                            {field.value.length}/{MAX_DAO_CATEGORIES}
+                          </FormDescription>
+                        </div>
+                      </FormItem>
+                    );
+                  }}
                 />
               )}
 

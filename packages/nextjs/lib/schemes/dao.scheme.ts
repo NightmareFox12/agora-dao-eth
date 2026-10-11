@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+// must match MAX_CATEGORIES in Validation.sol
+export const MAX_DAO_CATEGORIES = 3;
+
 export const DaoFormSchema = z.object({
   name: z
     .string()
@@ -21,7 +24,10 @@ export const DaoFormSchema = z.object({
       message: "Character limit exceeded",
     }),
 
-  categories: z.string(),
+  categories: z
+    .array(z.number())
+    .min(1, { message: "Selecciona al menos una categoría." })
+    .max(MAX_DAO_CATEGORIES, { message: `Máximo ${MAX_DAO_CATEGORIES} categorías.` }),
 
   logo: z
     .instanceof(File)

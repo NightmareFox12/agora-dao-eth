@@ -20,7 +20,7 @@ contract AgoraDaoFactory is Ownable, Validation {
         address daoAddress;
         string name;
         string description;
-        string category;
+        uint256[] categoryIDs;
         string imageURI;
         // bool isPublic;
         uint256 creationTimestamp;
@@ -53,11 +53,11 @@ contract AgoraDaoFactory is Ownable, Validation {
     function createDao(
         string memory _name,
         string memory _description,
-        uint256 _categoryID,
+        uint256[] memory _categoryIDs,
         string memory _imageURI // bool _isPublic
     ) external {
         //Validation
-        _createDao(_name, _description, _categoryID, daoCategories);
+        _createDao(_name, _description, _categoryIDs, daoCategories);
 
         //create dao
         AgoraDao createdDaoContract = new AgoraDao(address(this), msg.sender);
@@ -68,7 +68,7 @@ contract AgoraDaoFactory is Ownable, Validation {
             address(createdDaoContract),
             _name,
             _description,
-            daoCategories[_categoryID],
+            _categoryIDs,
             _imageURI,
             // _isPublic,
             block.timestamp

@@ -22,6 +22,15 @@ export const DaoGrid: React.FC = () => {
     functionName: "getAllDaos",
   });
 
+  const { data: daoCategories } = useScaffoldReadContract({
+    contractName: "AgoraDaoFactory",
+    functionName: "getAllDaoCategories",
+  });
+
+  //functions
+  const getCategoryNames = (ids: readonly bigint[]) =>
+    ids.map(id => daoCategories?.[Number(id)]).filter((name): name is string => name !== undefined);
+
   //components
   const LoadingCards = () => {
     const arr = new Array(9).fill(0);
@@ -47,15 +56,16 @@ export const DaoGrid: React.FC = () => {
   //memos
   const daosFiltered = useMemo(() => {
     const daosCat = daos?.filter(x => {
-      if (selectedDao.category === "all") return daos;
+      if (selectedDao.category === "all") return true;
       if (selectedDao.category === "myDaos") return x.creator === address;
-      return x.category === selectedDao.category;
+      return getCategoryNames(x.categoryIDs).includes(selectedDao.category);
     });
 
     if (selectedDao.name.length > 0)
       return daosCat?.filter(x => x.name.toLowerCase().includes(selectedDao.name.toLowerCase()));
     return daosCat;
-  }, [address, daos, selectedDao]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, daos, daoCategories, selectedDao]);
 
   if (isPending) {
     return (
@@ -88,7 +98,7 @@ export const DaoGrid: React.FC = () => {
                   userAddress={address}
                   name={x.name}
                   description={x.description}
-                  category={x.category}
+                  categories={getCategoryNames(x.categoryIDs)}
                   imageUri={x.imageURI}
                   creationDate={x.creationTimestamp}
                 />

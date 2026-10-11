@@ -19,23 +19,23 @@ import { cn } from "~~/lib/utils";
 const NoSSRBadge = dynamic(() => import("~~/components/ui/shadcn/badge").then(module => module.Badge), { ssr: false });
 
 //constans
-const DARK_CATEGORY_COLORS = {
+const DARK_CATEGORY_COLORS: Record<string, string> = {
   defi: "bg-blue-900 text-blue-300",
   gaming: "bg-purple-900 text-purple-300",
-  "Social Impact": "bg-green-900 text-green-300",
+  "social impact": "bg-green-900 text-green-300",
   service: "bg-orange-900 text-orange-300",
   energy: "bg-yellow-900 text-yellow-300",
   governance: "bg-pink-900 text-pink-300",
-} as const;
+};
 
-const LIGHT_CATEGORY_COLORS = {
+const LIGHT_CATEGORY_COLORS: Record<string, string> = {
   defi: "bg-blue-100 text-blue-800",
   gaming: "bg-purple-100 text-purple-800",
-  "Social Impact": "bg-green-100 text-green-800",
+  "social impact": "bg-green-100 text-green-800",
   service: "bg-orange-100 text-orange-800",
   energy: "bg-yellow-100 text-yellow-800",
   governance: "bg-pink-100 text-pink-800",
-} as const;
+};
 
 const BORDER_COLOR = {
   dark: "border-blue-400",
@@ -48,7 +48,7 @@ type DaoCardProps = {
   userAddress: string | undefined;
   name: string;
   description: string;
-  category: string;
+  categories: string[];
   imageUri: string;
   creationDate: bigint;
 };
@@ -59,7 +59,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   userAddress,
   name,
   description,
-  category,
+  categories,
   imageUri,
   creationDate,
 }) => {
@@ -150,16 +150,18 @@ export const DaoCard: React.FC<DaoCardProps> = ({
           </div>
           <NoSSRBadge>#{daoID}</NoSSRBadge>
         </div>
-        <NoSSRBadge
-          variant="secondary"
-          className={`w-fit ${
-            isDarkMode
-              ? DARK_CATEGORY_COLORS[category.toLowerCase() as keyof typeof DARK_CATEGORY_COLORS]
-              : LIGHT_CATEGORY_COLORS[category.toLowerCase() as keyof typeof LIGHT_CATEGORY_COLORS]
-          }`}
-        >
-          {category.toLowerCase()}
-        </NoSSRBadge>
+        <div className="flex flex-wrap gap-1.5">
+          {categories.map(category => {
+            const name = category.toLowerCase();
+            const colors = isDarkMode ? DARK_CATEGORY_COLORS : LIGHT_CATEGORY_COLORS;
+
+            return (
+              <NoSSRBadge key={category} variant="secondary" className={colors[name]}>
+                {name}
+              </NoSSRBadge>
+            );
+          })}
+        </div>
       </CardHeader>
 
       <CardContent className="flex-1">
