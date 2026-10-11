@@ -122,7 +122,8 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
           <Info className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+      {/* grid-cols-1 keeps a long word from stretching the dialog: a plain grid column grows to fit it */}
+      <DialogContent className="grid-cols-1 sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-left">
           <div className="flex items-start gap-4">
             <div className="size-20 shrink-0 overflow-hidden rounded-xl border bg-primary/10 flex items-center justify-center">
@@ -136,7 +137,7 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
 
             <div className="min-w-0 space-y-2">
               <div className="flex flex-wrap items-center gap-2 pr-6">
-                <DialogTitle className="text-2xl break-words">{name}</DialogTitle>
+                <DialogTitle className="text-2xl [overflow-wrap:anywhere]">{name}</DialogTitle>
                 <Badge variant="secondary">#{daoID.toString()}</Badge>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -149,7 +150,9 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
             </div>
           </div>
 
-          <DialogDescription className="pt-2 break-words text-foreground/80">{description}</DialogDescription>
+          <DialogDescription className="pt-2 text-foreground/80 [overflow-wrap:anywhere]">
+            {description}
+          </DialogDescription>
         </DialogHeader>
 
         {/* Info */}

@@ -42,21 +42,21 @@ Una DAO necesita que alguien haga cosas: diseñar, programar, escribir, organiza
 
 ## Qué lleva una tarea
 
-Al publicarla, el creador completa una página con estas secciones:
+Al publicarla, el creador completa un asistente de **3 pasos** (lo básico, detalles, y plazo y recompensa), con una barra de progreso que muestra en qué paso va. Cada paso se valida antes de avanzar. Estos son los datos:
 
 | Dato | Detalle |
 |---|---|
 | **Título** | Hasta 80 caracteres |
 | **Resumen** | Hasta 160 caracteres. Es lo que se ve en la tarjeta de la lista |
 | **Categoría** | Desarrollo, Diseño, Contenido, Marketing, Investigación u Otro |
-| **Descripción** | Larga y con formato (títulos, listas, negritas, enlaces). Hasta 5.000 caracteres, con vista previa |
+| **Descripción** | Larga, en Markdown como el de GitHub: títulos, negritas, listas, listas de tareas, tablas, citas y bloques de código. Hasta 5.000 caracteres. El editor tiene barra de formato, atajos de teclado (Ctrl+B, Ctrl+I, Ctrl+K), continúa las listas al pulsar Enter y ofrece vista previa |
 | **Imágenes** | Opcional. Hasta 3, JPG o PNG de menos de 1 MB: referencias, bocetos, capturas |
 | **Criterios de aceptación** | Opcional. Hasta 10 puntos que definen cuándo la tarea está terminada. Si hay una disputa, el árbitro los usa para decidir |
 | **Enlaces de referencia** | Opcional. Hasta 5, con nombre (ejemplos, guía de marca...) |
 | **Plazo de entrega** | De 7 a 30 días, lo elige el creador. Es el tiempo que tendrá quien tome la tarea, desde que la toma |
 | **Recompensa** | En ETH. Se deposita en el momento de publicar |
 
-Antes de pagar, la página muestra cómo se verá la tarjeta y cuánto se va a depositar.
+Antes de pagar, la página muestra cómo se verá la tarjeta y cuánto se va a depositar. Las imágenes escritas dentro de la descripción no se cargan (se muestran como enlace); para adjuntar imágenes está su propio campo.
 
 **Lo acordado no se puede cambiar.** La descripción, las imágenes, los criterios y los enlaces se guardan en IPFS, y la blockchain guarda un enlace que es una huella del contenido. Si alguien cambiara una sola letra, la huella ya no coincidiría. Así, en una disputa, el árbitro ve exactamente lo que se pidió, y ninguna de las dos partes puede reescribirlo.
 

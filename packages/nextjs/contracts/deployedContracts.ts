@@ -529,7 +529,7 @@ const deployedContracts = {
       deployedOnBlock: 28,
     },
     AgoraDaoFactory: {
-      address: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+      address: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
       abi: [
         {
           inputs: [
@@ -1024,10 +1024,10 @@ const deployedContracts = {
         MAX_DESCRIPTION_LENGTH: "contracts/AgoraDaoFactory/Validation.sol",
         MAX_NAME_LENGTH: "contracts/AgoraDaoFactory/Validation.sol",
       },
-      deployedOnBlock: 32,
+      deployedOnBlock: 37,
     },
     AgoraTasks: {
-      address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
+      address: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
       abi: [
         {
           inputs: [],
@@ -1120,7 +1120,7 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "MAX_DESCRIPTION_LENGTH",
+          name: "CATEGORY_COUNT",
           outputs: [
             {
               internalType: "uint256",
@@ -1134,6 +1134,32 @@ const deployedContracts = {
         {
           inputs: [],
           name: "MAX_LINK_LENGTH",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "MAX_METADATA_URI_LENGTH",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "MAX_SUMMARY_LENGTH",
           outputs: [
             {
               internalType: "uint256",
@@ -1172,7 +1198,7 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "REVIEW_WINDOW",
+          name: "MAX_WORK_DAYS",
           outputs: [
             {
               internalType: "uint256",
@@ -1185,7 +1211,20 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "WORK_WINDOW",
+          name: "MIN_WORK_DAYS",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "REVIEW_WINDOW",
           outputs: [
             {
               internalType: "uint256",
@@ -1257,7 +1296,22 @@ const deployedContracts = {
             },
             {
               internalType: "string",
-              name: "_description",
+              name: "_summary",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "_categoryId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_workDays",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "_metadataURI",
               type: "string",
             },
           ],
@@ -1331,7 +1385,17 @@ const deployedContracts = {
                 },
                 {
                   internalType: "string",
-                  name: "description",
+                  name: "summary",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "categoryId",
+                  type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "metadataURI",
                   type: "string",
                 },
                 {
@@ -1347,6 +1411,11 @@ const deployedContracts = {
                 {
                   internalType: "uint256",
                   name: "deadline",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "workWindow",
                   type: "uint256",
                 },
                 {
@@ -1412,7 +1481,17 @@ const deployedContracts = {
                 },
                 {
                   internalType: "string",
-                  name: "description",
+                  name: "summary",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "categoryId",
+                  type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "metadataURI",
                   type: "string",
                 },
                 {
@@ -1428,6 +1507,11 @@ const deployedContracts = {
                 {
                   internalType: "uint256",
                   name: "deadline",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "workWindow",
                   type: "uint256",
                 },
                 {
@@ -1580,7 +1664,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 30,
+      deployedOnBlock: 35,
     },
   },
   11155111: {
