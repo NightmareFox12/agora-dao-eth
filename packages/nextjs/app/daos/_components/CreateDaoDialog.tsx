@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleQuestionMarkIcon, Loader, Plus, Rocket, Trash, Upload } from "lucide-react";
+import { Check, CircleQuestionMarkIcon, Loader, Plus, Rocket, Trash, Upload } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -34,7 +34,13 @@ import { Textarea } from "~~/components/ui/shadcn/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~~/components/ui/shadcn/tooltip";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useBreakpoint } from "~~/hooks/useBreakpoint";
-import { DaoFormSchema, MAX_DAO_CATEGORIES } from "~~/lib/schemes/dao.scheme";
+import { getCategoryStyle } from "~~/lib/categoryColors";
+import {
+  DAO_DESCRIPTION_MAX_LENGTH,
+  DAO_NAME_MAX_LENGTH,
+  DaoFormSchema,
+  MAX_DAO_CATEGORIES,
+} from "~~/lib/schemes/dao.scheme";
 import { cn } from "~~/lib/utils";
 
 export const CreateDaoDialog: React.FC = () => {
@@ -205,7 +211,9 @@ export const CreateDaoDialog: React.FC = () => {
                       {fieldState.error === undefined && <span />}
                       <FormMessage className="-my-1" />
 
-                      <FormDescription className="-my-1 justify-end">{field.value.length}/50</FormDescription>
+                      <FormDescription className="-my-1 justify-end">
+                        {field.value.length}/{DAO_NAME_MAX_LENGTH}
+                      </FormDescription>
                     </div>
                   </FormItem>
                 )}
@@ -232,7 +240,9 @@ export const CreateDaoDialog: React.FC = () => {
                       {fieldState.error === undefined && <span />}
                       <FormMessage className="-my-1" />
 
-                      <FormDescription className="-my-1 justify-end">{field.value.length}/500</FormDescription>
+                      <FormDescription className="-my-1 justify-end">
+                        {field.value.length}/{DAO_DESCRIPTION_MAX_LENGTH}
+                      </FormDescription>
                     </div>
                   </FormItem>
                 )}
@@ -262,24 +272,23 @@ export const CreateDaoDialog: React.FC = () => {
                         <div className="flex flex-wrap gap-2">
                           {daoCategories.map((category, id) => {
                             const isSelected = field.value.includes(id);
+                            const style = getCategoryStyle(id);
 
                             return (
                               <Badge
                                 key={id}
                                 asChild
-                                variant={isSelected ? "default" : "outline"}
-                                className="text-sm px-3 py-1"
+                                variant="outline"
+                                className={cn("text-sm px-3 py-1", isSelected ? style.active : style.idle)}
                               >
                                 <button
                                   type="button"
                                   aria-pressed={isSelected}
                                   disabled={submitLoading || (isAtLimit && !isSelected)}
                                   onClick={() => toggleCategory(id)}
-                                  className={cn(
-                                    "cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
-                                    !isSelected && "hover:bg-accent",
-                                  )}
+                                  className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                                 >
+                                  {isSelected && <Check />}
                                   {category}
                                 </button>
                               </Badge>

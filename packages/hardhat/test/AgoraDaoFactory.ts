@@ -54,4 +54,37 @@ describe("AgoraDaoFactory", function () {
       );
     });
   });
+
+  describe("createDao text limits", function () {
+    it("accepts a name and description at the maximum length", async function () {
+      const name = "n".repeat(Number(await factory.MAX_NAME_LENGTH()));
+      const description = "d".repeat(Number(await factory.MAX_DESCRIPTION_LENGTH()));
+
+      await factory.createDao(name, description, [0], "");
+      expect((await factory.getAllDaos()).length).to.equal(1);
+    });
+
+    it("rejects a name longer than MAX_NAME_LENGTH", async function () {
+      const name = "n".repeat(Number(await factory.MAX_NAME_LENGTH()) + 1);
+
+      await expect(factory.createDao(name, "A DAO for testing", [0], "")).to.be.revertedWith(
+        "The name of the DAO is very long",
+      );
+    });
+
+    it("rejects a description longer than MAX_DESCRIPTION_LENGTH", async function () {
+      const description = "d".repeat(Number(await factory.MAX_DESCRIPTION_LENGTH()) + 1);
+
+      await expect(factory.createDao("ETH Force", description, [0], "")).to.be.revertedWith(
+        "The description of the DAO is very long",
+      );
+    });
+
+    // The frontend form (dao.scheme.ts) hardcodes these numbers: if this test fails, update both places.
+    it("keeps the limits the frontend form expects", async function () {
+      expect(await factory.MAX_NAME_LENGTH()).to.equal(50);
+      expect(await factory.MAX_DESCRIPTION_LENGTH()).to.equal(500);
+      expect(await factory.MAX_CATEGORIES()).to.equal(3);
+    });
+  });
 });

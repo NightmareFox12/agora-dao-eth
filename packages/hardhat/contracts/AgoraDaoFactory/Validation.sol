@@ -2,6 +2,9 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 abstract contract Validation {
+    // Keep in sync with packages/nextjs/lib/schemes/dao.scheme.ts
+    uint256 public constant MAX_NAME_LENGTH = 50;
+    uint256 public constant MAX_DESCRIPTION_LENGTH = 500;
     uint256 public constant MAX_CATEGORIES = 3;
 
     function _createDao(
@@ -13,9 +16,9 @@ abstract contract Validation {
         //TODO: me falta verificar que el nombre no este repetido. Pero gastaria mucho gas
 
         require(bytes(_name).length > 0, "Dao name must not be empty");
-        require(bytes(_name).length <= 50, "The name of the DAO is very long");
+        require(bytes(_name).length <= MAX_NAME_LENGTH, "The name of the DAO is very long");
         require(bytes(_description).length > 0, "DAO description must not be empty");
-        require(bytes(_description).length <= 500, "The description of the DAO is very long");
+        require(bytes(_description).length <= MAX_DESCRIPTION_LENGTH, "The description of the DAO is very long");
 
         require(_categoryIDs.length > 0, "At least one category is required");
         require(_categoryIDs.length <= MAX_CATEGORIES, "Too many categories");

@@ -1,27 +1,34 @@
 import { z } from "zod";
 
-// must match MAX_CATEGORIES in Validation.sol
+// Upper limits mirror the constants in Validation.sol (MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH, MAX_CATEGORIES).
+// If you change one of them, change it in both places. The form counters read from here too.
+export const DAO_NAME_MAX_LENGTH = 50;
+export const DAO_DESCRIPTION_MAX_LENGTH = 500;
 export const MAX_DAO_CATEGORIES = 3;
+
+// Lower limits are only enforced by the form.
+const DAO_NAME_MIN_LENGTH = 2;
+const DAO_DESCRIPTION_MIN_LENGTH = 15;
 
 export const DaoFormSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, {
-      message: "DAO name must be at least 2 characters.",
+    .min(DAO_NAME_MIN_LENGTH, {
+      message: `El nombre debe tener al menos ${DAO_NAME_MIN_LENGTH} caracteres.`,
     })
-    .max(30, {
-      message: "Character limit exceeded",
+    .max(DAO_NAME_MAX_LENGTH, {
+      message: `El nombre no puede superar los ${DAO_NAME_MAX_LENGTH} caracteres.`,
     }),
 
   description: z
     .string()
     .trim()
-    .min(15, {
-      message: "Description must be at least 15 characters.",
+    .min(DAO_DESCRIPTION_MIN_LENGTH, {
+      message: `La descripción debe tener al menos ${DAO_DESCRIPTION_MIN_LENGTH} caracteres.`,
     })
-    .max(300, {
-      message: "Character limit exceeded",
+    .max(DAO_DESCRIPTION_MAX_LENGTH, {
+      message: `La descripción no puede superar los ${DAO_DESCRIPTION_MAX_LENGTH} caracteres.`,
     }),
 
   categories: z
@@ -32,7 +39,7 @@ export const DaoFormSchema = z.object({
   logo: z
     .instanceof(File)
     .refine(file => file.type.startsWith("image/"), {
-      message: "Only image files are allowed.",
+      message: "Solo se permiten archivos de imagen.",
     })
     .optional(),
 

@@ -12,6 +12,8 @@ import {
 } from "~~/components/ui/shadcn/dropdown-menu";
 import { Input } from "~~/components/ui/shadcn/input";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
+import { getCategoryStyle } from "~~/lib/categoryColors";
+import { cn } from "~~/lib/utils";
 import { useDaoStore } from "~~/services/store/dao.store";
 
 export const SearchDaos: React.FC = () => {
@@ -61,6 +63,7 @@ export const SearchDaos: React.FC = () => {
                 checked={selectedDao.category === category}
                 onCheckedChange={() => setSelectedDao({ ...selectedDao, category: category })}
               >
+                <span className={cn("size-2 rounded-full", getCategoryStyle(index).dot)} />
                 {category}
               </DropdownMenuCheckboxItem>
             ))}

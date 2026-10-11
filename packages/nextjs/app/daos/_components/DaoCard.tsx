@@ -13,30 +13,13 @@ import { LOCAL_STORAGE_KEYS } from "~~/constants/localStorage";
 import { DEFAULT_ADMIN_ROLE, USER_ROLE } from "~~/constants/roles";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
+import { getCategoryStyle } from "~~/lib/categoryColors";
 import { cn } from "~~/lib/utils";
 
 //dinamycs
 const NoSSRBadge = dynamic(() => import("~~/components/ui/shadcn/badge").then(module => module.Badge), { ssr: false });
 
 //constans
-const DARK_CATEGORY_COLORS: Record<string, string> = {
-  defi: "bg-blue-900 text-blue-300",
-  gaming: "bg-purple-900 text-purple-300",
-  "social impact": "bg-green-900 text-green-300",
-  service: "bg-orange-900 text-orange-300",
-  energy: "bg-yellow-900 text-yellow-300",
-  governance: "bg-pink-900 text-pink-300",
-};
-
-const LIGHT_CATEGORY_COLORS: Record<string, string> = {
-  defi: "bg-blue-100 text-blue-800",
-  gaming: "bg-purple-100 text-purple-800",
-  "social impact": "bg-green-100 text-green-800",
-  service: "bg-orange-100 text-orange-800",
-  energy: "bg-yellow-100 text-yellow-800",
-  governance: "bg-pink-100 text-pink-800",
-};
-
 const BORDER_COLOR = {
   dark: "border-blue-400",
   light: "border-blue-500",
@@ -48,7 +31,7 @@ type DaoCardProps = {
   userAddress: string | undefined;
   name: string;
   description: string;
-  categories: string[];
+  categories: { id: number; name: string }[];
   imageUri: string;
   creationDate: bigint;
 };
@@ -151,16 +134,11 @@ export const DaoCard: React.FC<DaoCardProps> = ({
           <NoSSRBadge>#{daoID}</NoSSRBadge>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {categories.map(category => {
-            const name = category.toLowerCase();
-            const colors = isDarkMode ? DARK_CATEGORY_COLORS : LIGHT_CATEGORY_COLORS;
-
-            return (
-              <NoSSRBadge key={category} variant="secondary" className={colors[name]}>
-                {name}
-              </NoSSRBadge>
-            );
-          })}
+          {categories.map(({ id, name }) => (
+            <NoSSRBadge key={id} variant="outline" className={getCategoryStyle(id).soft}>
+              {name.toLowerCase()}
+            </NoSSRBadge>
+          ))}
         </div>
       </CardHeader>
 

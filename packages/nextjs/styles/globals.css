@@ -130,6 +130,14 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-category-1: var(--category-1);
+  --color-category-2: var(--category-2);
+  --color-category-3: var(--category-3);
+  --color-category-4: var(--category-4);
+  --color-category-5: var(--category-5);
+  --color-category-6: var(--category-6);
+  --color-category-7: var(--category-7);
+  --color-category-8: var(--category-8);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -200,6 +208,15 @@
   --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+  /* one color per DAO category (assigned by category id, see lib/categoryColors.ts) */
+  --category-1: oklch(0.5 0.17 255);
+  --category-2: oklch(0.5 0.18 300);
+  --category-3: oklch(0.5 0.15 150);
+  --category-4: oklch(0.5 0.18 50);
+  --category-5: oklch(0.5 0.13 90);
+  --category-6: oklch(0.5 0.18 350);
+  --category-7: oklch(0.5 0.12 195);
+  --category-8: oklch(0.5 0.19 25);
 }
 
 /*
@@ -207,6 +224,15 @@
 */
 
 .dark {
+  /* one color per DAO category (assigned by category id, see lib/categoryColors.ts) */
+  --category-1: oklch(0.78 0.14 255);
+  --category-2: oklch(0.78 0.15 300);
+  --category-3: oklch(0.78 0.12 150);
+  --category-4: oklch(0.78 0.15 50);
+  --category-5: oklch(0.78 0.10 90);
+  --category-6: oklch(0.78 0.15 350);
+  --category-7: oklch(0.78 0.09 195);
+  --category-8: oklch(0.78 0.16 25);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     AgoraDao: {
-      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
       abi: [
         {
           inputs: [
@@ -501,10 +501,10 @@ const deployedContracts = {
         revokeRole: "contracts/AgoraDao/Rol.sol",
         supportsInterface: "contracts/AgoraDao/Rol.sol",
       },
-      deployedOnBlock: 9,
+      deployedOnBlock: 14,
     },
     AgoraDaoFactory: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       abi: [
         {
           inputs: [
@@ -586,6 +586,32 @@ const deployedContracts = {
         {
           inputs: [],
           name: "MAX_CATEGORIES",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "MAX_DESCRIPTION_LENGTH",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "MAX_NAME_LENGTH",
           outputs: [
             {
               internalType: "uint256",
@@ -910,8 +936,10 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         MAX_CATEGORIES: "contracts/AgoraDaoFactory/Validation.sol",
+        MAX_DESCRIPTION_LENGTH: "contracts/AgoraDaoFactory/Validation.sol",
+        MAX_NAME_LENGTH: "contracts/AgoraDaoFactory/Validation.sol",
       },
-      deployedOnBlock: 7,
+      deployedOnBlock: 12,
     },
   },
   11155111: {
@@ -1508,6 +1536,8 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         MAX_CATEGORIES: "contracts/AgoraDaoFactory/Validation.sol",
+        MAX_DESCRIPTION_LENGTH: "contracts/AgoraDaoFactory/Validation.sol",
+        MAX_NAME_LENGTH: "contracts/AgoraDaoFactory/Validation.sol",
       },
       deployedOnBlock: 9775327,
     },

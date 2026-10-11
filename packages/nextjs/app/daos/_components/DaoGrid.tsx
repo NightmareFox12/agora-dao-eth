@@ -28,8 +28,11 @@ export const DaoGrid: React.FC = () => {
   });
 
   //functions
-  const getCategoryNames = (ids: readonly bigint[]) =>
-    ids.map(id => daoCategories?.[Number(id)]).filter((name): name is string => name !== undefined);
+  const getDaoCategories = (ids: readonly bigint[]) =>
+    ids.flatMap(id => {
+      const name = daoCategories?.[Number(id)];
+      return name === undefined ? [] : [{ id: Number(id), name }];
+    });
 
   //components
   const LoadingCards = () => {
@@ -58,7 +61,7 @@ export const DaoGrid: React.FC = () => {
     const daosCat = daos?.filter(x => {
       if (selectedDao.category === "all") return true;
       if (selectedDao.category === "myDaos") return x.creator === address;
-      return getCategoryNames(x.categoryIDs).includes(selectedDao.category);
+      return getDaoCategories(x.categoryIDs).some(c => c.name === selectedDao.category);
     });
 
     if (selectedDao.name.length > 0)
@@ -98,7 +101,7 @@ export const DaoGrid: React.FC = () => {
                   userAddress={address}
                   name={x.name}
                   description={x.description}
-                  categories={getCategoryNames(x.categoryIDs)}
+                  categories={getDaoCategories(x.categoryIDs)}
                   imageUri={x.imageURI}
                   creationDate={x.creationTimestamp}
                 />
