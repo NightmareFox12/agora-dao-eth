@@ -87,4 +87,58 @@ describe("AgoraDaoFactory", function () {
       expect(await factory.MAX_CATEGORIES()).to.equal(3);
     });
   });
+
+  describe("unique DAO names", function () {
+    it("rejects a name that already exists", async function () {
+      await factory.createDao("ETH Force", "A DAO for testing", [0], "");
+
+      await expect(factory.createDao("ETH Force", "Another description", [1], "")).to.be.revertedWith(
+        "A DAO with this name already exists",
+      );
+    });
+
+    it("treats names that differ only in letter case as the same", async function () {
+      await factory.createDao("ETH Force", "A DAO for testing", [0], "");
+
+      await expect(factory.createDao("eth FORCE", "Another description", [1], "")).to.be.revertedWith(
+        "A DAO with this name already exists",
+      );
+    });
+
+    it("rejects the same name from a different creator", async function () {
+      const [, other] = await ethers.getSigners();
+      await factory.createDao("ETH Force", "A DAO for testing", [0], "");
+
+      await expect(factory.connect(other).createDao("ETH Force", "Another description", [1], "")).to.be.revertedWith(
+        "A DAO with this name already exists",
+      );
+    });
+
+    it("rejects names with leading or trailing spaces", async function () {
+      await expect(factory.createDao(" ETH Force", "A DAO for testing", [0], "")).to.be.revertedWith(
+        "The name must not start or end with spaces",
+      );
+      await expect(factory.createDao("ETH Force ", "A DAO for testing", [0], "")).to.be.revertedWith(
+        "The name must not start or end with spaces",
+      );
+    });
+
+    it("allows different names and keeps the original casing", async function () {
+      await factory.createDao("ETH Force", "A DAO for testing", [0], "");
+      await factory.createDao("Solar Club", "Another DAO", [1], "");
+
+      const daos = await factory.getAllDaos();
+      expect(daos.map(dao => dao.name)).to.deep.equal(["ETH Force", "Solar Club"]);
+    });
+
+    it("reports availability through isDaoNameAvailable", async function () {
+      expect(await factory.isDaoNameAvailable("ETH Force")).to.equal(true);
+
+      await factory.createDao("ETH Force", "A DAO for testing", [0], "");
+
+      expect(await factory.isDaoNameAvailable("ETH Force")).to.equal(false);
+      expect(await factory.isDaoNameAvailable("eth force")).to.equal(false);
+      expect(await factory.isDaoNameAvailable("Solar Club")).to.equal(true);
+    });
+  });
 });

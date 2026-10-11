@@ -3,15 +3,16 @@
 import { useEffect, useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { DaoCard } from "./DaoCard";
-import { Frown, Loader } from "lucide-react";
+import { Frown, Loader, X } from "lucide-react";
 import { useAccount } from "wagmi";
+import { Button } from "~~/components/ui/shadcn/button";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { LOCAL_STORAGE_KEYS } from "~~/constants/localStorage";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useDaoStore } from "~~/services/store/dao.store";
 
 export const DaoGrid: React.FC = () => {
-  const { selectedDao } = useDaoStore();
+  const { selectedDao, clearDaoSearch } = useDaoStore();
   const { address } = useAccount();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -58,17 +59,16 @@ export const DaoGrid: React.FC = () => {
 
   //memos
   const daosFiltered = useMemo(() => {
-    const daosCat = daos?.filter(x => {
-      if (selectedDao.category === "all") return true;
-      if (selectedDao.category === "myDaos") return x.creator === address;
-      return getDaoCategories(x.categoryIDs).some(c => c.name === selectedDao.category);
-    });
+    const search = selectedDao.name.trim().toLowerCase();
 
-    if (selectedDao.name.length > 0)
-      return daosCat?.filter(x => x.name.toLowerCase().includes(selectedDao.name.toLowerCase()));
-    return daosCat;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, daos, daoCategories, selectedDao]);
+    return daos?.filter(x => {
+      if (selectedDao.onlyMine && x.creator !== address) return false;
+      if (selectedDao.categories.length > 0 && !x.categoryIDs.some(id => selectedDao.categories.includes(Number(id))))
+        return false;
+      if (search.length > 0 && !x.name.toLowerCase().includes(search)) return false;
+      return true;
+    });
+  }, [address, daos, selectedDao]);
 
   if (isPending) {
     return (
@@ -88,6 +88,16 @@ export const DaoGrid: React.FC = () => {
           <h3 className="text-2xl font-semibold mb-2">No hay DAOS disponibles</h3>
           <p className="text-muted-foreground">Por favor, vuelve más tarde para ver nuevas DAOS disponibles.</p>
         </article>
+      ) : daosFiltered?.length === 0 ? (
+        <article className="h-96 mt-5 flex justify-center items-center flex-col text-center py-12">
+          <Frown className="h-20 w-20 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-2xl font-semibold mb-2">Ninguna DAO coincide</h3>
+          <p className="text-muted-foreground mb-4">Prueba con otra búsqueda o quita algunos filtros.</p>
+          <Button variant="outline" onClick={clearDaoSearch}>
+            <X className="h-4 w-4" />
+            Borrar búsqueda y filtros
+          </Button>
+        </article>
       ) : (
         <article className="container mx-auto px-4 py-8">
           {/* Main Content */}
@@ -99,6 +109,7 @@ export const DaoGrid: React.FC = () => {
                   daoID={x.daoID}
                   daoAddress={x.daoAddress}
                   userAddress={address}
+                  creator={x.creator}
                   name={x.name}
                   description={x.description}
                   categories={getDaoCategories(x.categoryIDs)}

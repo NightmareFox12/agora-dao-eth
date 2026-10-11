@@ -29,6 +29,7 @@ type DaoCardProps = {
   daoID: bigint;
   daoAddress: string;
   userAddress: string | undefined;
+  creator: string;
   name: string;
   description: string;
   categories: { id: number; name: string }[];
@@ -40,6 +41,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   daoID,
   daoAddress,
   userAddress,
+  creator,
   name,
   description,
   categories,
@@ -180,6 +182,8 @@ export const DaoCard: React.FC<DaoCardProps> = ({
             description={description}
             imageUri={imageUri}
             creationDate={creationDate}
+            creator={creator}
+            categories={categories}
           />
         </div>
       </CardFooter>

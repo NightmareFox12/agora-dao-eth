@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import { UserJoinedTable } from "./DaoDetailsEvents/userJoined";
 import { UserJoinedEvent } from "./DaoDetailsEvents/userJoined/userJoinedColumns";
-import { Image, Info } from "lucide-react";
+import { CalendarDays, Crown, FileCode2, Image as ImageIcon, Info, Users } from "lucide-react";
+import { useAccount } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { Badge } from "~~/components/ui/shadcn/badge";
 import { Button } from "~~/components/ui/shadcn/button";
@@ -17,6 +18,8 @@ import { ScrollArea, ScrollBar } from "~~/components/ui/shadcn/scroll-area";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~~/components/ui/shadcn/tabs";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth/useScaffoldEventHistory";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
+import { getCategoryStyle } from "~~/lib/categoryColors";
 
 type DaoDetailsDialogProps = {
   daoID: bigint;
@@ -25,6 +28,8 @@ type DaoDetailsDialogProps = {
   description: string;
   imageUri: string;
   creationDate: bigint;
+  creator: string;
+  categories: { id: number; name: string }[];
 };
 
 export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
@@ -34,22 +39,32 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
   description,
   imageUri,
   creationDate,
+  creator,
+  categories,
 }) => {
+  const { address: userAddress } = useAccount();
+
   //const
-  const parsedDate = new Date(parseInt((creationDate * 1000n).toString())).toISOString().split("T")[0];
+  const parsedDate = new Date(Number(creationDate) * 1000).toLocaleDateString("es", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const isCreator = userAddress !== undefined && userAddress.toLowerCase() === creator.toLowerCase();
 
   //Smart contract
-  const {
-    data: userJoined,
-    isLoading: isLoadingEvents,
-    // error: errorReadingEvents,
-  } = useScaffoldEventHistory({
+  const { data: userCounter, isLoading: userCounterLoading } = useScaffoldReadContract({
+    contractName: "AgoraDao",
+    functionName: "userCounter",
+    contractAddress: daoAddress,
+  });
+
+  const { data: userJoined, isLoading: isLoadingEvents } = useScaffoldEventHistory({
     contractName: "AgoraDao",
     eventName: "UserJoined",
     contractAddress: daoAddress,
     fromBlock: 0n,
     watch: true,
-    // filters: { greetingSetter: "0x9eB2C4866aAe575bC88d00DE5061d5063a1bb3aF" },
     blockData: true,
     transactionData: true,
     receiptData: true,
@@ -57,7 +72,6 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
 
   //TODO: agregar tabla de eventos con un tab para (unidos,votaciones o mas cosas)
 
-  console.log(userJoined);
   //memos
   const userJoinedArr = useMemo(() => {
     if (!userJoined || userJoined.length === 0 || isLoadingEvents) return [];
@@ -68,6 +82,39 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
     return data;
   }, [isLoadingEvents, userJoined]);
 
+  const infoItems = [
+    {
+      icon: Crown,
+      label: "Creador",
+      value: (
+        <div className="flex flex-wrap items-center gap-2">
+          <Address address={creator} />
+          {isCreator && <Badge variant="secondary">Eres tú</Badge>}
+        </div>
+      ),
+    },
+    {
+      icon: CalendarDays,
+      label: "Fecha de creación",
+      value: <span className="text-sm font-medium">{parsedDate}</span>,
+    },
+    {
+      icon: Users,
+      label: "Miembros",
+      value:
+        userCounter === undefined || userCounterLoading ? (
+          <Skeleton className="h-5 w-10" />
+        ) : (
+          <span className="text-sm font-medium">{userCounter.toString()}</span>
+        ),
+    },
+    {
+      icon: FileCode2,
+      label: "Contrato de la DAO",
+      value: <Address address={daoAddress} />,
+    },
+  ];
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -75,55 +122,66 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
           <Info className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader className="sm:max-w-md">
-          <DialogTitle>{name} Detalles</DialogTitle>
-          <DialogDescription className="break-all overflow-ellipsis">{description}</DialogDescription>
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="text-left">
+          <div className="flex items-start gap-4">
+            <div className="size-20 shrink-0 overflow-hidden rounded-xl border bg-primary/10 flex items-center justify-center">
+              {imageUri.length > 4 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={`https://ipfs.io/ipfs/${imageUri}`} alt={name} className="size-full object-cover" />
+              ) : (
+                <ImageIcon className="size-8 text-muted-foreground" />
+              )}
+            </div>
+
+            <div className="min-w-0 space-y-2">
+              <div className="flex flex-wrap items-center gap-2 pr-6">
+                <DialogTitle className="text-2xl break-words">{name}</DialogTitle>
+                <Badge variant="secondary">#{daoID.toString()}</Badge>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {categories.map(category => (
+                  <Badge key={category.id} variant="outline" className={getCategoryStyle(category.id).soft}>
+                    {category.name.toLowerCase()}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <DialogDescription className="pt-2 break-words text-foreground/80">{description}</DialogDescription>
         </DialogHeader>
 
-        <div className="sm:max-w-md flex justify-between">
-          <span className="text-sm text-muted-foreground">Creado el: {parsedDate}</span>
-          <Badge>ID #{daoID}</Badge>
-        </div>
+        {/* Info */}
+        <dl className="grid gap-3 sm:grid-cols-2">
+          {infoItems.map(({ icon: Icon, label, value }) => (
+            <div key={label} className="min-w-0 rounded-lg border bg-card p-3 space-y-1.5">
+              <dt className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Icon className="size-3.5" />
+                {label}
+              </dt>
+              <dd className="min-w-0">{value}</dd>
+            </div>
+          ))}
+        </dl>
 
-        {/* Image  */}
-        <div className="sm:max-w-md flex flex-col justify-center items-center">
-          {imageUri.length > 4 ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={`https://ipfs.io/ipfs/${imageUri}`} alt={name} className="object-cover w-32 h-32" />
-          ) : (
-            // eslint-disable-next-line jsx-a11y/alt-text
-            <Image className="w-12 h-12" />
-          )}
-          <span className="text-sm text-muted-foreground">Logo</span>
-        </div>
-
-        <div className="sm:max-w-md flex justify-center items-center">
-          <Address address={daoAddress} />
-        </div>
-
+        {/* Events */}
         {isLoadingEvents ? (
-          <Skeleton className="sm:max-w-md h-24" />
+          <Skeleton className="h-24" />
         ) : (
-          <div className="sm:max-w-md flex justify-center items-center flex-col">
-            <Tabs defaultValue="users-joined" className="w-full">
-              <TabsList className="w-full flex justify-center items-center">
-                <TabsTrigger className="flex-1" value="users-joined">
-                  Usuarios Unidos
-                </TabsTrigger>
-                {/* <TabsTrigger className="flex-1" value="password">
-                  Contraseña
-                </TabsTrigger> */}
-              </TabsList>
-              <TabsContent value="users-joined">
-                <ScrollArea className="w-[300px] sm:w-full">
-                  <UserJoinedTable data={userJoinedArr.slice(0, 4)} />
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              </TabsContent>
-              {/* <TabsContent value="password">Contraseña</TabsContent> */}
-            </Tabs>
-          </div>
+          <Tabs defaultValue="users-joined" className="w-full">
+            <TabsList className="w-full flex justify-center items-center">
+              <TabsTrigger className="flex-1" value="users-joined">
+                Usuarios Unidos
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="users-joined">
+              <ScrollArea className="w-full">
+                <UserJoinedTable data={userJoinedArr.slice(0, 4)} />
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         )}
       </DialogContent>
     </Dialog>

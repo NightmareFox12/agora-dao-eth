@@ -36,6 +36,7 @@ contract AgoraDaoFactory is Ownable, Validation {
     mapping(address => Dao[]) public daosByUser;
     mapping(address => bool) internal isUser;
     mapping(address => bool) internal isDao;
+    mapping(bytes32 => bool) internal usedNames;
 
     //events
     event DaoCreated(uint256 indexed daoID, address indexed creator, string indexed name);
@@ -58,6 +59,10 @@ contract AgoraDaoFactory is Ownable, Validation {
     ) external {
         //Validation
         _createDao(_name, _description, _categoryIDs, daoCategories);
+
+        bytes32 nameKey = _nameKey(_name);
+        require(!usedNames[nameKey], "A DAO with this name already exists");
+        usedNames[nameKey] = true;
 
         //create dao
         AgoraDao createdDaoContract = new AgoraDao(address(this), msg.sender);
@@ -112,6 +117,10 @@ contract AgoraDaoFactory is Ownable, Validation {
     }
 
     // --- read functions ---
+    function isDaoNameAvailable(string memory _name) external view returns (bool) {
+        return !usedNames[_nameKey(_name)];
+    }
+
     function getAllDaoCategories() external view returns (string[] memory) {
         return daoCategories;
     }

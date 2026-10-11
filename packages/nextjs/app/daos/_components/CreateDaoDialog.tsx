@@ -51,6 +51,7 @@ export const CreateDaoDialog: React.FC = () => {
   const [loadImage, setLoadImage] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+  const [debouncedName, setDebouncedName] = useState<string>("");
 
   // Form
   const daoForm = useForm<z.infer<typeof DaoFormSchema>>({
@@ -66,6 +67,7 @@ export const CreateDaoDialog: React.FC = () => {
 
   //Subscriptions
   const logoFile = daoForm.watch("logo");
+  const nameValue = daoForm.watch("name");
 
   //Smart contract
   const { writeContractAsync: writeAgoraDaoFabricAsync } = useScaffoldWriteContract({
@@ -77,7 +79,22 @@ export const CreateDaoDialog: React.FC = () => {
     functionName: "getAllDaoCategories",
   });
 
+  // the contract rejects repeated names, so tell the user before they pay for a failing transaction
+  const canCheckName = debouncedName.length >= 2 && debouncedName.length <= DAO_NAME_MAX_LENGTH;
+  const { data: isNameAvailable } = useScaffoldReadContract({
+    contractName: "AgoraDaoFactory",
+    functionName: "isDaoNameAvailable",
+    args: [debouncedName],
+    query: { enabled: canCheckName },
+  });
+  const isNameTaken = canCheckName && debouncedName === nameValue.trim() && isNameAvailable === false;
+
   //effects
+  useEffect(() => {
+    const timeout = setTimeout(() => setDebouncedName(nameValue.trim()), 400);
+    return () => clearTimeout(timeout);
+  }, [nameValue]);
+
   useEffect(() => {
     if (!loadImage) return;
     setProgress(0);
@@ -208,7 +225,12 @@ export const CreateDaoDialog: React.FC = () => {
                       <Input placeholder="e.g. ETH Force" {...field} />
                     </FormControl>
                     <div className="w-full flex justify-between px-1">
-                      {fieldState.error === undefined && <span />}
+                      {fieldState.error === undefined &&
+                        (isNameTaken ? (
+                          <p className="-my-1 text-sm text-destructive">Ya existe una DAO con ese nombre.</p>
+                        ) : (
+                          <span />
+                        ))}
                       <FormMessage className="-my-1" />
 
                       <FormDescription className="-my-1 justify-end">
@@ -401,7 +423,10 @@ export const CreateDaoDialog: React.FC = () => {
                   Borrar todo
                 </Button>
 
-                <Button type="submit" disabled={daoCategoriesLoading || submitLoading || !daoForm.formState.isValid}>
+                <Button
+                  type="submit"
+                  disabled={daoCategoriesLoading || submitLoading || isNameTaken || !daoForm.formState.isValid}
+                >
                   {daoCategoriesLoading || submitLoading ? (
                     <>
                       <Loader className="w-4 h-4 animate-spin" />
