@@ -15,6 +15,16 @@ interface IAgoraDaoFactory {
  * @author NightmareFox12
  */
 contract AgoraDao is Rol {
+    /// @dev Bundle of module addresses, so adding a module does not require a new initialize parameter.
+    struct Modules {
+        address tasks;
+        address votes;
+        address treasury;
+        address publicEvents;
+        address reputation;
+        address rewards;
+    }
+
     // State Variables
     address public fabric;
     uint256 public daoID;
@@ -24,6 +34,11 @@ contract AgoraDao is Rol {
 
     // Modules (each one is its own contract, created together with the DAO)
     address public tasks;
+    address public votes;
+    address public treasury;
+    address public publicEvents;
+    address public reputation;
+    address public rewards;
 
     //events
     event UserJoined(address indexed user, uint256 userID);
@@ -33,12 +48,17 @@ contract AgoraDao is Rol {
         initialized = true;
     }
 
-    function initialize(address _fabric, address _creator, address _tasks) external {
+    function initialize(address _fabric, address _creator, Modules calldata _modules) external {
         require(!initialized, "Already initialized");
         initialized = true;
 
         fabric = _fabric;
-        tasks = _tasks;
+        tasks = _modules.tasks;
+        votes = _modules.votes;
+        treasury = _modules.treasury;
+        publicEvents = _modules.publicEvents;
+        reputation = _modules.reputation;
+        rewards = _modules.rewards;
         _grantRole(DEFAULT_ADMIN_ROLE, _creator);
 
         userCounter++;

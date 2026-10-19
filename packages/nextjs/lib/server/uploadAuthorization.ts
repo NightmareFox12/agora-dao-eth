@@ -1,6 +1,6 @@
 // Server only. Decides whether an upload is allowed, from a wallet signature and what the blockchain says.
 import { type Address, type Hex, type PublicClient, isAddress, parseAbi } from "viem";
-import { DEFAULT_ADMIN_ROLE, TASK_MANAGER_ROLE } from "~~/constants/roles";
+import { DEFAULT_ADMIN_ROLE, TASK_MANAGER_ROLE, USER_ROLE } from "~~/constants/roles";
 import { isSha256Hex } from "~~/lib/files";
 import {
   MAX_FILES_PER_UPLOAD,
@@ -70,17 +70,24 @@ export const authorizeUpload = async (
   const isSigned = await reader.verifyMessage({ address, message, signature: signature as Hex }).catch(() => false);
   if (!isSigned) return deny(401, "La firma no corresponde a esta wallet.");
 
-  if (action === "task") {
+  if (action === "task" || action === "event") {
     const daoAddress = dao as Address;
 
     if (!(await reader.isDao(daoAddress))) return deny(403, "Esa dirección no es una DAO de Agora.");
 
-    const [isManager, isAdmin] = await Promise.all([
-      reader.hasRole(daoAddress, TASK_MANAGER_ROLE, address),
+    const roleToCheck = action === "task" ? TASK_MANAGER_ROLE : USER_ROLE;
+    const [hasOperationalRole, isAdmin] = await Promise.all([
+      reader.hasRole(daoAddress, roleToCheck, address),
       reader.hasRole(daoAddress, DEFAULT_ADMIN_ROLE, address),
     ]);
-    if (!isManager && !isAdmin)
-      return deny(403, "Solo los gestores de tareas y los administradores pueden subir archivos.");
+    if (!hasOperationalRole && !isAdmin) {
+      return deny(
+        403,
+        action === "task"
+          ? "Solo los gestores de tareas y los administradores pueden subir archivos."
+          : "Solo los miembros y los administradores pueden subir archivos de eventos.",
+      );
+    }
   }
 
   return { ok: true };

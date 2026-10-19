@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Award, CalendarDays, ClipboardList, History, Lock, Medal, TrendingUp, UserCog } from "lucide-react";
+import { ReputationCard } from "./ReputationCard";
+import { CalendarDays, ClipboardList, UserCog, Vote } from "lucide-react";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
@@ -15,24 +16,17 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadCo
 import { useCurrentDao } from "~~/hooks/useCurrentDao";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
 import { useTasksAddress } from "~~/hooks/useTasksAddress";
+import { useVotesAddress } from "~~/hooks/useVotesAddress";
 import { TASK_STATUS_META } from "~~/lib/tasks";
 import { formatRelativeTime, getEventTimestamp, shortAddress } from "~~/lib/utils";
-
-const UPCOMING = [
-  { icon: TrendingUp, title: "Nivel y experiencia", description: "Sube de nivel mientras más aportas a la DAO." },
-  { icon: Award, title: "Insignias NFT", description: "Colecciona NFTs al alcanzar nuevos niveles." },
-  {
-    icon: History,
-    title: "Historial de contribuciones",
-    description: "Todo lo que has hecho en la DAO, en un solo lugar.",
-  },
-];
+import { PROPOSAL_STATUS_META } from "~~/lib/votes";
 
 export const ProfileSection: React.FC = () => {
   const { address } = useAccount();
   const { daoAddress, dao } = useCurrentDao();
   const { roles, isLoading: rolesLoading } = useDaoRoles();
   const tasksAddress = useTasksAddress();
+  const votesAddress = useVotesAddress();
 
   const enabled = address !== undefined && daoAddress !== "";
 
@@ -63,6 +57,13 @@ export const ProfileSection: React.FC = () => {
     functionName: "getAllTasks",
     contractAddress: tasksAddress,
     query: { enabled: tasksAddress !== undefined },
+  });
+
+  const { data: allProposals } = useScaffoldReadContract({
+    contractName: "AgoraVotes",
+    functionName: "getAllProposals",
+    contractAddress: votesAddress,
+    query: { enabled: votesAddress !== undefined },
   });
 
   //consts
@@ -130,37 +131,7 @@ export const ProfileSection: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Level (coming soon) */}
-        <Card className="lg:col-span-3 border-dashed">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Medal className="size-5" />
-              Nivel y reputación
-              <Badge variant="outline" className="ml-auto font-normal">
-                <Lock />
-                Próximamente
-              </Badge>
-            </CardTitle>
-            <CardDescription>
-              Aquí verás tu progreso cuando esté listo el módulo de Reputación. Esto es lo que vendrá:
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              {UPCOMING.map(({ icon: Icon, title, description }) => (
-                <li key={title} className="flex items-center gap-3 opacity-70">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <Icon className="size-4" />
-                  </div>
-                  <div>
-                    <p className="m-0 text-sm font-medium">{title}</p>
-                    <p className="m-0 text-xs text-muted-foreground">{description}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <ReputationCard user={address} />
       </div>
 
       {/* My tasks */}
@@ -202,6 +173,53 @@ export const ProfileSection: React.FC = () => {
               ))}
             </ul>
           )}
+        </CardContent>
+      </Card>
+
+      {/* My proposals */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Vote className="size-5" />
+            Mis propuestas
+          </CardTitle>
+          <CardDescription>Las que publicaste en la DAO.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const mine = [...(allProposals ?? [])]
+              .reverse()
+              .filter(p => p.creator.toLowerCase() === address?.toLowerCase());
+            return mine.length === 0 ? (
+              <p className="m-0 py-4 text-center text-sm text-muted-foreground">
+                Todavía no publicaste propuestas.{" "}
+                <Link href="/vote" className="text-primary underline underline-offset-2">
+                  Ver las propuestas de la DAO
+                </Link>
+              </p>
+            ) : (
+              <ul className="m-0 list-none space-y-1 p-0">
+                {mine.map(proposal => (
+                  <li key={proposal.id.toString()}>
+                    <Link
+                      href={`/vote/${proposal.id}`}
+                      className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="m-0 truncate text-sm font-medium">{proposal.title}</p>
+                        <p className="m-0 text-xs text-muted-foreground">
+                          {proposal.forVotes.toString()} a favor · {proposal.againstVotes.toString()} en contra
+                        </p>
+                      </div>
+                      <Badge variant="secondary" className="shrink-0 font-normal">
+                        {PROPOSAL_STATUS_META[proposal.status]?.label}
+                      </Badge>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            );
+          })()}
         </CardContent>
       </Card>
 

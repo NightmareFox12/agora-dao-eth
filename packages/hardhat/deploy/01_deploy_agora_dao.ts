@@ -16,7 +16,15 @@ const deployImplementations: DeployFunction = async function (hre: HardhatRuntim
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  for (const contract of ["AgoraDao", "AgoraTasks"]) {
+  for (const contract of [
+    "AgoraDao",
+    "AgoraTasks",
+    "AgoraVotes",
+    "AgoraTreasury",
+    "AgoraEvents",
+    "AgoraReputation",
+    "AgoraRewards",
+  ]) {
     await deploy(contract, {
       from: deployer,
       args: [],

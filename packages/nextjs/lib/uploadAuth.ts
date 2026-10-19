@@ -1,7 +1,7 @@
 // The text a user signs with their wallet to authorize an upload. The browser and the server build it from the
 // same data, so it is never sent: the server rebuilds it and checks the signature against it.
 
-export type UploadAction = "logo" | "task";
+export type UploadAction = "logo" | "task" | "event";
 
 /** How old a signature can be (in seconds) before the server stops accepting it */
 export const UPLOAD_MESSAGE_MAX_AGE_SECONDS = 10 * 60;
@@ -22,6 +22,7 @@ type UploadMessageData = {
 const ACTION_LABELS: Record<UploadAction, string> = {
   logo: "subir el logo de una DAO",
   task: "subir los archivos de una tarea",
+  event: "subir los archivos de un evento",
 };
 
 export const buildUploadMessage = ({ action, hashes, dao, chainId, timestamp }: UploadMessageData) =>

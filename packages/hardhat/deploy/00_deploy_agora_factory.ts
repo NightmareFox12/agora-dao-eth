@@ -17,10 +17,24 @@ const deployAgoraDaoFactory: DeployFunction = async function (hre: HardhatRuntim
 
   const daoImplementation = await get("AgoraDao");
   const tasksImplementation = await get("AgoraTasks");
+  const votesImplementation = await get("AgoraVotes");
+  const treasuryImplementation = await get("AgoraTreasury");
+  const eventsImplementation = await get("AgoraEvents");
+  const reputationImplementation = await get("AgoraReputation");
+  const rewardsImplementation = await get("AgoraRewards");
 
   await deploy("AgoraDaoFactory", {
     from: deployer,
-    args: [deployer, daoImplementation.address, tasksImplementation.address],
+    args: [
+      deployer,
+      daoImplementation.address,
+      tasksImplementation.address,
+      votesImplementation.address,
+      treasuryImplementation.address,
+      eventsImplementation.address,
+      reputationImplementation.address,
+      rewardsImplementation.address,
+    ],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.

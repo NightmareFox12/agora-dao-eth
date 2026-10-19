@@ -38,6 +38,22 @@ export const dashboardTourSteps: DriveStep[] = [
     },
   },
   {
+    element: '[data-tour="nav-votaciones"]',
+    popover: {
+      title: "Votaciones",
+      description: "Propuestas que la DAO vota. Cada miembro vota una vez, y el resultado queda público.",
+      side: "bottom",
+    },
+  },
+  {
+    element: '[data-tour="nav-tesoreria"]',
+    popover: {
+      title: "Tesorería",
+      description: "Los fondos de la DAO. Solo salen cuando una propuesta aprobada por los miembros los libera.",
+      side: "bottom",
+    },
+  },
+  {
     element: '[data-tour="nav-perfil"]',
     popover: {
       title: "Tu perfil",

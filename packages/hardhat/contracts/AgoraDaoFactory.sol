@@ -6,6 +6,11 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 
 import "./AgoraDao.sol";
 import "./AgoraTasks.sol";
+import "./AgoraVotes.sol";
+import "./AgoraTreasury.sol";
+import "./AgoraEvents.sol";
+import "./AgoraReputation.sol";
+import "./AgoraRewards.sol";
 import "./AgoraDaoFactory/Validation.sol";
 
 /**
@@ -32,6 +37,11 @@ contract AgoraDaoFactory is Ownable, Validation {
     // Implementations that every DAO (and its modules) clones
     address public immutable daoImplementation;
     address public immutable tasksImplementation;
+    address public immutable votesImplementation;
+    address public immutable treasuryImplementation;
+    address public immutable eventsImplementation;
+    address public immutable reputationImplementation;
+    address public immutable rewardsImplementation;
 
     // State Variables
     uint256 public userCounter;
@@ -48,10 +58,33 @@ contract AgoraDaoFactory is Ownable, Validation {
     //events
     event DaoCreated(uint256 indexed daoID, address indexed creator, string indexed name);
 
-    constructor(address initialOwner, address _daoImplementation, address _tasksImplementation) Ownable(initialOwner) {
-        require(_daoImplementation != address(0) && _tasksImplementation != address(0), "Invalid implementation");
+    constructor(
+        address initialOwner,
+        address _daoImplementation,
+        address _tasksImplementation,
+        address _votesImplementation,
+        address _treasuryImplementation,
+        address _eventsImplementation,
+        address _reputationImplementation,
+        address _rewardsImplementation
+    ) Ownable(initialOwner) {
+        require(
+            _daoImplementation != address(0) &&
+                _tasksImplementation != address(0) &&
+                _votesImplementation != address(0) &&
+                _treasuryImplementation != address(0) &&
+                _eventsImplementation != address(0) &&
+                _reputationImplementation != address(0) &&
+                _rewardsImplementation != address(0),
+            "Invalid implementation"
+        );
         daoImplementation = _daoImplementation;
         tasksImplementation = _tasksImplementation;
+        votesImplementation = _votesImplementation;
+        treasuryImplementation = _treasuryImplementation;
+        eventsImplementation = _eventsImplementation;
+        reputationImplementation = _reputationImplementation;
+        rewardsImplementation = _rewardsImplementation;
 
         daoCategories.push("SERVICE");
         daoCategories.push("GOVERNANCE");
@@ -76,9 +109,30 @@ contract AgoraDaoFactory is Ownable, Validation {
         //create the dao and its modules, all at once
         address daoAddress = Clones.clone(daoImplementation);
         address tasksAddress = Clones.clone(tasksImplementation);
+        address votesAddress = Clones.clone(votesImplementation);
+        address treasuryAddress = Clones.clone(treasuryImplementation);
+        address eventsAddress = Clones.clone(eventsImplementation);
+        address reputationAddress = Clones.clone(reputationImplementation);
+        address rewardsAddress = Clones.clone(rewardsImplementation);
 
-        AgoraDao(payable(daoAddress)).initialize(address(this), msg.sender, tasksAddress);
+        AgoraDao(payable(daoAddress)).initialize(
+            address(this),
+            msg.sender,
+            AgoraDao.Modules({
+                tasks: tasksAddress,
+                votes: votesAddress,
+                treasury: treasuryAddress,
+                publicEvents: eventsAddress,
+                reputation: reputationAddress,
+                rewards: rewardsAddress
+            })
+        );
         AgoraTasks(tasksAddress).initialize(daoAddress);
+        AgoraVotes(votesAddress).initialize(daoAddress);
+        AgoraTreasury(payable(treasuryAddress)).initialize(daoAddress, votesAddress);
+        AgoraEvents(eventsAddress).initialize(daoAddress);
+        AgoraReputation(reputationAddress).initialize(daoAddress);
+        AgoraRewards(rewardsAddress).initialize(daoAddress, reputationAddress);
 
         Dao memory newDao = Dao(
             daoCounter,

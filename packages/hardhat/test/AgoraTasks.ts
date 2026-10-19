@@ -86,9 +86,16 @@ describe("AgoraTasks", function () {
 
     it("cannot be initialized twice", async function () {
       await expect(tasks.initialize(outsider.address)).to.be.revertedWith("Already initialized");
-      await expect(dao.initialize(outsider.address, outsider.address, outsider.address)).to.be.revertedWith(
-        "Already initialized",
-      );
+      await expect(
+        dao.initialize(outsider.address, outsider.address, {
+          tasks: outsider.address,
+          votes: outsider.address,
+          treasury: outsider.address,
+          publicEvents: outsider.address,
+          reputation: outsider.address,
+          rewards: outsider.address,
+        }),
+      ).to.be.revertedWith("Already initialized");
     });
 
     it("cannot take over an implementation", async function () {

@@ -8,6 +8,8 @@ export const BUCKETS = {
   logos: "dao-logos",
   taskImages: "task-images",
   taskDetails: "task-details",
+  eventCovers: "event-covers",
+  eventDetails: "event-details",
 } as const;
 
 const publicUrl = (bucket: string, name: string) =>
@@ -17,6 +19,8 @@ const publicUrl = (bucket: string, name: string) =>
 export const getLogoUrl = (name: string) => publicUrl(BUCKETS.logos, name);
 
 export const getTaskImageUrl = (name: string) => publicUrl(BUCKETS.taskImages, name);
+
+export const getEventCoverUrl = (name: string) => publicUrl(BUCKETS.eventCovers, name);
 
 /**
  * Reads the details of a task and checks them against the hash the contract holds: if the file is not exactly
@@ -42,6 +46,29 @@ export const fetchTaskMetadata = async (hash: string): Promise<TaskMetadata> => 
 
   const metadata = TaskMetadataSchema.safeParse(JSON.parse(new TextDecoder().decode(bytes)));
   if (!metadata.success) throw new Error("Los detalles de esta tarea no tienen el formato esperado.");
+
+  return metadata.data;
+};
+
+/** Reads the extended details of an event. Returns undefined for events without metadata (hash = 0x00). */
+export const fetchEventMetadata = async (hash: string) => {
+  const expected = hash.replace(/^0x/, "").toLowerCase();
+  if (/^0+$/.test(expected)) return undefined;
+
+  const { EventMetadataSchema } = await import("~~/lib/schemes/event.scheme");
+
+  const response = await fetch(publicUrl(BUCKETS.eventDetails, `${expected}.json`), {
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!response.ok) throw new Error(`No se pudieron leer los detalles (error ${response.status}).`);
+
+  const bytes = await response.arrayBuffer();
+  if ((await sha256Hex(bytes)) !== expected) {
+    throw new Error("El contenido de este evento no coincide con lo que se publicó, así que no se muestra.");
+  }
+
+  const metadata = EventMetadataSchema.safeParse(JSON.parse(new TextDecoder().decode(bytes)));
+  if (!metadata.success) throw new Error("Los detalles de este evento no tienen el formato esperado.");
 
   return metadata.data;
 };

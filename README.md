@@ -18,12 +18,12 @@ Cada módulo de la plataforma tiene su propia guía: qué hace, cómo funciona, 
 
 | Módulo | Estado | Guía |
 |---|---|---|
-| **Tareas** – publicar trabajo con recompensa en escrow, entrega, revisión y pago | Contrato listo, interfaz en desarrollo | [Leer la guía de Tareas](docs/modules/tasks.md) |
-| **Votaciones** | Próximamente | – |
-| **Tesorería** | Próximamente | – |
-| **Eventos públicos** | Próximamente | – |
-| **Recompensas** | Próximamente | – |
-| **Reputación** | Próximamente | – |
+| **Tareas** – publicar trabajo con recompensa en escrow, entrega, revisión y pago | Completo | [Leer la guía de Tareas](docs/modules/tasks.md) |
+| **Votaciones** – publicar propuestas, votar a favor/en contra/abstención, y cierre con quorum | Completo | [Leer la guía de Votaciones](docs/modules/votes.md) |
+| **Tesorería** – recibe donaciones, los pagos salen solo si una propuesta los aprueba | Completo | [Leer la guía de Tesorería](docs/modules/treasury.md) |
+| **Eventos** – publicar encuentros con fecha, lugar y cupo; los miembros se apuntan | Completo | [Leer la guía de Eventos](docs/modules/events.md) |
+
+| **Reputación y Recompensas** – puntos por aportar, niveles, insignias NFT soulbound | Completo | [Leer la guía de Reputación](docs/modules/reputation.md) |
 
 El orden de construcción y las decisiones de arquitectura están en el [ROADMAP](ROADMAP.md).
 

@@ -5,6 +5,7 @@ import { createPublicClient } from "viem";
 import type { Address } from "viem";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { DETAILS_MAX_BYTES, IMAGE_MAX_BYTES, detectImageType, sha256Hex } from "~~/lib/files";
+import { EventMetadataSchema } from "~~/lib/schemes/event.scheme";
 import { TaskMetadataSchema } from "~~/lib/schemes/task.scheme";
 import { authorizeUpload, createChainReader } from "~~/lib/server/uploadAuthorization";
 import { BUCKETS } from "~~/lib/storage";
@@ -15,6 +16,8 @@ const KINDS = {
   logo: { bucket: BUCKETS.logos, action: "logo" },
   "task-image": { bucket: BUCKETS.taskImages, action: "task" },
   "task-details": { bucket: BUCKETS.taskDetails, action: "task" },
+  "event-cover": { bucket: BUCKETS.eventCovers, action: "event" },
+  "event-details": { bucket: BUCKETS.eventDetails, action: "event" },
 } as const;
 
 type Kind = keyof typeof KINDS;
@@ -40,7 +43,7 @@ export const POST = async (request: NextRequest) => {
     if (typeof kind !== "string" || !(kind in KINDS)) return fail(400, "Tipo de archivo no válido.");
     if (!(file instanceof File)) return fail(400, "No se recibió ningún archivo.");
 
-    const isDetails = kind === "task-details";
+    const isDetails = kind === "task-details" || kind === "event-details";
     if (isDetails ? file.size > DETAILS_MAX_BYTES : file.size >= IMAGE_MAX_BYTES) {
       return fail(413, "El archivo es demasiado grande.");
     }
@@ -89,9 +92,10 @@ export const POST = async (request: NextRequest) => {
       try {
         details = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
       } catch {
-        return fail(400, "Los detalles de la tarea no son un JSON válido.");
+        return fail(400, "Los detalles no son un JSON válido.");
       }
-      if (!TaskMetadataSchema.safeParse(details).success) return fail(400, "Los detalles de la tarea no son válidos.");
+      const schema = kind === "task-details" ? TaskMetadataSchema : EventMetadataSchema;
+      if (!schema.safeParse(details).success) return fail(400, "Los detalles no son válidos.");
 
       name = `${hash}.json`;
       contentType = "application/json";
