@@ -1,7 +1,7 @@
 import { detectImageType, sha256Hex } from "~~/lib/files";
 import { type UploadAction, buildUploadMessage } from "~~/lib/uploadAuth";
 
-export type UploadKind = "logo" | "task-image" | "task-details";
+export type UploadKind = "logo" | "task-image" | "task-details" | "event-cover" | "event-details";
 
 /** What the server needs to know that the wallet authorized the upload. */
 export type UploadAuthorization = {

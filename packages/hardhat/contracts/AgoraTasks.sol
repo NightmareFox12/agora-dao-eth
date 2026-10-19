@@ -4,6 +4,7 @@ pragma solidity >=0.8.0 <0.9.0;
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./shared/IAgoraDao.sol";
+import "./shared/IAgoraReputation.sol";
 import "./shared/RoleIds.sol";
 
 /**
@@ -300,12 +301,15 @@ contract AgoraTasks is ReentrancyGuard {
         _setStatus(task, Status.Open);
     }
 
+    uint256 private constant POINTS_FOR_COMPLETED_TASK = 50;
+
     function _pay(Task storage task) private {
         address assignee = task.assignee;
         task.deadline = 0;
         _setStatus(task, Status.Completed);
 
         Address.sendValue(payable(assignee), task.reward);
+        IAgoraReputation(dao.reputation()).award(assignee, POINTS_FOR_COMPLETED_TASK);
     }
 
     function _refund(Task storage task) private {
