@@ -42,6 +42,7 @@ export const SearchDaos: React.FC = () => {
   return (
     <>
       <Input
+        data-tour="daos-search"
         className="w-full md:w-1/4"
         placeholder="Buscar DAOs..."
         value={selectedDao.name}
@@ -50,7 +51,11 @@ export const SearchDaos: React.FC = () => {
       <DropdownMenu>
         {/* Button trigger */}
         <DropdownMenuTrigger asChild>
-          <Button variant={activeFilters > 0 ? "default" : "outline"} disabled={daoCategoriesLoading}>
+          <Button
+            data-tour="daos-filters"
+            variant={activeFilters > 0 ? "default" : "outline"}
+            disabled={daoCategoriesLoading}
+          >
             {daoCategoriesLoading ? <Loader className="h-4 w-4 animate-spin" /> : <Funnel className="h-4 w-4" />}
             {activeFilters === 0 ? "Filtros" : `${activeFilters} ${activeFilters === 1 ? "filtro" : "filtros"}`}
           </Button>

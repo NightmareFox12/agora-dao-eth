@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { EVENT_DETAIL_TOUR_ID, eventDetailTourSteps } from "./eventDetail.tour";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -22,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import { Markdown } from "~~/components/Markdown";
+import { TourButton } from "~~/components/TourButton";
 import { Address } from "~~/components/scaffold-eth";
 import { BlockieAvatar } from "~~/components/scaffold-eth/BlockieAvatar";
 import { Badge } from "~~/components/ui/shadcn/badge";
@@ -32,6 +34,7 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadCo
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
 import { useEventsAddress } from "~~/hooks/useEventsAddress";
+import { useTour } from "~~/hooks/useTour";
 import { EVENT_PHASE_META, type EventData, formatEventDate, getEventPhase, hasMetadata } from "~~/lib/events";
 import { fetchEventMetadata, getEventCoverUrl } from "~~/lib/storage";
 import { cn, shortAddress } from "~~/lib/utils";
@@ -76,6 +79,9 @@ export const EventDetail: React.FC = () => {
     contractAddress: eventsAddress,
     query: { enabled: eventsAddress !== undefined && isValidId && address !== undefined },
   });
+
+  //tour
+  const { start: startTour } = useTour(EVENT_DETAIL_TOUR_ID, eventDetailTourSteps, { ready: event !== undefined });
 
   const metadataQuery = useQuery({
     queryKey: ["event-metadata", event?.metadataHash],
@@ -160,13 +166,16 @@ export const EventDetail: React.FC = () => {
 
   return (
     <main className="container mx-auto max-w-6xl space-y-6 px-4 py-6">
-      <Link
-        href="/events"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Volver a los eventos
-      </Link>
+      <div className="flex items-center justify-between gap-2">
+        <Link
+          href="/events"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Volver a los eventos
+        </Link>
+        <TourButton onClick={startTour} />
+      </div>
 
       {/* Cover and title */}
       <div className="space-y-4">
@@ -190,7 +199,7 @@ export const EventDetail: React.FC = () => {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Content */}
         <div className="min-w-0 space-y-6 lg:col-span-2">
-          <Card>
+          <Card data-tour="event-info">
             <CardContent className="grid gap-3 py-5 sm:grid-cols-2">
               <div className="space-y-1">
                 <p className="m-0 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -255,7 +264,7 @@ export const EventDetail: React.FC = () => {
           )}
 
           {/* Attendees */}
-          <Card>
+          <Card data-tour="event-attendees">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="size-5" />
@@ -291,7 +300,7 @@ export const EventDetail: React.FC = () => {
 
         {/* Side: actions */}
         <aside className="min-w-0 space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <Card>
+          <Card data-tour="event-actions">
             <CardHeader className="pb-0">
               <CardTitle className="text-base">Qué puedes hacer</CardTitle>
             </CardHeader>

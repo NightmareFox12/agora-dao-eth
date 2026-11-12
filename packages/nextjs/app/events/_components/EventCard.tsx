@@ -12,14 +12,17 @@ type EventCardProps = {
   /** File name of the cover (from the event's details file) */
   coverName?: string;
   href?: string;
+  /** data-tour value, for the guided tour */
+  tour?: string;
 };
 
-export const EventCard: React.FC<EventCardProps> = ({ event, attendeeCount, coverName, href }) => {
+export const EventCard: React.FC<EventCardProps> = ({ event, attendeeCount, coverName, href, tour }) => {
   const phase = getEventPhase(event);
   const phaseMeta = EVENT_PHASE_META[phase];
 
   const card = (
     <Card
+      data-tour={tour}
       className={cn("overflow-hidden pt-0 transition-shadow hover:shadow-md", phase !== "upcoming" && "opacity-70")}
     >
       {coverName !== undefined ? (
