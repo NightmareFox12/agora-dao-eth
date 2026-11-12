@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { TaskActions } from "./TaskActions";
-import { ArrowLeft, Check, CircleCheck, ExternalLink, FileSearch, RefreshCw, Users } from "lucide-react";
+import { TASK_DETAIL_TOUR_ID, taskDetailTourSteps } from "./taskDetail.tour";
+import { ArrowLeft, Check, CircleCheck, ExternalLink, RefreshCw } from "lucide-react";
 import { formatEther } from "viem";
 import { Markdown } from "~~/components/Markdown";
+import { TourButton } from "~~/components/TourButton";
 import { Address } from "~~/components/scaffold-eth";
 import { Badge } from "~~/components/ui/shadcn/badge";
 import { Button } from "~~/components/ui/shadcn/button";
@@ -15,6 +17,7 @@ import { TASK_CATEGORIES } from "~~/constants/taskCategories";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useTaskMetadata } from "~~/hooks/useTaskMetadata";
 import { useTasksAddress } from "~~/hooks/useTasksAddress";
+import { useTour } from "~~/hooks/useTour";
 import { getCategoryStyle } from "~~/lib/categoryColors";
 import { isHttpUrl } from "~~/lib/schemes/task.scheme";
 import { getTaskImageUrl } from "~~/lib/storage";
@@ -65,10 +68,12 @@ export const TaskDetail: React.FC = () => {
 
   const details = useTaskMetadata(task?.metadataHash);
 
+  //tour
+  const { start: startTour } = useTour(TASK_DETAIL_TOUR_ID, taskDetailTourSteps, { ready: task !== undefined });
+
   if (!isValidId || (error !== null && error !== undefined)) {
     return (
-      <main className="container mx-auto px-4 py-16 flex flex-col items-center gap-4 text-center">
-        <FileSearch className="h-16 w-16 text-muted-foreground" />
+      <main className="container mx-auto flex max-w-md flex-col items-center gap-4 px-4 py-20 text-center">
         <h1 className="m-0 text-2xl font-bold">No encontramos esta tarea</h1>
         <p className="m-0 max-w-md text-muted-foreground">
           Puede que el enlace sea incorrecto o que la tarea no exista.
@@ -103,13 +108,16 @@ export const TaskDetail: React.FC = () => {
   return (
     <main className="container mx-auto max-w-6xl px-4 py-6 space-y-6">
       <div className="space-y-3">
-        <Link
-          href="/task"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver a las tareas
-        </Link>
+        <div className="flex items-center justify-between gap-2">
+          <Link
+            href="/task"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver a las tareas
+          </Link>
+          <TourButton onClick={startTour} />
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           {category !== undefined && (
             <Badge variant="outline" className={getCategoryStyle(categoryId).soft}>
@@ -234,7 +242,7 @@ export const TaskDetail: React.FC = () => {
 
         {/* Side: reward, progress, people and actions */}
         <aside className="min-w-0 space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <Card className="gap-2 py-5">
+          <Card data-tour="task-reward" className="gap-2 py-5">
             <CardContent className="space-y-1">
               <p className="m-0 text-sm text-muted-foreground">Recompensa</p>
               <p className="m-0 text-3xl font-bold">{formatEther(task.reward)} ETH</p>
@@ -242,7 +250,7 @@ export const TaskDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="gap-3 py-5">
+          <Card data-tour="task-progress" className="gap-3 py-5">
             <CardContent>
               {task.status === TASK_STATUS.Cancelled ? (
                 <p className="m-0 text-sm text-muted-foreground">
@@ -282,19 +290,14 @@ export const TaskDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="gap-3 py-5">
+          <Card data-tour="task-people" className="gap-3 py-5">
             <CardContent className="space-y-3 text-sm">
               <div className="space-y-1">
-                <p className="m-0 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Creador
-                </p>
+                <p className="m-0 text-sm text-muted-foreground">Creador</p>
                 <Address address={task.creator} />
               </div>
               <div className="space-y-1">
-                <p className="m-0 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  <Users className="size-3.5" />
-                  Quién la tiene
-                </p>
+                <p className="m-0 text-sm text-muted-foreground">Quién la tiene</p>
                 {hasAssignee ? (
                   <Address address={task.assignee} />
                 ) : (

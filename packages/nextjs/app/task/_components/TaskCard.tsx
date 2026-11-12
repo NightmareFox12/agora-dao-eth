@@ -21,6 +21,8 @@ type TaskCardProps = {
   creator?: string;
   /** Makes the whole card a link (the preview in the publish form is not one) */
   href?: string;
+  /** data-tour value, for the guided tour */
+  tour?: string;
 };
 
 export const TaskCard: React.FC<TaskCardProps> = ({
@@ -33,6 +35,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   workDays,
   creator,
   href,
+  tour,
 }) => {
   const statusMeta = TASK_STATUS_META[status];
   const deadlineText = getDeadlineText(status, deadline);
@@ -44,7 +47,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const showWorkDays = workDays !== undefined && !isCancelled && !isCompleted;
 
   const card = (
-    <Card className={cn("transition-shadow hover:shadow-md", isCancelled && "opacity-70")}>
+    <Card data-tour={tour} className={cn("transition-shadow hover:shadow-md", isCancelled && "opacity-70")}>
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           {category !== undefined ? (

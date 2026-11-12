@@ -110,5 +110,4 @@ Reputación y Recompensas se tocan: los NFTs de nivel son recompensas. Van como 
 
 ## Por decidir
 
-- ¿Qué es un "evento público"? Puede ser un meetup con asistentes, o una actividad abierta a quien no es miembro de la DAO.
-- Ocultar "Configuración" del menú a quien no es administrador.
+- Ocultar "Configuración" del menú a quien no es administrador (la página ya muestra un aviso y no deja hacer nada, pero el enlace sigue en "Más").

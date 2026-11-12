@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Medal, Sparkles, Trophy } from "lucide-react";
+import { parseAbi } from "viem";
+import { usePublicClient } from "wagmi";
 import { Badge } from "~~/components/ui/shadcn/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Progress } from "~~/components/ui/shadcn/progress";
@@ -64,6 +65,7 @@ const BadgeTile: React.FC<{ tokenId: bigint; rewardsAddress: string }> = ({ toke
 
 export const ReputationCard: React.FC<{ user: string | undefined }> = ({ user }) => {
   const { reputationAddress, rewardsAddress } = useReputationAddresses();
+  const publicClient = usePublicClient();
   const { points, level, maxLevel, pointsToNextLevel, isMax } = useReputation(user);
 
   const meta = LEVEL_META[level];
@@ -107,7 +109,8 @@ export const ReputationCard: React.FC<{ user: string | undefined }> = ({ user })
 
   const [ownedIds, setOwnedIds] = useState<bigint[]>([]);
   useEffect(() => {
-    if (rewardsAddress === undefined || user === undefined || totalMinted === undefined) return;
+    if (rewardsAddress === undefined || user === undefined || totalMinted === undefined || publicClient === undefined)
+      return;
     const total = Number(totalMinted);
     if (total === 0) {
       setOwnedIds([]);
@@ -115,9 +118,7 @@ export const ReputationCard: React.FC<{ user: string | undefined }> = ({ user })
     }
     // Scan tokenIds and keep the ones owned by user
     (async () => {
-      const { createPublicClient, http, parseAbi } = await import("viem");
-      const { hardhat } = await import("viem/chains");
-      const client = createPublicClient({ chain: hardhat, transport: http() });
+      const client = publicClient;
       const abi = parseAbi(["function ownerOf(uint256) view returns (address)"]);
 
       const owned: bigint[] = [];
@@ -136,15 +137,14 @@ export const ReputationCard: React.FC<{ user: string | undefined }> = ({ user })
       }
       setOwnedIds(owned);
     })();
-  }, [rewardsAddress, user, totalMinted]);
+  }, [rewardsAddress, user, totalMinted, publicClient]);
 
   if (user === undefined) return null;
 
   return (
-    <Card className="lg:col-span-3">
+    <Card data-tour="profile-reputation" className="lg:col-span-3">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Medal className="size-5" />
           Nivel y reputación
           <Badge className={cn("ml-auto border-transparent", meta?.color, meta?.textColor)}>
             Nivel {level} · {meta?.label}
@@ -162,10 +162,7 @@ export const ReputationCard: React.FC<{ user: string | undefined }> = ({ user })
         <div className="space-y-2">
           <div className="flex items-end justify-between gap-2">
             <div>
-              <p className="m-0 flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Sparkles className="size-3.5" />
-                Puntos de reputación
-              </p>
+              <p className="m-0 text-sm text-muted-foreground">Puntos de reputación</p>
               <p className="m-0 text-3xl font-bold">{points}</p>
             </div>
             {!isMax && (
@@ -201,10 +198,7 @@ export const ReputationCard: React.FC<{ user: string | undefined }> = ({ user })
         {/* Badges */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <p className="m-0 flex items-center gap-1 text-sm font-medium">
-              <Trophy className="size-4" />
-              Tus insignias
-            </p>
+            <p className="m-0 text-sm font-medium">Tus insignias</p>
             {badgeCount !== undefined && (
               <span className="text-xs text-muted-foreground">
                 {badgeCount.toString()} de {maxLevel}
