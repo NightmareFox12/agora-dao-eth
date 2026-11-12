@@ -398,7 +398,7 @@ export const TaskActions: React.FC<{ task: TaskData; tasksAddress: string }> = (
 
   return (
     <>
-      <Card>
+      <Card data-tour="task-actions">
         <CardHeader className="pb-0">
           <CardTitle className="text-base">Qué puedes hacer</CardTitle>
         </CardHeader>

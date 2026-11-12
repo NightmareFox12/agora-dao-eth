@@ -3,21 +3,12 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { type Movement, MovementRow, MovementsSheet } from "./MovementsSheet";
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  HandCoins,
-  Info,
-  Landmark,
-  Loader,
-  Plus,
-  Users,
-  Vote,
-  Wallet,
-} from "lucide-react";
+import { TREASURY_TOUR_ID, treasuryTourSteps } from "./treasury.tour";
+import { HandCoins, Info, Landmark, Loader, Plus, Vote } from "lucide-react";
 import { toast } from "sonner";
 import { formatEther, parseEther } from "viem";
 import { useAccount, useBalance, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
+import { TourButton } from "~~/components/TourButton";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Input } from "~~/components/ui/shadcn/input";
@@ -25,6 +16,7 @@ import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth/useScaffoldEventHistory";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
+import { useTour } from "~~/hooks/useTour";
 import { useTreasuryAddress } from "~~/hooks/useTreasuryAddress";
 import { cn, getEventTimestamp, shortAddress } from "~~/lib/utils";
 
@@ -113,6 +105,9 @@ export const TreasurySection: React.FC = () => {
     return addresses.size;
   }, [deposits]);
 
+  //tour
+  const { start: startTour } = useTour(TREASURY_TOUR_ID, treasuryTourSteps, { ready: balance !== undefined });
+
   //functions
   const parsedAmount = (() => {
     try {
@@ -153,26 +148,22 @@ export const TreasurySection: React.FC = () => {
 
   const stats = [
     {
-      icon: Wallet,
       label: "Saldo actual",
       value: balance !== undefined ? `${formatEther(balance)} ETH` : undefined,
       hint: "Lo que la tesorería tiene disponible",
       prominent: true,
     },
     {
-      icon: Users,
       label: "Donantes",
       value: `${uniqueDonors}`,
       hint: uniqueDonors === 1 ? "wallet distinta" : "wallets distintas",
     },
     {
-      icon: ArrowDownLeft,
       label: "Recibido",
       value: totalDeposited !== undefined ? `${formatEther(totalDeposited)} ETH` : undefined,
       hint: "Total de donaciones",
     },
     {
-      icon: ArrowUpRight,
       label: "Pagado",
       value: totalPaid !== undefined ? `${formatEther(totalPaid)} ETH` : undefined,
       hint: "Total de pagos aprobados",
@@ -194,23 +185,25 @@ export const TreasurySection: React.FC = () => {
             Los fondos de la DAO. Solo salen cuando una propuesta aprobada los libera.
           </p>
         </div>
-        {canCreateProposals && (
-          <Button asChild variant="outline">
-            <Link href="/vote/new">
-              <Vote className="h-4 w-4" />
-              Proponer un pago
-            </Link>
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <TourButton onClick={startTour} />
+          {canCreateProposals && (
+            <Button asChild variant="outline" data-tour="treasury-propose">
+              <Link href="/vote/new">
+                <Vote className="h-4 w-4" />
+                Proponer un pago
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Stats */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map(({ icon: Icon, label, value, hint, prominent }) => (
+      <section data-tour="treasury-stats" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map(({ label, value, hint, prominent }) => (
           <Card key={label} className={cn("gap-2 py-4", prominent && "border-primary/40 bg-primary/5")}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+            <CardHeader className="pb-0">
               <CardDescription>{label}</CardDescription>
-              <Icon className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className={cn("font-bold tracking-tight", prominent ? "text-3xl" : "text-2xl")}>
@@ -224,7 +217,7 @@ export const TreasurySection: React.FC = () => {
 
       <div className="grid gap-6 lg:grid-cols-5">
         {/* Donate */}
-        <Card className="lg:col-span-2 lg:self-start">
+        <Card data-tour="treasury-donate" className="lg:col-span-2 lg:self-start">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <HandCoins className="size-5" />
@@ -272,7 +265,7 @@ export const TreasurySection: React.FC = () => {
         </Card>
 
         {/* Recent movements, with a sheet for the full list */}
-        <Card className="lg:col-span-3">
+        <Card data-tour="treasury-movements" className="lg:col-span-3">
           <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
             <div>
               <CardTitle>Últimos movimientos</CardTitle>

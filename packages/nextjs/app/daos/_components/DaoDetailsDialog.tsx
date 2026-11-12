@@ -160,7 +160,7 @@ export const DaoDetailsDialog: React.FC<DaoDetailsDialogProps> = ({
         <dl className="grid gap-3 sm:grid-cols-2">
           {infoItems.map(({ icon: Icon, label, value, badge }) => (
             <div key={label} className="min-w-0 rounded-lg border bg-card p-3 space-y-1.5">
-              <dt className="flex items-center justify-between gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <dt className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <Icon className="size-3.5" />
                   {label}
