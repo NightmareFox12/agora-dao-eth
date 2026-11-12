@@ -46,7 +46,6 @@ export const RoleLastChangesDialog: React.FC<RoleLastChangesDialogProps> = ({ da
     receiptData: true,
   });
 
-  console.log(events);
   //memos
   const lastChanges = useMemo(() => {
     if (!events) return [];
@@ -56,12 +55,10 @@ export const RoleLastChangesDialog: React.FC<RoleLastChangesDialogProps> = ({ da
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="flex justify-center items-center w-full mt-3">
-          <Button className="w-[300px]">
-            <List className="size-5" />
-            Ver últimos cambios
-          </Button>
-        </div>
+        <Button variant="outline" size="sm" data-tour="role-changes">
+          <List className="size-4" />
+          Últimos cambios
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
