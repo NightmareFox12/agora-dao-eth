@@ -19,11 +19,10 @@ export const ScaffoldSidebar: React.FC = () => {
       <SidebarHeader>
         <article className="flex items-center gap-2 mr-6 shrink-0">
           <div className="flex relative w-7 h-7">
-            <Image src="/logo.svg" alt="SE2 logo" fill />
+            <Image src="/logo.svg" alt="" fill />
           </div>
           <div className="flex flex-col -space-y-1 mb-0.5">
-            <span className="font-semibold ">Scaffold-ETH</span>
-            <span className="text-xs">Ethereum dev stack</span>
+            <span className="font-semibold">Agora DAO</span>
           </div>
         </article>
       </SidebarHeader>

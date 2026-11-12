@@ -4,11 +4,13 @@ import { useCallback, useEffect, useRef } from "react";
 import { type DriveStep, type Driver, driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { useDaoStore } from "~~/services/store/dao.store";
-import { getTourKey, useOnboardingStore } from "~~/services/store/onboarding.store";
+import { GLOBAL_TOUR_KEY, getTourKey, useOnboardingStore } from "~~/services/store/onboarding.store";
 
 type UseTourOptions = {
   /** Wait until the page has the content the steps point at. */
   ready?: boolean;
+  /** "dao" (default): remembered per DAO. "global": pages outside a DAO, like the DAO list. */
+  scope?: "dao" | "global";
 };
 
 const isVisible = (selector: string) => {
@@ -17,17 +19,18 @@ const isVisible = (selector: string) => {
 };
 
 /**
- * Guided tour built with driver.js. It starts by itself the first time a user opens a page in a DAO
- * and remembers it (per DAO address) so it does not show up again. `start` replays it on demand.
+ * Guided tour built with driver.js. It starts by itself the first time a user opens a page and remembers it
+ * (per DAO address, or once for global pages) so it does not show up again. `start` replays it on demand.
  *
  * Keep `steps` stable (define it outside the component).
  */
-export const useTour = (tourId: string, steps: DriveStep[], { ready = true }: UseTourOptions = {}) => {
+export const useTour = (tourId: string, steps: DriveStep[], { ready = true, scope = "dao" }: UseTourOptions = {}) => {
   const { daoAddress } = useDaoStore();
+  const key = scope === "global" ? GLOBAL_TOUR_KEY : getTourKey(daoAddress);
+  const hasContext = scope === "global" || daoAddress !== "";
+
   const completeTour = useOnboardingStore(state => state.completeTour);
-  const isCompleted = useOnboardingStore(state =>
-    (state.completedTours[getTourKey(daoAddress)] ?? []).includes(tourId),
-  );
+  const isCompleted = useOnboardingStore(state => (state.completedTours[key] ?? []).includes(tourId));
 
   const activeTour = useRef<Driver | null>(null);
   const isLeavingPage = useRef(false);
@@ -35,7 +38,7 @@ export const useTour = (tourId: string, steps: DriveStep[], { ready = true }: Us
   const start = useCallback(() => {
     // the nav links, for example, are hidden on mobile: skip the steps whose target is not on screen
     const availableSteps = steps.filter(step => typeof step.element !== "string" || isVisible(step.element));
-    if (availableSteps.length === 0 || daoAddress === "") return;
+    if (availableSteps.length === 0 || !hasContext) return;
 
     activeTour.current?.destroy();
     activeTour.current = driver({
@@ -51,18 +54,18 @@ export const useTour = (tourId: string, steps: DriveStep[], { ready = true }: Us
       overlayOpacity: 0.6,
       // closing it (finishing or skipping) counts as seen, so it does not come back
       onDestroyed: () => {
-        if (!isLeavingPage.current) completeTour(daoAddress, tourId);
+        if (!isLeavingPage.current) completeTour(key, tourId);
       },
     });
     activeTour.current.drive();
-  }, [steps, daoAddress, tourId, completeTour]);
+  }, [steps, hasContext, key, tourId, completeTour]);
 
   useEffect(() => {
-    if (!ready || isCompleted || daoAddress === "") return;
+    if (!ready || isCompleted || !hasContext) return;
 
     const timeout = setTimeout(start, 800);
     return () => clearTimeout(timeout);
-  }, [ready, isCompleted, daoAddress, start]);
+  }, [ready, isCompleted, hasContext, start]);
 
   // leaving the page must not mark the tour as seen
   useEffect(() => {

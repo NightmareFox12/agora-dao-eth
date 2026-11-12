@@ -7,13 +7,17 @@ import { cn, shortAddress } from "~~/lib/utils";
 import { PROPOSAL_STATUS_META, type ProposalData, getVotingDeadlineText, summarizeProposal } from "~~/lib/votes";
 
 /** Compact view of a proposal, used in the list. */
-export const ProposalCard: React.FC<{ proposal: ProposalData; href?: string }> = ({ proposal, href }) => {
+export const ProposalCard: React.FC<{ proposal: ProposalData; href?: string; tour?: string }> = ({
+  proposal,
+  href,
+  tour,
+}) => {
   const statusMeta = PROPOSAL_STATUS_META[proposal.status];
   const summary = summarizeProposal(proposal);
   const deadlineText = getVotingDeadlineText(proposal.status, proposal.votingDeadline);
 
   const card = (
-    <Card className="transition-shadow hover:shadow-md">
+    <Card data-tour={tour} className="transition-shadow hover:shadow-md">
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <Badge variant="secondary" className="font-normal">
