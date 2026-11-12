@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { EventCard } from "./EventCard";
+import { EVENTS_TOUR_ID, eventsTourSteps } from "./events.tour";
 import { CalendarDays, Plus, Search } from "lucide-react";
+import { TourButton } from "~~/components/TourButton";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Input } from "~~/components/ui/shadcn/input";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
@@ -11,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "~~/components/ui/shadcn/tabs";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
 import { useEventsAddress } from "~~/hooks/useEventsAddress";
+import { useTour } from "~~/hooks/useTour";
 import { type EventData, type EventPhase, getEventPhase } from "~~/lib/events";
 
 export const EventsSection: React.FC = () => {
@@ -58,24 +61,30 @@ export const EventsSection: React.FC = () => {
 
   const hasEvents = (events?.length ?? 0) > 0;
 
+  //tour
+  const { start: startTour } = useTour(EVENTS_TOUR_ID, eventsTourSteps, { ready: events !== undefined });
+
   return (
     <main className="container mx-auto space-y-6 px-4 py-2">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Eventos de la DAO</h1>
-          <p className="text-muted-foreground">Encuentros, charlas y actividades abiertos a los miembros.</p>
+          <h1 className="m-0 text-3xl font-bold tracking-tight">Eventos</h1>
+          <p className="m-0 text-muted-foreground">Encuentros y actividades para los miembros.</p>
         </div>
-        {canCreateEvents ? (
-          <Button asChild className="w-full md:w-auto">
-            <Link href="/events/new">
-              <Plus className="h-4 w-4" /> Nuevo evento
-            </Link>
-          </Button>
-        ) : (
-          <p className="m-0 max-w-xs text-xs text-muted-foreground md:text-right">
-            Únete a la DAO para publicar eventos.
-          </p>
-        )}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <TourButton onClick={startTour} />
+          {canCreateEvents ? (
+            <Button asChild className="w-full md:w-auto" data-tour="events-new">
+              <Link href="/events/new">
+                <Plus className="h-4 w-4" /> Nuevo evento
+              </Link>
+            </Button>
+          ) : (
+            <p className="m-0 max-w-xs text-xs text-muted-foreground md:text-right">
+              Únete a la DAO para publicar eventos.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
@@ -89,7 +98,7 @@ export const EventsSection: React.FC = () => {
           />
         </div>
         <Tabs value={tab} onValueChange={value => setTab(value as typeof tab)} className="w-full lg:w-auto">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
+          <TabsList data-tour="events-tabs" className="grid w-full grid-cols-4 lg:w-auto">
             <TabsTrigger value="upcoming">Próximos</TabsTrigger>
             <TabsTrigger value="past">Pasados</TabsTrigger>
             <TabsTrigger value="cancelled">Cancelados</TabsTrigger>
@@ -125,8 +134,13 @@ export const EventsSection: React.FC = () => {
         </article>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {eventsFiltered.map(event => (
-            <EventCard key={event.id.toString()} event={event} href={`/events/${event.id}`} />
+          {eventsFiltered.map((event, index) => (
+            <EventCard
+              key={event.id.toString()}
+              event={event}
+              href={`/events/${event.id}`}
+              tour={index === 0 ? "event-card" : undefined}
+            />
           ))}
         </div>
       )}

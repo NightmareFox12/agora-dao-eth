@@ -2,12 +2,16 @@
 
 import Link from "next/link";
 import { ReputationCard } from "./ReputationCard";
-import { CalendarDays, ClipboardList, UserCog, Vote } from "lucide-react";
+import { PROFILE_TOUR_ID, profileTourSteps } from "./profile.tour";
+import { CalendarDays, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
+import { TourButton } from "~~/components/TourButton";
 import { Address } from "~~/components/scaffold-eth";
 import { BlockieAvatar } from "~~/components/scaffold-eth/BlockieAvatar";
 import { Badge } from "~~/components/ui/shadcn/badge";
+import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { getRoleLabel } from "~~/constants/roles";
@@ -16,10 +20,12 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadCo
 import { useCurrentDao } from "~~/hooks/useCurrentDao";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
 import { useTasksAddress } from "~~/hooks/useTasksAddress";
+import { useTour } from "~~/hooks/useTour";
 import { useVotesAddress } from "~~/hooks/useVotesAddress";
 import { TASK_STATUS_META } from "~~/lib/tasks";
 import { formatRelativeTime, getEventTimestamp, shortAddress } from "~~/lib/utils";
 import { PROPOSAL_STATUS_META } from "~~/lib/votes";
+import { useOnboardingStore } from "~~/services/store/onboarding.store";
 
 export const ProfileSection: React.FC = () => {
   const { address } = useAccount();
@@ -27,6 +33,7 @@ export const ProfileSection: React.FC = () => {
   const { roles, isLoading: rolesLoading } = useDaoRoles();
   const tasksAddress = useTasksAddress();
   const votesAddress = useVotesAddress();
+  const resetAllTours = useOnboardingStore(state => state.resetAllTours);
 
   const enabled = address !== undefined && daoAddress !== "";
 
@@ -83,6 +90,14 @@ export const ProfileSection: React.FC = () => {
     return [];
   });
 
+  //tour
+  const { start: startTour } = useTour(PROFILE_TOUR_ID, profileTourSteps, { ready: address !== undefined });
+
+  const replayAllTours = () => {
+    resetAllTours();
+    toast.success("Listo. La guía de cada pantalla volverá a abrirse la próxima vez que entres.");
+  };
+
   if (address === undefined) {
     return (
       <main className="container mx-auto px-4 py-16 text-center">
@@ -94,16 +109,25 @@ export const ProfileSection: React.FC = () => {
 
   return (
     <main className="container mx-auto px-4 py-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Mi perfil</h1>
-        <p className="m-0 text-muted-foreground">
-          Tu actividad en {dao?.name ?? "la DAO"}, tu nivel y lo que vayas logrando.
-        </p>
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+        <div>
+          <h1 className="m-0 text-3xl font-bold tracking-tight">Mi perfil</h1>
+          <p className="m-0 text-muted-foreground">
+            Tu actividad en {dao?.name ?? "la DAO"}, tu nivel y tus insignias.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={replayAllTours} data-tour="profile-reset-tours">
+            <RotateCcw className="size-4" />
+            Repetir todas las guías
+          </Button>
+          <TourButton onClick={startTour} />
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
         {/* Identity */}
-        <Card className="lg:col-span-2">
+        <Card data-tour="profile-identity" className="lg:col-span-2">
           <CardContent className="flex flex-col items-center gap-4 text-center">
             <BlockieAvatar address={address} size={96} />
             <Address address={address} />
@@ -135,12 +159,9 @@ export const ProfileSection: React.FC = () => {
       </div>
 
       {/* My tasks */}
-      <Card>
+      <Card data-tour="profile-tasks">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="size-5" />
-            Mis tareas
-          </CardTitle>
+          <CardTitle>Mis tareas</CardTitle>
           <CardDescription>Las que publicaste y las que tienes a tu cargo.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -179,10 +200,7 @@ export const ProfileSection: React.FC = () => {
       {/* My proposals */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Vote className="size-5" />
-            Mis propuestas
-          </CardTitle>
+          <CardTitle>Mis propuestas</CardTitle>
           <CardDescription>Las que publicaste en la DAO.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -226,10 +244,7 @@ export const ProfileSection: React.FC = () => {
       {/* Roles received */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserCog className="size-5" />
-            Roles que te han asignado
-          </CardTitle>
+          <CardTitle>Roles que te han asignado</CardTitle>
         </CardHeader>
         <CardContent>
           {assignedRoles.length === 0 ? (
