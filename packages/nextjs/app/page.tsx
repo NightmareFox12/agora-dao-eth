@@ -33,6 +33,44 @@ const mainFeatures: Feature[] = [
   },
 ];
 
+const REPO = "https://github.com/NightmareFox12/agora-dao-eth";
+
+// GitHub's own mark (lucide dropped brand icons)
+const GitHubIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+    <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" />
+  </svg>
+);
+
+// Only links that lead somewhere today
+const FOOTER_LINKS = [
+  {
+    title: "Producto",
+    links: [
+      { label: "Características", href: "#features" },
+      { label: "Cómo funciona", href: "#how-it-works" },
+      { label: "Impacto", href: "#impact" },
+    ],
+  },
+  {
+    title: "Módulos",
+    links: [
+      { label: "Tareas", href: `${REPO}/blob/main/docs/modules/tasks.md`, external: true },
+      { label: "Votaciones", href: `${REPO}/blob/main/docs/modules/votes.md`, external: true },
+      { label: "Tesorería", href: `${REPO}/blob/main/docs/modules/treasury.md`, external: true },
+      { label: "Eventos", href: `${REPO}/blob/main/docs/modules/events.md`, external: true },
+      { label: "Reputación y recompensas", href: `${REPO}/blob/main/docs/modules/reputation.md`, external: true },
+    ],
+  },
+  {
+    title: "Recursos",
+    links: [
+      { label: "Código en GitHub", href: REPO, external: true },
+      { label: "Hoja de ruta", href: `${REPO}/blob/main/ROADMAP.md`, external: true },
+      { label: "Explorador de bloques", href: "/blockexplorer" },
+    ],
+  },
+];
 const LandingPage = () => {
   return (
     <>
@@ -263,90 +301,55 @@ const LandingPage = () => {
         </section> */}
 
         {/* Footer */}
-        {/* <footer className="border-t bg-card/30 py-12 px-4 relative z-10">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <Vote className="w-5 h-5 text-primary-foreground" />
+        <footer className="border-t bg-card/30 py-12 px-4 relative z-10">
+          <div className="container mx-auto">
+            <div className="grid gap-8 md:grid-cols-4">
+              <div>
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                    <Vote className="w-5 h-5 text-primary-foreground" />
+                  </div>
+                  <span className="text-xl font-bold text-foreground">AgoraDAO</span>
                 </div>
-                <span className="text-xl font-bold text-foreground">AgoraDAO</span>
+                <p className="m-0 text-muted-foreground">
+                  Tareas con recompensa, votaciones y un fondo común para tu comunidad, con las reglas en la blockchain.
+                </p>
               </div>
-              <p className="text-muted-foreground">
-                La plataforma líder en gobernanza descentralizada y participación comunitaria.
-              </p>
+
+              {FOOTER_LINKS.map(({ title, links }) => (
+                <div key={title}>
+                  <h4 className="m-0 mb-4 font-semibold text-foreground">{title}</h4>
+                  <ul className="m-0 list-none space-y-2 p-0 text-muted-foreground">
+                    {links.map(({ label, href, external }) => (
+                      <li key={label}>
+                        <a
+                          href={href}
+                          className="hover:text-foreground transition-colors"
+                          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        >
+                          {label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
 
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Producto</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Características
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Roadmap
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Tokenomics
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Comunidad</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Discord
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Twitter
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Telegram
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Recursos</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Documentación
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition-colors">
-                    Soporte
-                  </a>
-                </li>
-              </ul>
+            <div className="border-t border-border mt-8 pt-8 flex flex-col items-center justify-between gap-4 text-muted-foreground sm:flex-row">
+              <p className="m-0">© {new Date().getFullYear()} AgoraDAO</p>
+              <a
+                href={REPO}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ver el código en GitHub"
+                className="transition-colors hover:text-foreground"
+              >
+                <GitHubIcon className="size-6" />
+              </a>
             </div>
           </div>
-
-          <div className="border-t border-border pt-8 text-center text-muted-foreground">
-            <p>&copy; 2025 AgoraDAO. Todos los derechos reservados.</p>
-          </div>
-        </div>
-      </footer> */}
+        </footer>
       </section>
       <ScaffoldFooter />
     </>
