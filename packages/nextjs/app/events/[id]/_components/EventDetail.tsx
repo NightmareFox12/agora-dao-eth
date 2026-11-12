@@ -202,21 +202,21 @@ export const EventDetail: React.FC = () => {
           <Card data-tour="event-info">
             <CardContent className="grid gap-3 py-5 sm:grid-cols-2">
               <div className="space-y-1">
-                <p className="m-0 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <p className="m-0 flex items-center gap-1.5 text-sm text-muted-foreground">
                   <CalendarDays className="size-3.5" />
                   Cuándo
                 </p>
                 <p className="m-0 font-medium">{formatEventDate(e.startsAt)}</p>
               </div>
               <div className="space-y-1">
-                <p className="m-0 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <p className="m-0 flex items-center gap-1.5 text-sm text-muted-foreground">
                   <MapPin className="size-3.5" />
                   Dónde
                 </p>
                 <p className="m-0 font-medium [overflow-wrap:anywhere]">{e.location}</p>
               </div>
               <div className="space-y-1">
-                <p className="m-0 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <p className="m-0 flex items-center gap-1.5 text-sm text-muted-foreground">
                   <Users className="size-3.5" />
                   Capacidad
                 </p>
@@ -225,9 +225,7 @@ export const EventDetail: React.FC = () => {
                 </p>
               </div>
               <div className="space-y-1">
-                <p className="m-0 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Organiza
-                </p>
+                <p className="m-0 flex items-center gap-1.5 text-sm text-muted-foreground">Organiza</p>
                 <Address address={e.creator} />
               </div>
             </CardContent>

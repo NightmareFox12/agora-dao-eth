@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { VoteBar } from "../../_components/VoteBar";
+import { PROPOSAL_DETAIL_TOUR_ID, proposalDetailTourSteps } from "./proposalDetail.tour";
 import {
   ArrowLeft,
   Check,
@@ -21,6 +22,7 @@ import { toast } from "sonner";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 import { Markdown } from "~~/components/Markdown";
+import { TourButton } from "~~/components/TourButton";
 import { Address } from "~~/components/scaffold-eth";
 import { Badge } from "~~/components/ui/shadcn/badge";
 import { Button } from "~~/components/ui/shadcn/button";
@@ -29,6 +31,7 @@ import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
+import { useTour } from "~~/hooks/useTour";
 import { useVotesAddress } from "~~/hooks/useVotesAddress";
 import { cn } from "~~/lib/utils";
 import {
@@ -85,6 +88,11 @@ export const ProposalDetail: React.FC = () => {
     args: [isValidId ? BigInt(id) : undefined],
     contractAddress: votesAddress,
     query: { enabled: votesAddress !== undefined && isValidId },
+  });
+
+  //tour
+  const { start: startTour } = useTour(PROPOSAL_DETAIL_TOUR_ID, proposalDetailTourSteps, {
+    ready: proposal !== undefined,
   });
 
   const { data: myVote } = useScaffoldReadContract({
@@ -176,13 +184,16 @@ export const ProposalDetail: React.FC = () => {
   return (
     <main className="container mx-auto max-w-6xl space-y-6 px-4 py-6">
       <div className="space-y-3">
-        <Link
-          href="/vote"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver a las propuestas
-        </Link>
+        <div className="flex items-center justify-between gap-2">
+          <Link
+            href="/vote"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver a las propuestas
+          </Link>
+          <TourButton onClick={startTour} />
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="secondary">#{p.id.toString()}</Badge>
           <Badge className={cn("border-transparent", statusMeta?.className)}>{statusMeta?.label}</Badge>
@@ -229,7 +240,7 @@ export const ProposalDetail: React.FC = () => {
 
         {/* Side: results and voting */}
         <aside className="min-w-0 space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <Card className="gap-3 py-5">
+          <Card data-tour="proposal-results" className="gap-3 py-5">
             <CardHeader className="pb-0">
               <CardTitle className="text-base">Resultados</CardTitle>
               {deadlineText !== undefined && (
@@ -278,7 +289,7 @@ export const ProposalDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card data-tour="proposal-actions">
             <CardHeader className="pb-0">
               <CardTitle className="text-base">Qué puedes hacer</CardTitle>
             </CardHeader>
