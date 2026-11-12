@@ -1,14 +1,37 @@
-"use server";
-
 import React, { Suspense } from "react";
-import { FeatureSection } from "./_components/FeatureSection";
 import { HeroSection } from "./_components/HeroSection";
 import { ImpactSection } from "./_components/ImpactSection";
 import { ParticlesBackground } from "./_components/ParticlesBackground";
-import { Vote } from "lucide-react";
+import { LucideIcon, Trophy, Vote, Zap } from "lucide-react";
 import { ScaffoldFooter } from "~~/components/ScaffoldFooter";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth/RainbowKitCustomConnectButton";
+import { Card, CardDescription, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
+
+type Feature = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+};
+
+const mainFeatures: Feature[] = [
+  {
+    title: "Voto Transparente",
+    description:
+      "Sistema de votación en cadena de bloques que garantiza transparencia e inmutabilidad en cada decisión.",
+    icon: Vote,
+  },
+  {
+    title: "Tareas Gamificadas",
+    description: "Completar misiones, contribuir al ecosistema y ganar experiencia mientras ayudas a la comunidad.",
+    icon: Zap,
+  },
+  {
+    title: "Sistema de recompensas",
+    description: "Recibe tokens y NFTs exclusivos por tu participación activa en la gobernanza del DAO.",
+    icon: Trophy,
+  },
+];
 
 const LandingPage = () => {
   return (
@@ -30,10 +53,13 @@ const LandingPage = () => {
             </div>
             <nav className="hidden md:flex items-center space-x-6">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-                Features
+                Características
               </a>
               <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-                How it works
+                Cómo funciona
+              </a>
+              <a href="#impact" className="text-muted-foreground hover:text-foreground transition-colors">
+                Impacto
               </a>
               {/* <a href="#rewards" className="text-muted-foreground hover:text-foreground transition-colors">
                 Recompensas
@@ -49,27 +75,38 @@ const LandingPage = () => {
         <HeroSection />
 
         {/* Features Section */}
-        <Suspense
-          fallback={
-            <section className="w-full">
-              <div className="container grid md:grid-cols-3 gap-8 mx-auto">
-                <Skeleton className="w-full h-52" />
-                <Skeleton className="w-full h-52" />
-                <Skeleton className="w-full h-52" />
-              </div>
-            </section>
-          }
-        >
-          <FeatureSection />
-        </Suspense>
+        <section id="features" className="py-20 px-4 bg-card/30 relative z-10">
+          <div className="container mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Características Principales</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Descubre las herramientas que hacen de AgoraDAO la plataforma líder en gobernanza descentralizada.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {mainFeatures.map(({ title, description, icon: Icon }) => (
+                <Card key={title} className="border-border hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                      <Icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription>{description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* How It Works Section */}
         <section id="how-it-works" className="py-20 px-4 relative z-10">
           <div className="container mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">How It Works</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Cómo funciona</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Three simple steps to begin your journey in AgoraDAO
+                Tres pasos simples para comenzar tu viaje en AgoraDAO
               </p>
             </div>
 
@@ -78,17 +115,17 @@ const LandingPage = () => {
                 <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl font-bold text-primary-foreground">1</span>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Connect your Wallet</h3>
-                <p className="text-muted-foreground">Connect your Web3 wallet and create or join a DAO.</p>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Conecta tu wallet</h3>
+                <p className="text-muted-foreground">Conecta tu wallet y crea o une a un DAO.</p>
               </div>
 
               <div className="text-center">
                 <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl font-bold text-accent-foreground">2</span>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Participate and vote</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Participa y vota</h3>
                 <p className="text-muted-foreground">
-                  Vote on important proposals and complete tasks to gain experience.
+                  Vota en propuestas importantes y completa tareas para ganar experiencia.
                 </p>
               </div>
 
@@ -96,7 +133,7 @@ const LandingPage = () => {
                 <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl font-bold text-primary-foreground">3</span>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Recibe Recompensas</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Recibe recompensas</h3>
                 <p className="text-muted-foreground">
                   Gana tokens, NFTs y beneficios exclusivos por tu participación activa
                 </p>

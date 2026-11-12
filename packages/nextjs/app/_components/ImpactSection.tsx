@@ -13,12 +13,12 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 export const ImpactSection: React.FC = () => {
   //smart contract
   const { data: daoCounter, isLoading: daoCounterLoading } = useScaffoldReadContract({
-    contractName: "AgoraDaoFabric",
+    contractName: "AgoraDaoFactory",
     functionName: "getTotalDaoCount",
   });
 
   const { data: userCounter, isLoading: userCounterLoading } = useScaffoldReadContract({
-    contractName: "AgoraDaoFabric",
+    contractName: "AgoraDaoFactory",
     functionName: "userCounter",
   });
 
@@ -39,7 +39,7 @@ export const ImpactSection: React.FC = () => {
                 <CardTitle className="text-2xl text-primary">
                   <CountUp
                     from={0}
-                    to={parseInt(daoCounter?.toString() ?? "0") === 0 ? 0 : parseInt(daoCounter?.toString() ?? "0") - 1}
+                    to={parseInt(daoCounter?.toString() ?? "0") > 0 ? parseInt(daoCounter?.toString() ?? "0") : 0}
                     separator=","
                     direction="up"
                     duration={1}
@@ -47,7 +47,7 @@ export const ImpactSection: React.FC = () => {
                   />
                   +
                 </CardTitle>
-                <CardDescription>DAOs created</CardDescription>
+                <CardDescription>DAOs creadas</CardDescription>
               </CardHeader>
             </Card>
           )}
@@ -64,9 +64,7 @@ export const ImpactSection: React.FC = () => {
                 <CardTitle className="text-2xl">
                   <CountUp
                     from={0}
-                    to={
-                      parseInt(userCounter?.toString() ?? "0") === 0 ? 0 : parseInt(userCounter?.toString() ?? "0") - 1
-                    }
+                    to={parseInt(userCounter?.toString() ?? "0") > 0 ? parseInt(userCounter?.toString() ?? "0") : 0}
                     separator=","
                     direction="up"
                     duration={1}
@@ -74,7 +72,7 @@ export const ImpactSection: React.FC = () => {
                   />
                   +
                 </CardTitle>
-                <CardDescription>Registered Users</CardDescription>
+                <CardDescription>Usuarios Registrados</CardDescription>
               </CardHeader>
             </Card>
           )}
@@ -130,7 +128,7 @@ export const ImpactSection: React.FC = () => {
       <TabsContent value="charts">
         <Card>
           <CardHeader>
-            <CardTitle>Bar Chart</CardTitle>
+            <CardTitle>Gráfico de Barras</CardTitle>
             <CardDescription>January - June 2024</CardDescription>
           </CardHeader>
           <CardContent>
@@ -165,10 +163,12 @@ export const ImpactSection: React.FC = () => {
       <div className="container mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-center md:text-left text-3xl md:text-4xl font-bold text-foreground mb-6">Our Impact</h2>
+            <h2 className="text-center md:text-left text-3xl md:text-4xl font-bold text-foreground mb-6">
+              Nuestro Impacto
+            </h2>
             <p className="text-center md:text-left text-lg text-muted-foreground mb-8">
-              At AgoraDAO, every action counts. Our rewards system recognizes and rewards active community
-              participation.
+              En AgoraDAO, cada acción cuenta. Nuestro sistema de recompensas reconoce y recompensa la participación
+              activa de la comunidad.
             </p>
 
             {/* <div className="space-y-4">

@@ -1,21 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Rocket } from "lucide-react";
-import { useAccount } from "wagmi";
+import { ArrowRight, Rocket } from "lucide-react";
+import { toast } from "sonner";
+import { useAccount, useAccountEffect } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth/RainbowKitCustomConnectButton";
 import DecryptedText from "~~/components/ui/DecryptedText";
 import RotatingText from "~~/components/ui/RotatingText";
 import { Badge } from "~~/components/ui/shadcn/badge";
+import { Button } from "~~/components/ui/shadcn/button";
+import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 
 export const HeroSection: React.FC = () => {
-  const { isConnected } = useAccount();
+  const { status } = useAccount();
   const router = useRouter();
 
-  useEffect(() => {
-    if (isConnected) router.push("/daos");
-  }, [isConnected, router]);
+  // only for a fresh connection: the user may be reading further down and miss that the button changed
+  useAccountEffect({
+    onConnect({ isReconnected }) {
+      if (isReconnected) return;
+
+      toast.success("Wallet conectada", {
+        description: "Ya puedes ver las DAOs disponibles.",
+        duration: 15000,
+        action: { label: "Ir a mis DAOs", onClick: () => router.push("/daos") },
+      });
+    },
+  });
 
   return (
     <section className="py-20 px-4 relative z-10">
@@ -23,7 +35,7 @@ export const HeroSection: React.FC = () => {
         <Badge variant="secondary" className="mb-6 bg-primary/10 text-primary border-primary/20 ">
           <Rocket />
           <DecryptedText
-            text="Decentralization in Action"
+            text="Decentralización en Acción"
             animateOn="view"
             speed={100}
             maxIterations={15}
@@ -31,10 +43,10 @@ export const HeroSection: React.FC = () => {
           />
         </Badge>
         <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 text-balance">
-          <div className="flex justify-center">The platform for DAOs that work seriously</div>
+          <div className="flex justify-center">La Plataforma Completa para tu Organización Descentralizada</div>
         </h1>
         <RotatingText
-          texts={["Vote", "Participate", "Earn", "Organize", "Clear tasks", "Collective decisions"]}
+          texts={["Vota", "Participa", "Gana", "Organiza", "Tareas claras", "Decisiones colectivas"]}
           mainClassName="text-4xl md:text-6xl font-bold text-foreground px-2 sm:px-2 md:px-3 overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
           staggerFrom={"last"}
           initial={{ y: "100%" }}
@@ -47,12 +59,23 @@ export const HeroSection: React.FC = () => {
           rotationInterval={2000}
         />
         <p className="text-xl text-muted-foreground mb-8 text-pretty max-w-2xl mx-auto">
-          AgoraDAO is the decentralized platform where your voice matters. Participate in important decisions, complete
-          tasks, and receive rewards for contributing to the ecosystem.
+          AgoraDAO es la plataforma descentralizada donde tu voz importa. Participa en decisiones importantes, completa
+          tareas y recibe recompensas por contribuir al ecosistema.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <RainbowKitCustomConnectButton />
+          {status === "connecting" || status === "reconnecting" ? (
+            <Skeleton className="h-9 w-40" />
+          ) : status === "connected" ? (
+            <Button asChild size="lg">
+              <Link href="/daos">
+                Ir a mis DAOs
+                <ArrowRight />
+              </Link>
+            </Button>
+          ) : (
+            <RainbowKitCustomConnectButton />
+          )}
         </div>
       </div>
     </section>

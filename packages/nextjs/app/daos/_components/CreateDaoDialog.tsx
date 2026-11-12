@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useAccount, useChainId, useSignMessage } from "wagmi";
 import { z } from "zod";
+import RotatingText from "~~/components/ui/RotatingText";
 import { Badge } from "~~/components/ui/shadcn/badge";
 import { Button } from "~~/components/ui/shadcn/button";
 import {
@@ -189,7 +190,20 @@ export const CreateDaoDialog: React.FC = () => {
         <DialogTrigger asChild>
           <Button size={isMd ? "lg" : "sm"}>
             <Plus className="w-4 h-4" />
-            Crear DAO
+
+            <RotatingText
+              texts={["Crear DAO", "Lanzar DAO", "Descentralizar ahora", "Iniciar DAO"]}
+              mainClassName="px-2 sm:px-2 md:px-3 overflow-hidden  justify-center rounded-lg"
+              staggerFrom={"last"}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "-120%" }}
+              staggerDuration={0.025}
+              splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+              elementLevelClassName="text-primary-foreground"
+              transition={{ type: "tween", damping: 30, stiffness: 400 }}
+              rotationInterval={5000}
+            />
           </Button>
         </DialogTrigger>
       </div>
