@@ -85,16 +85,18 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role, daoAddress }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size="icon" className="h-8 w-8">
+        <Button size="sm">
           <Plus className="h-4 w-4" />
-          <span className="sr-only">Agregar {role.name}</span>
+          Añadir
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Agregar {role.name}</DialogTitle>
-          <DialogDescription>Puedes agregar varias direcciones usando el botón con el simbolo +.</DialogDescription>
+          <DialogTitle>Añadir {role.label.toLowerCase()}</DialogTitle>
+          <DialogDescription>
+            Pega la dirección de la wallet. Con el botón + puedes añadir varias en una sola transacción.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4 max-h-[300px] overflow-y-auto px-1">
@@ -140,20 +142,19 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({ role, daoAddress }) => {
         </div>
 
         <DialogFooter>
-          <Button variant="destructive" onClick={() => setInputs([""])}>
-            <Trash2 className="h-4 w-4" />
-            Eliminar todo
+          <Button variant="outline" onClick={() => setInputs([""])}>
+            Limpiar
           </Button>
           <Button onClick={handleSave} disabled={hasErrors || submitLoading}>
             {submitLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Loading...
+                Confirma en tu wallet…
               </>
             ) : (
               <>
                 <UserCheck className="h-4 w-4" />
-                Crear {inputs.length > 1 ? "roles" : "rol"}
+                Asignar {inputs.length > 1 ? `a ${inputs.length} personas` : "rol"}
               </>
             )}
           </Button>

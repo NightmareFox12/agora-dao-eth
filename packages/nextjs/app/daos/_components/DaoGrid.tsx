@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { DaoCard } from "./DaoCard";
-import { Frown, Loader, X } from "lucide-react";
+import { Loader, X } from "lucide-react";
 import { useAccount } from "wagmi";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
@@ -42,7 +42,7 @@ export const DaoGrid: React.FC = () => {
     return (
       <article className="w-full grid gap-6 sm:grid-cols-2 md:grid-cols-3 px-4 sm:mt-4 mb-2 sm:mb-4">
         {arr.map((_x, y) => (
-          <Skeleton key={y} className="h-56 w-full bg-primary/50" />
+          <Skeleton key={y} className="h-56 w-full" />
         ))}
       </article>
     );
@@ -83,16 +83,16 @@ export const DaoGrid: React.FC = () => {
       {daos === undefined || daoLoading ? (
         <LoadingCards />
       ) : daos.length === 0 ? (
-        <article className="h-96 mt-5 flex justify-center flex-col text-center py-12">
-          <Frown className="h-20 w-20 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-2xl font-semibold mb-2">No hay DAOS disponibles</h3>
-          <p className="text-muted-foreground">Por favor, vuelve más tarde para ver nuevas DAOS disponibles.</p>
+        <article className="mx-auto max-w-md px-4 py-20 text-center">
+          <h3 className="m-0 text-xl font-semibold">Todavía no hay ninguna DAO en esta red</h3>
+          <p className="m-0 mt-2 text-muted-foreground">
+            La primera la crea alguien con el botón «Crear DAO» de arriba. Puede ser la tuya.
+          </p>
         </article>
       ) : daosFiltered?.length === 0 ? (
-        <article className="h-96 mt-5 flex justify-center items-center flex-col text-center py-12">
-          <Frown className="h-20 w-20 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-2xl font-semibold mb-2">Ninguna DAO coincide</h3>
-          <p className="text-muted-foreground mb-4">Prueba con otra búsqueda o quita algunos filtros.</p>
+        <article className="mx-auto flex max-w-md flex-col items-center px-4 py-20 text-center">
+          <h3 className="m-0 text-xl font-semibold">Ninguna DAO coincide</h3>
+          <p className="m-0 mb-4 mt-2 text-muted-foreground">Prueba con otra búsqueda o quita algunos filtros.</p>
           <Button variant="outline" onClick={clearDaoSearch}>
             <X className="h-4 w-4" />
             Borrar búsqueda y filtros
