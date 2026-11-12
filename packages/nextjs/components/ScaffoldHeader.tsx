@@ -72,11 +72,11 @@ export const ScaffoldHeader = () => {
       <div className="mx-4 flex h-16 items-center justify-between gap-2">
         <Link href="/" passHref className="hidden shrink-0 items-center gap-2 md:flex">
           <div className="relative flex h-10 w-10">
-            <Image src="/logo.svg" alt="SE2 logo" className="cursor-pointer" fill />
+            <Image src="/logo.svg" alt="" className="cursor-pointer" fill />
           </div>
           <div className="flex min-w-0 max-w-48 flex-col">
             <span className="font-bold leading-tight">Agora DAO</span>
-            <span className="truncate text-xs">{dao?.name ?? "Gobierno descentralizado"}</span>
+            <span className="truncate text-xs">{dao?.name ?? "Cargando…"}</span>
           </div>
         </Link>
 

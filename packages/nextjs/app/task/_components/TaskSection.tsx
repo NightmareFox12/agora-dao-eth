@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { TaskCard } from "./TaskCard";
+import { TASKS_TOUR_ID, tasksTourSteps } from "./tasks.tour";
 import { ClipboardList, Plus, Search } from "lucide-react";
+import { TourButton } from "~~/components/TourButton";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Input } from "~~/components/ui/shadcn/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~~/components/ui/shadcn/select";
@@ -13,6 +15,7 @@ import { TASK_CATEGORIES } from "~~/constants/taskCategories";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
 import { useTasksAddress } from "~~/hooks/useTasksAddress";
+import { useTour } from "~~/hooks/useTour";
 import { TASK_STATUS } from "~~/lib/tasks";
 
 // Which statuses each tab shows
@@ -58,24 +61,30 @@ export const TaskSection: React.FC = () => {
 
   const hasTasks = (tasks?.length ?? 0) > 0;
 
+  //tour
+  const { start: startTour } = useTour(TASKS_TOUR_ID, tasksTourSteps, { ready: tasks !== undefined });
+
   return (
     <main className="container mx-auto py-2 px-4 space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Tareas de la DAO</h1>
-          <p className="text-muted-foreground">Contribuye a la organización y gana recompensas.</p>
+          <h1 className="m-0 text-3xl font-bold tracking-tight">Tareas</h1>
+          <p className="m-0 text-muted-foreground">Trabajo con recompensa en ETH. Toma una, entrega y cobra.</p>
         </div>
-        {canCreateTasks ? (
-          <Button asChild className="w-full md:w-auto">
-            <Link href="/task/new">
-              <Plus className="h-4 w-4" /> Nueva tarea
-            </Link>
-          </Button>
-        ) : (
-          <p className="m-0 max-w-xs text-xs text-muted-foreground md:text-right">
-            Solo los gestores de tareas y los administradores publican tareas.
-          </p>
-        )}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <TourButton onClick={startTour} />
+          {canCreateTasks ? (
+            <Button asChild className="w-full md:w-auto" data-tour="tasks-new">
+              <Link href="/task/new">
+                <Plus className="h-4 w-4" /> Nueva tarea
+              </Link>
+            </Button>
+          ) : (
+            <p className="m-0 max-w-xs text-xs text-muted-foreground md:text-right">
+              Solo los gestores de tareas y los administradores publican tareas.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4 lg:items-center">
@@ -90,7 +99,7 @@ export const TaskSection: React.FC = () => {
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
           <Tabs value={tab} onValueChange={setTab} className="w-full sm:w-auto">
-            <TabsList className="grid grid-cols-4 w-full sm:w-auto">
+            <TabsList data-tour="tasks-tabs" className="grid grid-cols-4 w-full sm:w-auto">
               <TabsTrigger value="all">Todas</TabsTrigger>
               <TabsTrigger value="open">Abiertas</TabsTrigger>
               <TabsTrigger value="active">En curso</TabsTrigger>
@@ -98,7 +107,7 @@ export const TaskSection: React.FC = () => {
             </TabsList>
           </Tabs>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-full sm:w-44">
+            <SelectTrigger data-tour="tasks-category" className="w-full sm:w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -140,9 +149,10 @@ export const TaskSection: React.FC = () => {
         </article>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tasksFiltered.map(task => (
+          {tasksFiltered.map((task, index) => (
             <TaskCard
               key={task.id.toString()}
+              tour={index === 0 ? "task-card" : undefined}
               title={task.title}
               summary={task.summary}
               categoryId={Number(task.categoryId)}

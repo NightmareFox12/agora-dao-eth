@@ -3,13 +3,16 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ProposalCard } from "./ProposalCard";
+import { VOTES_TOUR_ID, votesTourSteps } from "./votes.tour";
 import { Plus, Search, Vote } from "lucide-react";
+import { TourButton } from "~~/components/TourButton";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Input } from "~~/components/ui/shadcn/input";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "~~/components/ui/shadcn/tabs";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth/useScaffoldReadContract";
 import { useDaoRoles } from "~~/hooks/useDaoRoles";
+import { useTour } from "~~/hooks/useTour";
 import { useVotesAddress } from "~~/hooks/useVotesAddress";
 import { PROPOSAL_STATUS, type ProposalData } from "~~/lib/votes";
 
@@ -50,24 +53,30 @@ export const VoteSection: React.FC = () => {
 
   const hasProposals = (proposals?.length ?? 0) > 0;
 
+  //tour
+  const { start: startTour } = useTour(VOTES_TOUR_ID, votesTourSteps, { ready: proposals !== undefined });
+
   return (
     <main className="container mx-auto space-y-6 px-4 py-2">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Propuestas de la DAO</h1>
-          <p className="text-muted-foreground">Lee, debate y vota lo que decide la comunidad.</p>
+          <h1 className="m-0 text-3xl font-bold tracking-tight">Votaciones</h1>
+          <p className="m-0 text-muted-foreground">Lo que la DAO decide. Cada miembro vota una vez.</p>
         </div>
-        {canCreateProposals ? (
-          <Button asChild className="w-full md:w-auto">
-            <Link href="/vote/new">
-              <Plus className="h-4 w-4" /> Nueva propuesta
-            </Link>
-          </Button>
-        ) : (
-          <p className="m-0 max-w-xs text-xs text-muted-foreground md:text-right">
-            Solo los gestores de propuestas y los administradores publican propuestas.
-          </p>
-        )}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <TourButton onClick={startTour} />
+          {canCreateProposals ? (
+            <Button asChild className="w-full md:w-auto" data-tour="votes-new">
+              <Link href="/vote/new">
+                <Plus className="h-4 w-4" /> Nueva propuesta
+              </Link>
+            </Button>
+          ) : (
+            <p className="m-0 max-w-xs text-xs text-muted-foreground md:text-right">
+              Solo los gestores de propuestas y los administradores publican propuestas.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
@@ -81,7 +90,7 @@ export const VoteSection: React.FC = () => {
           />
         </div>
         <Tabs value={tab} onValueChange={setTab} className="w-full lg:w-auto">
-          <TabsList className="grid w-full grid-cols-3 lg:w-auto">
+          <TabsList data-tour="votes-tabs" className="grid w-full grid-cols-3 lg:w-auto">
             <TabsTrigger value="all">Todas</TabsTrigger>
             <TabsTrigger value="active">En votación</TabsTrigger>
             <TabsTrigger value="closed">Cerradas</TabsTrigger>
@@ -118,9 +127,10 @@ export const VoteSection: React.FC = () => {
         </article>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {proposalsFiltered.map(proposal => (
+          {proposalsFiltered.map((proposal, index) => (
             <ProposalCard
               key={proposal.id.toString()}
+              tour={index === 0 ? "proposal-card" : undefined}
               proposal={proposal as ProposalData}
               href={`/vote/${proposal.id}`}
             />
