@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { DaoDetailsDialog } from "./DaoDetailsDialog";
 import { DoorOpen, Image, Loader2, Users } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
-import { useTheme } from "next-themes";
 import { Button } from "~~/components/ui/shadcn/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/shadcn/card";
 import { Skeleton } from "~~/components/ui/shadcn/skeleton";
@@ -20,12 +19,6 @@ import { cn } from "~~/lib/utils";
 //dinamycs
 const NoSSRBadge = dynamic(() => import("~~/components/ui/shadcn/badge").then(module => module.Badge), { ssr: false });
 
-//constans
-const BORDER_COLOR = {
-  dark: "border-blue-400",
-  light: "border-blue-500",
-} as const;
-
 type DaoCardProps = {
   daoID: bigint;
   daoAddress: string;
@@ -36,6 +29,8 @@ type DaoCardProps = {
   categories: { id: number; name: string }[];
   imageUri: string;
   creationDate: bigint;
+  /** The first card in the list is the one the guided tour points at */
+  tour?: boolean;
 };
 
 export const DaoCard: React.FC<DaoCardProps> = ({
@@ -48,12 +43,11 @@ export const DaoCard: React.FC<DaoCardProps> = ({
   categories,
   imageUri,
   creationDate,
+  tour = false,
 }) => {
-  const { resolvedTheme } = useTheme();
   const router = useRouter();
 
   //consts
-  const isDarkMode = (resolvedTheme ?? "light") === "dark";
 
   //smart contract
   const { writeContractAsync: writeAgoraDaoAsync } = useScaffoldWriteContract({
@@ -103,10 +97,8 @@ export const DaoCard: React.FC<DaoCardProps> = ({
 
   return (
     <Card
-      className={cn(
-        "flex flex-col transition-all hover:shadow-lg",
-        isOwner ? BORDER_COLOR[isDarkMode ? "dark" : "light"] : "",
-      )}
+      data-tour={tour ? "dao-card" : undefined}
+      className={cn("flex flex-col transition-all hover:shadow-lg", isOwner && "border-primary")}
     >
       <CardHeader>
         <div className="flex items-start justify-between">
@@ -126,10 +118,10 @@ export const DaoCard: React.FC<DaoCardProps> = ({
               <div className="flex items-center gap-1">
                 <Users className="h-4 w-4 text-muted-foreground" />
                 {userCounter === undefined || userCounterLoading ? (
-                  <Skeleton className="h-5 w-5 bg-primary/50" />
+                  <Skeleton className="h-4 w-20" />
                 ) : (
                   <span className="text-sm text-muted-foreground">
-                    {userCounter} {userCounter === 1n ? "usuario" : "usuarios"}
+                    {userCounter} {userCounter === 1n ? "miembro" : "miembros"}
                   </span>
                 )}
               </div>
@@ -147,7 +139,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
       </CardHeader>
 
       <CardContent className="flex-1">
-        <CardDescription className="text-sm leading-relaxed break-all">
+        <CardDescription className="text-sm leading-relaxed [overflow-wrap:anywhere]">
           {description.length > 100 ? description.slice(0, 100) + "..." : description}
         </CardDescription>
       </CardContent>
@@ -155,6 +147,7 @@ export const DaoCard: React.FC<DaoCardProps> = ({
       <CardFooter>
         <div className="w-full flex items-center justify-between gap-1 md:gap-1.5">
           <Button
+            data-tour={tour ? "dao-join" : undefined}
             onClick={handleJoinDao}
             className={`flex-1 ${isOwner ? "bg-secondary-foreground" : "bg-primary"}`}
             size="sm"

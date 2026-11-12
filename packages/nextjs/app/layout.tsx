@@ -5,8 +5,8 @@ import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
-  title: "Scaffold-ETH 2 App",
-  description: "Built with 🏗 Scaffold-ETH 2",
+  title: "Agora DAO",
+  description: "Tareas con recompensa, votaciones y un fondo común para tu comunidad, con las reglas en la blockchain.",
 });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {

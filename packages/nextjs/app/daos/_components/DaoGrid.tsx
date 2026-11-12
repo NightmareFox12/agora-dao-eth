@@ -102,10 +102,11 @@ export const DaoGrid: React.FC = () => {
         <article className="container mx-auto px-4 py-8">
           {/* Main Content */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {daosFiltered?.map(x => {
+            {daosFiltered?.map((x, index) => {
               return (
                 <DaoCard
                   key={x.daoID}
+                  tour={index === 0}
                   daoID={x.daoID}
                   daoAddress={x.daoAddress}
                   userAddress={address}
